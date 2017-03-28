@@ -1,0 +1,13 @@
+# output directories
+build/
+plots/out/*
+!plots/out/*.png
+
+# Converted images 
+images/*converted-to*
+
+# Temp files
+.*.swp
+
+# OSX files
+.DS_Store

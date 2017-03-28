@@ -1,0 +1,66 @@
+# markdown-spellcheck spelling configuration file
+# Format - lines beginning # are comments
+# global dictionary is at the start, file overrides afterwards
+# one word per line, to define a file override use ' - filename'
+# where filename is relative to this configuration file
+
+# biblinks
+lms
+delite
+optistructs
+eatperf
+betterfusion
+scalan
+tagless
+virtualization
+staging
+dsls
+mapreduce
+spark
+soa
+loopfusion
+debug
+designpatterns
+dslhudak
+
+# footnotes
+1lms
+1back
+1delite
+1redesign
+2redesign
+1eval
+2eval
+
+# names
+Cédric
+Bastin
+Manohar
+Jonnalagedda
+Koeplinger
+Salvisberg
+Rompf
+Tiark
+Odersky
+Kunle
+Olukotun
+Fiszel
+Karissa
+Paddie
+
+# other
+runtime
+ast
+api
+apis
+cpus
+logpocalypse
+heisenbugs
+heisenbug
+composable
+scala
+inlined
+parallelizable
+FPGAs
+backend
+frontend
