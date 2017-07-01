@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="reveal.js/css/theme/serif.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+
+<section><section id="spatial-and-drones" class="titleslide slide level1"><h1>Spatial and drones</h1></section><section id="an-exciting-target" class="slide level2">
+<h2>An exciting target</h2>
+<ul>
+<li class="fragment">Exciting demo for spatial <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo accent="false">⇒</mo><annotation encoding="application/x-tex">\Rightarrow</annotation></semantics></math> Answer to why spatial, and what can spatial do</li>
+<li class="fragment">Intellectually stimulating <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo accent="false">⇒</mo><annotation encoding="application/x-tex">\Rightarrow</annotation></semantics></math> Lots of research on the subject</li>
+</ul>
+</section><section id="full-of-potential" class="slide level2">
+<h2>Full of potential</h2>
+<p>Air is still very much an uncharted territory:</p>
+<ul>
+<li class="fragment">Surveillance</li>
+<li class="fragment">Search and rescue</li>
+<li class="fragment">Logistic inside warehouses</li>
+<li class="fragment">Transport of materials or documents</li>
+<li class="fragment">Monitoring (crops, protection of species in danger)</li>
+</ul>
+</section></section>
+<section><section id="a-constrained-problem" class="titleslide slide level1"><h1>A constrained problem</h1></section><section id="energy-bound" class="slide level2">
+<h2>Energy bound</h2>
+<p>Improved efficiency <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo accent="false">⇒</mo><annotation encoding="application/x-tex">\Rightarrow</annotation></semantics></math> Extended flight time</p>
+<ul>
+<li class="fragment">Hovering rule of thumb: <strong>~150W/Kg</strong></li>
+<li class="fragment">A drone like the AF450 from our lab <strong>~100W</strong></li>
+<li class="fragment">His FMU (Flight Management Unit), a Pixhawk: <strong>~1-2W</strong></li>
+<li class="fragment">Jetson TX2, the latest embedded CUDA board from NVIDIA consumes around: <strong>~8W</strong></li>
+</ul>
+</section><section id="latency-bound" class="slide level2">
+<h2>Latency bound</h2>
+<p><strong>SLAM</strong> (Software localization and mapping) is critical for <strong>motion planning</strong> and <strong>motion control</strong>.</p>
+<p>A critical subproblem of <strong>SLAM</strong> is <strong>POSE</strong> (position estimation)</p>
+</section><section id="section" class="slide level2">
+<h2></h2>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><msub><mi>x</mi><mi>t</mi></msub><mo accent="true">^</mo></mover><mo>=</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mi>O</mi><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{x_t} = f(x_{t-1}, O_t)</annotation></semantics></math></p>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>t</mi></msub><annotation encoding="application/x-tex">x_t</annotation></semantics></math> is the state of the drone (including position, attitude (orientation), velocity, etc ...) at time t</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>x</mi><mo accent="true">^</mo></mover><annotation encoding="application/x-tex">\hat{x}</annotation></semantics></math> is the estimation of that state</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>O</mi><mi>t</mi></msub><annotation encoding="application/x-tex">O_t</annotation></semantics></math> is the observation of the universe by the drone at time t</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math> is the SLAM prediction algorithm</li>
+</ul>
+</section><section id="goal" class="slide level2">
+<h2>Goal</h2>
+<p>Latency = <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Δ</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">\Delta t</annotation></semantics></math> = Max(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math> time, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>O</mi><annotation encoding="application/x-tex">O</annotation></semantics></math> sample rate)</p>
+<p>Reduce <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math> computation time closer to <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>O</mi><annotation encoding="application/x-tex">O</annotation></semantics></math> sample rate.</p>
+</section><section id="section-1" class="slide level2">
+<h2></h2>
+<p>Reduced latency result in more accurate <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><msub><mi>x</mi><mi>t</mi></msub><mo accent="true">^</mo></mover><annotation encoding="application/x-tex">\hat{x_t}</annotation></semantics></math>:</p>
+<ul>
+<li class="fragment">Smoother control <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo accent="false">⇒</mo><annotation encoding="application/x-tex">\Rightarrow</annotation></semantics></math> Less jiggering + &quot;agile&quot; drone</li>
+<li class="fragment">Better sync between planning and control</li>
+<li class="fragment">Better collision avoidance <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo accent="false">⇒</mo><annotation encoding="application/x-tex">\Rightarrow</annotation></semantics></math> safer for the drone and its surrounding.</li>
+</ul>
+</section><section id="performance-bound" class="slide level2">
+<h2>Performance bound</h2>
+<p>Currently, heavy tasks are usually done:</p>
+<ul>
+<li class="fragment">On a companion computer on the ground</li>
+<li class="fragment">Sometimes, offline (after the flight) from the data gathered</li>
+</ul>
+<p>Preferable or critical to do them <strong>onboard</strong> and <strong>online</strong></p>
+</section><section id="the-vision" class="slide level2">
+<h2>The vision</h2>
+<p><strong>Accelerating hardware! </strong></p>
+<p><em>(A plasticine in every drone)</em></p>
+<ul>
+<li class="fragment">Efficient</li>
+<li class="fragment">Low-latency</li>
+<li class="fragment">Performant</li>
+</ul>
+<p>Focus on <strong>FPGA</strong> and likely the <strong>OcPoc</strong> from aerotenna which include a <strong>cyclone V</strong>.</p>
+</section><section id="section-2" class="slide level2">
+<h2></h2>
+<ul>
+<li class="fragment">Plasticine: An hardware architecture made by us for spatial</li>
+<li class="fragment">FPGA: A common reprogrammable hardware achitecture targetable by spatial</li>
+<li class="fragment">Spatial: the compiler from DSL to spatial hardware architecture program</li>
+</ul>
+</section></section>
+<section><section id="sensor-fusion" class="titleslide slide level1"><h1>Sensor fusion</h1></section><section id="sensor-fusion-1" class="slide level2">
+<h2>Sensor fusion</h2>
+<p>Sensor fusion is the fusion of the data from different sensors to get the accurate estimator of one state.</p>
+<ul>
+<li class="fragment">Dual GPS</li>
+<li class="fragment">accelerometer + gyroscope for attitude</li>
+<li class="fragment">LIDAR + IMU</li>
+</ul>
+<p>Sensor fusion can be achieved through the combination of filtered signals.</p>
+</section><section id="section-3" class="slide level2">
+<h2></h2>
+<figure>
+<img src="fusion.png" alt="Sensor fusion" /><figcaption>Sensor fusion</figcaption>
+</figure>
+</section><section id="sensor-filters" class="slide level2">
+<h2>Sensor Filters</h2>
+<p>There is two main filters for POSE:</p>
+<ul>
+<li class="fragment">Complementary filters</li>
+<li class="fragment">Kalman filters</li>
+</ul>
+</section><section id="complementary-filters" class="slide level2">
+<h2>Complementary filters</h2>
+<p>Complementary filters come from the complentarity of a HPF and a LPF applied to different sensors</p>
+<p>For instance, retrieving the attitude/orientation from the gyroscope + accelerometer</p>
+</section><section id="section-4" class="slide level2">
+<h2></h2>
+<figure>
+<img src="cf.png" alt="orientation" /><figcaption>orientation</figcaption>
+</figure>
+</section><section id="accelerometer" class="slide level2">
+<h2>Accelerometer</h2>
+<p>accelerometer (through g acceleration) no drift but high-variance at high frequency (vibrations, other forces)</p>
+<p>Accurate in the long-term: <strong>Low-pass filter</strong></p>
+<figure>
+<img src="accelero.png" alt="Accelerometer" /><figcaption>Accelerometer</figcaption>
+</figure>
+</section><section id="gyroscope" class="slide level2">
+<h2>Gyroscope</h2>
+<p>gyroscope drift (because of integral over numerical error accumulate)</p>
+<p>Accurate in the short term: <strong>High-pass filter</strong></p>
+<figure>
+<img src="gyro.gif" alt="Gyroscope" /><figcaption>Gyroscope</figcaption>
+</figure>
+</section><section id="drift" class="slide level2">
+<h2>Drift</h2>
+<ul>
+<li class="fragment">Why does the gyro drift ? Because of the nature of an integration over a gaussian.</li>
+<li class="fragment">Even if the noise (sensor noise + floating point error) has no bias, it accumulates errors over time.</li>
+<li class="fragment">Even if there is no error, the integration is discrete <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo accent="false">⇒</mo><annotation encoding="application/x-tex">\Rightarrow</annotation></semantics></math> approximation errors</li>
+<li class="fragment"><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Z</mi><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><mi>X</mi></msub><mo>+</mo><msub><mi>μ</mi><mi>Y</mi></msub><mo>,</mo><msubsup><mi>σ</mi><mi>X</mi><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mi>Y</mi><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Z \sim N(\mu_X + \mu_Y, \sigma_X^2 + \sigma_Y^2)</annotation></semantics></math></li>
+<li class="fragment">For better intuition, see Wiener process <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mi>a</mi><mi>r</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>W</mi><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>t</mi></mrow><annotation encoding="application/x-tex">Var(W_t) = t</annotation></semantics></math></li>
+</ul>
+</section><section id="kalman-filters" class="slide level2">
+<h2>Kalman Filters</h2>
+<p>Also called linear quadratic estimation (LQE)</p>
+<p>Estimate the joint state random variables (like position) conditonned on a serie of noisy observation (from the sensors).</p>
+</section><section id="section-5" class="slide level2">
+<h2></h2>
+<p>Basic principle, true state <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{x}_t</annotation></semantics></math> is a linear noisy process:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mi>t</mi></msub><mo>=</mo><msub><mstyle mathvariant="bold"><mi>𝐅</mi></mstyle><mi>t</mi></msub><msub><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mstyle mathvariant="bold"><mi>𝐁</mi></mstyle><mi>t</mi></msub><msub><mstyle mathvariant="bold"><mi>𝐮</mi></mstyle><mi>t</mi></msub><mo>+</mo><msub><mstyle mathvariant="bold"><mi>𝐰</mi></mstyle><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\mathbf{x}_t = \mathbf{F}_t \mathbf{x}_{t-1} + \mathbf{B}_t \mathbf{u}_t + \mathbf{w}_t </annotation></semantics></math></p>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐅</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{F}_t</annotation></semantics></math> the state transition model</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐁</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{B}_t</annotation></semantics></math> the control-input model</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐮</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{u}_t</annotation></semantics></math> the control vector</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐰</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{w}_t</annotation></semantics></math> process noise drawn from <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐰</mi></mstyle><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝐐</mi></mstyle><mi>k</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathbf{w}_t \sim N(0, \mathbf{Q}_k)</annotation></semantics></math></li>
+</ul>
+</section><section id="section-6" class="slide level2">
+<h2></h2>
+<p>The kalman filter keeps track of our estimation of the gaussian random variable <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>t</mi></msub><annotation encoding="application/x-tex">X_t</annotation></semantics></math></p>
+<p>(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><msub><mo stretchy="false" form="postfix">]</mo><mrow><mi>a</mi><mo stretchy="false" form="prefix">|</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">[]_{a|b}</annotation></semantics></math> reads as at time a knowing all observations until and including b)</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathbf{X}_{t|t-1} \sim N(\hat{\mathbf{x}}_{t|t-1}, \mathbf{P}_{t|t-1})</annotation></semantics></math></p>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math> state gaussian random variable</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><annotation encoding="application/x-tex">\hat{\mathbf{x}}</annotation></semantics></math> estimated state mean (best guess)</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><annotation encoding="application/x-tex">\mathbf{P}</annotation></semantics></math> estimated covariance matrix</li>
+</ul>
+</section><section id="section-7" class="slide level2">
+<h2></h2>
+<p>Kalman filter proceed in two steps, predict and update:</p>
+<p><strong>Predict</strong>:</p>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>t</mi><mo>∣</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mstyle mathvariant="bold"><mi>𝐅</mi></mstyle><mi>k</mi></msub><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>t</mi><mo>−</mo><mn>1</mn><mo>∣</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mstyle mathvariant="bold"><mi>𝐁</mi></mstyle><mi>t</mi></msub><msub><mstyle mathvariant="bold"><mi>𝐮</mi></mstyle><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\hat{\mathbf{x}}_{t\mid t-1} = \mathbf{F}_k\hat{\mathbf{x}}_{t-1\mid t-1} + \mathbf{B}_t \mathbf{u}_t</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><mrow><mi>t</mi><mo>∣</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mstyle mathvariant="bold"><mi>𝐅</mi></mstyle><mi>t</mi></msub><msub><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><mrow><mi>t</mi><mo>−</mo><mn>1</mn><mo>∣</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><msubsup><mstyle mathvariant="bold"><mi>𝐅</mi></mstyle><mi>t</mi><mstyle mathvariant="normal"><mi>T</mi></mstyle></msubsup><mo>+</mo><msub><mstyle mathvariant="bold"><mi>𝐐</mi></mstyle><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\mathbf{P}_{t\mid t-1} = \mathbf{F}_t \mathbf{P}_{t-1\mid t-1} \mathbf{F}_t^\mathrm{T} + \mathbf{Q}_t</annotation></semantics></math></li>
+</ul>
+</section><section id="a-simple-example" class="slide level2">
+<h2>A simple example</h2>
+<p>A robot position and velocity in 1D.</p>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mi>t</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>t</mi></msub><mo>,</mo><msub><mi>v</mi><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathbf{x}_t = (p_t, v_t)</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>t</mi></msub><mo>=</mo><msub><mi>p</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mi>v</mi><mi>t</mi></msub><mi>Δ</mi><mi>t</mi><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mi>a</mi><mi>Δ</mi><msup><mi>t</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">p_t = p_{t-1} + v_t \Delta t + \frac{1}{2} a \Delta t^2</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>t</mi></msub><mo>=</mo><msub><mi>v</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mi>a</mi><mi>Δ</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">v_t = v_{t-1} + a \Delta t</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mi>t</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>Δ</mi><mi>t</mi><msup><mo stretchy="false" form="postfix">)</mo><mi>t</mi></msup></mrow><annotation encoding="application/x-tex">F_t = (1, \Delta t)^t</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>B</mi><mi>t</mi></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mi>Δ</mi><msup><mi>t</mi><mn>2</mn></msup><mo>,</mo><mi>Δ</mi><mi>t</mi><msup><mo stretchy="false" form="postfix">)</mo><mi>t</mi></msup></mrow><annotation encoding="application/x-tex">B_t = (\frac{1}{2} \Delta t^2, \Delta t)^t</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>u</mi><mi>t</mi></msub><mo>=</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">u_t = a</annotation></semantics></math></li>
+</ul>
+</section><section id="section-8" class="slide level2">
+<h2></h2>
+<p>Our sensor data <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>z</mi><mi>k</mi></msub><annotation encoding="application/x-tex">z_k</annotation></semantics></math> is also noisy. We assume error is gaussian.</p>
+<p>We get a <strong>likelihood</strong> gaussian distribution:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐙</mi></mstyle><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>t</mi></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝐑</mi></mstyle><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathbf{Z}_t \sim N(\mathbf{z}_t, \mathbf{R}_t)</annotation></semantics></math></p>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐙</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{Z}_t</annotation></semantics></math> the random variable of the sensor data at time t</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{z}_t</annotation></semantics></math> the data returned by the sensor at time t</li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐑</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{R}_t</annotation></semantics></math> the covariance matrix noise from the sensor (known)</li>
+</ul>
+</section><section id="section-9" class="slide level2">
+<h2></h2>
+<p><strong>Prior</strong>: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mathbf{X}_{t|t-1} \sim N(\hat{\mathbf{x}}_{t|t-1}, \mathbf{P}_{t|t-1})</annotation></semantics></math></p>
+<p>Now it suffices to combines them to get the <strong>posterior</strong> <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>∝</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>⋅</mo><mi>P</mi><mo stretchy="false" form="prefix">(</mo><msub><mstyle mathvariant="bold"><mi>𝐙</mi></mstyle><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P(\mathbf{X}_{t|t}) \propto P(\mathbf{X}_{t|t-1}) \cdot P(\mathbf{Z}_t)</annotation></semantics></math> <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>⋅</mo><msub><mstyle mathvariant="bold"><mi>𝐙</mi></mstyle><mi>t</mi></msub><mo>∼</mo><mi>?</mi></mrow><annotation encoding="application/x-tex">\mathbf{X}_{t|t-1} \cdot \mathbf{Z}_t \sim ?</annotation></semantics></math></p>
+<figure>
+<img src="gauss_joint.png" alt="gauss joint" /><figcaption>gauss joint</figcaption>
+</figure>
+</section><section id="section-10" class="slide level2">
+<h2></h2>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi><mi>’</mi><mo>=</mo><msub><mi>μ</mi><mn>0</mn></msub><mo>+</mo><mfrac><mrow><msubsup><mi>σ</mi><mn>0</mn><mn>2</mn></msubsup><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><mn>1</mn></msub><mi>–</mi><msub><mi>μ</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><mrow><msubsup><mi>σ</mi><mn>0</mn><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mn>1</mn><mn>2</mn></msubsup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\mu’ = \mu_0 + \frac{\sigma_0^2 (\mu_1 – \mu_0)} {\sigma_0^2 + \sigma_1^2}</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mrow><mi>σ</mi><mi>’</mi></mrow><mn>2</mn></msup><mo>=</mo><msubsup><mi>σ</mi><mn>0</mn><mn>2</mn></msubsup><mi>–</mi><mfrac><msubsup><mi>σ</mi><mn>0</mn><mn>4</mn></msubsup><mrow><msubsup><mi>σ</mi><mn>0</mn><mn>2</mn></msubsup><mo>+</mo><msubsup><mi>σ</mi><mn>1</mn><mn>2</mn></msubsup></mrow></mfrac></mrow><annotation encoding="application/x-tex">{\sigma’}^2 = \sigma_0^2 – \frac{\sigma_0^4} {\sigma_0^2 + \sigma_1^2}</annotation></semantics></math></li>
+</ul>
+<figure>
+<img src="combine.jpg" alt="combine" /><figcaption>combine</figcaption>
+</figure>
+</section><section id="update" class="slide level2">
+<h2>Update</h2>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐇</mi></mstyle><mi>t</mi></msub><annotation encoding="application/x-tex">\mathbf{H}_t</annotation></semantics></math> is the obs matrix (obs to state mapping)</li>
+<li class="fragment">Innovation or measurement residual: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mstyle mathvariant="bold"><mi>𝐲</mi></mstyle><mo accent="true">̃</mo></mover><mi>t</mi></msub><mo>=</mo><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>t</mi></msub><mo>−</mo><msub><mstyle mathvariant="bold"><mi>𝐇</mi></mstyle><mi>t</mi></msub><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>t</mi><mo>∣</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\tilde{\mathbf{y}}_t = \mathbf{z}_t - \mathbf{H}_t\hat{\mathbf{x}}_{t\mid t-1}</annotation></semantics></math></li>
+<li class="fragment">Innovation covariance: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐒</mi></mstyle><mi>t</mi></msub><mo>=</mo><msub><mstyle mathvariant="bold"><mi>𝐇</mi></mstyle><mi>t</mi></msub><msub><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><mrow><mi>t</mi><mo>∣</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><msubsup><mstyle mathvariant="bold"><mi>𝐇</mi></mstyle><mi>t</mi><mstyle mathvariant="normal"><mi>T</mi></mstyle></msubsup><mo>+</mo><msub><mstyle mathvariant="bold"><mi>𝐑</mi></mstyle><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\mathbf{S}_t = \mathbf{H}_t \mathbf{P}_{t\mid t-1} \mathbf{H}_t^\mathrm{T} + \mathbf{R}_t</annotation></semantics></math></li>
+<li class="fragment">Optimal Kalman gain: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐊</mi></mstyle><mi>t</mi></msub><mo>=</mo><msub><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><mrow><mi>t</mi><mo>∣</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><msubsup><mstyle mathvariant="bold"><mi>𝐇</mi></mstyle><mi>t</mi><mstyle mathvariant="normal"><mi>T</mi></mstyle></msubsup><msubsup><mstyle mathvariant="bold"><mi>𝐒</mi></mstyle><mi>t</mi><mrow><mo>−</mo><mn>1</mn></mrow></msubsup></mrow><annotation encoding="application/x-tex">\mathbf{K}_t = \mathbf{P}_{t\mid t-1}\mathbf{H}_t^\mathrm{T} \mathbf{S}_t^{-1}</annotation></semantics></math></li>
+<li class="fragment">Updated (a posteriori) state estimate: <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>t</mi><mo>∣</mo><mi>t</mi></mrow></msub><mo>=</mo><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>t</mi><mo>∣</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><msub><mstyle mathvariant="bold"><mi>𝐊</mi></mstyle><mi>t</mi></msub><msub><mover><mstyle mathvariant="bold"><mi>𝐲</mi></mstyle><mo accent="true">̃</mo></mover><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">\hat{\mathbf{x}}_{t\mid t} = \hat{\mathbf{x}}_{t\mid t-1} + \mathbf{K}_t\tilde{\mathbf{y}}_t</annotation></semantics></math></li>
+<li class="fragment">Updated (a posteriori) estimate covariance <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi></mrow></msub><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mstyle mathvariant="bold"><mi>𝐈</mi></mstyle><mo>−</mo><msub><mstyle mathvariant="bold"><mi>𝐊</mi></mstyle><mi>t</mi></msub><msub><mstyle mathvariant="bold"><mi>𝐇</mi></mstyle><mi>t</mi></msub><mo stretchy="false" form="postfix">)</mo><msub><mstyle mathvariant="bold"><mi>𝐏</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">\mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t \mathbf{H}_t) \mathbf{P}_{t|t-1}</annotation></semantics></math></li>
+</ul>
+</section><section id="section-11" class="slide level2">
+<h2></h2>
+<figure>
+<img src="kalflow.png" alt="Kalman filter flow" /><figcaption>Kalman filter flow</figcaption>
+</figure>
+</section><section id="section-12" class="slide level2">
+<h2></h2>
+<p>The random variables we are interested in here are:</p>
+<ul>
+<li class="fragment"><strong>position</strong> (x, y, z)</li>
+<li class="fragment"><strong>attitude</strong> (orientation)</li>
+<li class="fragment"><strong>velocity</strong></li>
+<li class="fragment"><strong>angular velocity</strong></li>
+<li class="fragment"><strong>sensor biases</strong></li>
+<li class="fragment">Earth magnetic field components</li>
+</ul>
+<p>(In bold the ones I will focus on for this project)</p>
+</section><section id="section-13" class="slide level2">
+<h2></h2>
+<p>The observations can come under many form:</p>
+<ul>
+<li class="fragment"><strong>motion capture systems like Vicon</strong> (output relative position from 6 cameras around the lab tracking some markers)</li>
+<li class="fragment"><strong>acceleratometer</strong> (for linear velocity)</li>
+<li class="fragment"><strong>gyroscope</strong> (for angular velocity)</li>
+<li class="fragment">magnetometer</li>
+<li class="fragment">GPS</li>
+<li class="fragment">Optical flow (camera with some points as referentials)</li>
+<li class="fragment">LIDAR for altitude or cloudpoints</li>
+</ul>
+<p>(In bold the ones I will focus on for this project)</p>
+</section><section id="non-linearity" class="slide level2">
+<h2>Non-linearity</h2>
+<p>Rotations are non-linear operations so we cannot just apply vanilla KF.</p>
+<p>Because <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>o</mi><mi>v</mi><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>X</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Cov(f(X))</annotation></semantics></math> for an arbitrary f has no closed form solution.</p>
+<p><strong>Differentiation to the rescue!</strong></p>
+</section><section id="extended-kalman-filter" class="slide level2">
+<h2>Extended Kalman Filter</h2>
+<p>Extended Kalman filter are an extension of kalman filters for <strong>non linear systems</strong>.</p>
+<p>F and H are linearized by an approximation of the first order using Jacobians:</p>
+<ul>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>k</mi><mo stretchy="false" form="prefix">|</mo><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="prefix">|</mo><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝐮</mi></mstyle><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\hat{\boldsymbol{x}}_{k|k-1} = f(\hat{\boldsymbol{x}}_{k-1|k-1}, \boldsymbol{u}_{k-1})</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mstyle mathvariant="bold"><mi>𝐲</mi></mstyle><mo accent="true">̃</mo></mover><mi>k</mi></msub><mo>=</mo><msub><mstyle mathvariant="bold"><mi>𝐳</mi></mstyle><mi>k</mi></msub><mo>−</mo><mi>h</mi><mo stretchy="false" form="prefix">(</mo><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>k</mi><mo stretchy="false" form="prefix">|</mo><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\tilde{\boldsymbol{y}}_{k} = \boldsymbol{z}_{k} - h(\hat{\boldsymbol{x}}_{k|k-1})</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐅</mi></mstyle><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>=</mo><msub><mrow><mfrac><mrow><mi>∂</mi><mi>f</mi></mrow><mrow><mi>∂</mi><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle></mrow></mfrac><mo stretchy="true" form="postfix">|</mo></mrow><mrow><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="prefix">|</mo><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>,</mo><msub><mstyle mathvariant="bold"><mi>𝐮</mi></mstyle><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow></msub></mrow><annotation encoding="application/x-tex">{{\boldsymbol{F}_{k-1}}} = \left . \frac{\partial f}{\partial \boldsymbol{x} } \right \vert _{\hat{\boldsymbol{x}}_{k-1|k-1},\boldsymbol{u}_{k-1}}</annotation></semantics></math></li>
+<li class="fragment"><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mstyle mathvariant="bold"><mi>𝐇</mi></mstyle><mi>k</mi></msub><mo>=</mo><msub><mrow><mfrac><mrow><mi>∂</mi><mi>h</mi></mrow><mrow><mi>∂</mi><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle></mrow></mfrac><mo stretchy="true" form="postfix">|</mo></mrow><msub><mover><mstyle mathvariant="bold"><mi>𝐱</mi></mstyle><mo accent="true">^</mo></mover><mrow><mi>k</mi><mo stretchy="false" form="prefix">|</mo><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub></msub></mrow><annotation encoding="application/x-tex">{{\boldsymbol{H}_{k}}} = \left . \frac{\partial h}{\partial \boldsymbol{x} } \right \vert _{\hat{\boldsymbol{x}}_{k|k-1}}</annotation></semantics></math></li>
+</ul>
+</section><section id="quaternions-optional" class="slide level2">
+<h2>Quaternions (optional)</h2>
+<p>Quaternions are an extensions of complex numbers but with 2 extra dimensions <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>i</mi><mn>2</mn></msup><mo>=</mo><msup><mi>j</mi><mn>2</mn></msup><mo>=</mo><msup><mi>j</mi><mn>2</mn></msup><mo>=</mo><mi>i</mi><mi>j</mi><mi>k</mi><mo>=</mo><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">i^2=j^2=j^2=ijk=-1</annotation></semantics></math></p>
+<p>Unit quaternions, also known as versors, can be used to represent orientations and rotations in 3D.</p>
+<p>Compared to Euler Angles, they are easier to compose and avoid gimbal lock.</p>
+</section></section>
+<section><section id="extensions" class="titleslide slide level1"><h1>Extensions</h1></section><section id="parallelizable-pipelinable" class="slide level2">
+<h2>Parallelizable, Pipelinable ?</h2>
+<p>Matrixes involved are small and some known in advance.</p>
+<p>Unrolling and parallelizing potential to shorten latency time.</p>
+<p>Investigate theorotical implication of pipelining by using <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mstyle mathvariant="bold"><mi>𝐗</mi></mstyle><mrow><mi>t</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mo>−</mo><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">\mathbf{X}_{t|t-k}</annotation></semantics></math> with k the length of the pipeline.</p>
+</section><section id="other-applications" class="slide level2">
+<h2>Other applications</h2>
+<ul>
+<li class="fragment">VR headsets also include an IMU whose reactivity is crucial for immersion</li>
+<li class="fragment">Not only drones but the whole field of robotic use kalman filter for various planning tasks.</li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'linear', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+              { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
