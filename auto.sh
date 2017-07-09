@@ -3,5 +3,5 @@
 
 SRC_FOLDER=src/
 
-fswatch -o "$SRC_FOLDER" | xargs -n1 ./build.sh
+fswatch -o "$SRC_FOLDER" | xargs -n 1 ./build.sh $@
 
