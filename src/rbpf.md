@@ -1,3 +1,12 @@
+---
+title: "Master thesis Pt I: Accelerated optimal sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter"
+author: Ruben Fiszel
+affiliation: Stanford University
+email: ruben.fiszel@epfl.ch
+date: June 2017
+link-citations: true
+---
+
 # Introduction
 
 ## Moore's law end
