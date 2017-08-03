@@ -87,6 +87,7 @@ pandoc tmp_thesis5.md \
        --standalone \
        --default-image-extension=pdf \
        --toc \
+       --toc-depth=2 \
        --latex-engine-opt=-shell-escape \
        --highlight-style=tango \
        --filter pandoc-minted \
@@ -99,6 +100,7 @@ pandoc tmp_thesis5.md \
 
 
 #pdflatex -shell-escape thesis.tex
+xelatex -shell-escape thesis.tex
 xelatex -shell-escape thesis.tex 
 
 cp thesis.pdf ../../hakyll-website/assets/
@@ -137,7 +139,7 @@ if [ $blog = true ]; then
     stack exec site build
 else
     cd ..
-    rm -rf build/    
+#    rm -rf build/    
 fi
 
 

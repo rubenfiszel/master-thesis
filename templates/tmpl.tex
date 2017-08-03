@@ -286,17 +286,13 @@ $endif$
 
 $for(include-before)$
 $include-before$
-
 $endfor$
-$if(toc)$
-{
-$if(colorlinks)$
+
 \hypersetup{linkcolor=$if(toccolor)$$toccolor$$else$black$endif$}
-$endif$
-\setcounter{tocdepth}{$toc-depth$}
+\setcounter{tocdepth}{1}
 \tableofcontents
-}
-$endif$
+\addcontentsline{toc}{chapter}{Table of Contents}
+
 $if(lot)$
 \listoftables
 $endif$
