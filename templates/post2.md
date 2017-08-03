@@ -1,12 +1,21 @@
 ---
-title: "Master thesis Pt II: A simulation tool for scala with spatial integration: scala-flow"
+title: "[thesis II] A simulation tool for scala with spatial integration: scala-flow"
 author: Ruben Fiszel
 affiliation: Stanford University
 email: ruben.fiszel@epfl.ch
 date: August 2017
 link-citations: true
+header-includes:
+    - \usepackage{minted}
 ---
 
-This post is the part II out of III of my master thesis at the [DAWN lab](http://dawn.cs.stanford.edu/), Stanford. This part is about scala-flow, a simulation library with a spatial-lang integration written to ease the prototyping, development and testing of applications that can be represented as data flows with some subpart going through spatial written accelerators.
+### About
+
+This post is the part II out of IV of my [master thesis](assets/thesis.pdf) at the [DAWN lab](http://dawn.cs.stanford.edu/), Stanford, under [Prof. Kunle](http://arsenalfc.stanford.edu/kunle) and [Prof. Odersky](http://lampwww.epfl.ch/~odersky/) supervision. The central themes of this thesis are sensor fusion and spatial, an hardware accelerator language (Verilog is also one, but tedious). 
+
+This part is about scala-flow, a simulation library with a spatial-lang integration written to ease the prototyping, development and testing of applications that can be represented as data flows with some subpart going through spatial written accelerators.
 
 ${flow}
+
+## References
+

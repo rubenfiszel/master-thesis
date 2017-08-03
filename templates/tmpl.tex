@@ -5,8 +5,33 @@ $endif$
 $if(fontfamily)$
 \usepackage[$for(fontfamilyoptions)$$fontfamilyoptions$$sep$,$endfor$]{$fontfamily$}
 $else$
-\usepackage{lmodern}
+\usepackage{lmodern}[cmss]
 $endif$
+
+%\usepackage[compact]{titlesec}
+\usepackage{xcolor}
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
+\usepackage[no-math]{fontspec}
+%\setmonofont{CMU Typewriter Text}
+\setmonofont{Fira Code Light}
+
+\usepackage{fancyvrb}
+\usepackage{minted}
+\usemintedstyle{tango}
+%\usepackage{pmboxdraw}
+
+\usepackage{titlesec, blindtext, color}
+\definecolor{gray75}{gray}{0.75}
+\newcommand{\hsp}{\hspace{20pt}}
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+%\newcommand{\sectionbreak}{\clearpage}
+\titlespacing*{\chapter}
+    {0pt} % left
+    {0pt} % before
+    {1.5in} % after
+    
+
 $if(linestretch)$
 \usepackage{setspace}
 \setstretch{$linestretch$}
@@ -58,9 +83,6 @@ $endif$
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
 \PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
-$if(verbatim-in-note)$
-\usepackage{fancyvrb}
-$endif$
 \usepackage[unicode=true]{hyperref}
 $if(colorlinks)$
 \PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
@@ -159,6 +181,9 @@ $else$
 }
 $endif$
 \setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setlength{\parindent}{0.5in}
+\usepackage{indentfirst}
+\setlength{\parskip}{1em}
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 $if(numbersections)$
@@ -240,9 +265,9 @@ LAMP | EPFL                     \hfill    PPL | Stanford \\
 \vspace{0.8cm}
 
 \noindent
-\includegraphics[width=0.27\textwidth]{images/epfl-logo.eps}
+\includegraphics[width=0.27\textwidth]{epfl-logo.eps}
 \hfill
-\includegraphics[width=0.4\textwidth]{images/stanford-logo.eps}
+\includegraphics[width=0.4\textwidth]{stanford-logo.eps}
 
 \end{titlepage}
 

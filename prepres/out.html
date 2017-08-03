@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="utf-8">
+	<meta name="generator" content="pandoc">
+		<meta name="author" content="Ruben Fiszel">
+				<title>Spatial interpreter and scala-flow</title>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+	<link rel="stylesheet" href="reveal.js/css/reveal.css">
+	<style type="text/css">code{white-space: pre;}</style>
+				<link rel="stylesheet" href="reveal.js/css/theme/black.css" id="theme">
+			<link rel="stylesheet" href="mermaid.css"/>
+		<!-- Printing and PDF exports -->
+	<script>
+	 var link = document.createElement( 'link' );
+	 link.rel = 'stylesheet';
+	 link.type = 'text/css';
+	 link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+	 document.getElementsByTagName( 'head' )[0].appendChild( link );
+	</script>
+	<!--[if lt IE 9]>
+	    <script src="reveal.js/lib/js/html5shiv.js"></script>
+	<![endif]-->
+		    </head>
+    <body>
+		<div class="reveal">
+	    <div class="slides">
+
+				<section>
+		    <h1 class="title">Spatial interpreter and scala-flow</h1>
+		    		    		    <p class="author">Ruben Fiszel</p>
+		    		    		    <p class="date">Summer 2017</p>
+		    		</section>
+				
+		<section id="outline" class="slide level1">
+<h1>Outline</h1>
+<ul>
+<li>built an interpreter for spatial: <strong>why ? how ? show me</strong></li>
+<li>integrated spatial with <strong>scala-flow</strong>, another tool I built: <strong>what is scala-flow ? what are the benefits of spatial integration</strong></li>
+</ul>
+</section>
+<section id="preliminaries" class="slide level1">
+<h1>Preliminaries</h1>
+<h2 id="compiler">compiler</h2>
+<ul>
+<li>A <strong>compiler</strong> transforms a program from a <strong>source</strong> language to a <strong>target</strong> language</li>
+<li>Usually the target program is of a lower level and in a form that can be more “easily” executed (native code or bytecode).</li>
+<li>A <strong>transpiler</strong> is a kind of compiler that does not lower the language level (java -&gt; scala)</li>
+</ul>
+</section>
+<section id="section" class="slide level1">
+<h1></h1>
+<div>
+<!-- htmlmin:ignore -->
+<div class="mermaid">
+graph LR
+    prog(Program)
+    AST
+    subgraph compiler
+    IR
+    passes
+    codegen
+    end
+    target
+    prog--&gt;AST
+    AST--&gt;IR
+    IR--&gt;passes
+    passes--&gt;IR
+    passes--&gt;codegen
+    codegen--&gt;target
+</div>
+<!-- htmlmin:ignore -->
+</div>
+</section>
+<section id="interpreter" class="slide level1">
+<h1>interpreter</h1>
+<ul>
+<li>An interpreter executes a source program directly without any IR transformation. It <em>interprets</em> it.</li>
+</ul>
+<div>
+<!-- htmlmin:ignore -->
+<div class="mermaid">
+graph LR
+    prog(Program)
+    AST
+    interpreter
+    prog--&gt;AST
+    AST--&gt;interpreter
+</div>
+<!-- htmlmin:ignore -->
+</div>
+<ul>
+<li>An interpreter has less coupling needed, it is easier to write than a compiler.</li>
+<li><strong>python</strong> is an interpreted language</li>
+</ul>
+</section>
+<section id="recap" class="slide level1">
+<h1>Recap</h1>
+<ul>
+<li>Spatial is an embedded <em>Domain specific language</em> (DSL) in Scala</li>
+<li>Compromise between a dedicated language and a library</li>
+<li>We can leverage the full power of scala for meta-programming :)</li>
+<li>For simulation, we codegen to scala and run the scala</li>
+</ul>
+</section>
+<section id="problems" class="slide level1">
+<h1>Problems</h1>
+<ul>
+<li>scala AST is not the spatial AST</li>
+<li>Spatial is a hardware <strong>description</strong> language. It does not translate trivially to instructions, this is the task of the compiler !</li>
+</ul>
+</section>
+<section id="our-way" class="slide level1">
+<h1>Our way</h1>
+<ul>
+<li>we compile <strong>and then</strong> interpret the resulting IR</li>
+<li>similar to the scala REPL which wraps all input into a template, compiles it and then executes it.</li>
+</ul>
+</section>
+<section id="section-1" class="slide level1">
+<h1></h1>
+<div>
+<!-- htmlmin:ignore -->
+<div class="mermaid">
+graph LR
+    prog(Program)
+    AST
+    subgraph compiler
+    IR
+    passes
+    end
+    interpreter 
+    prog--&gt;AST
+    AST--&gt;IR
+    IR--&gt;passes
+    passes--&gt;IR
+    passes--&gt;interpreter
+</div>
+<!-- htmlmin:ignore -->
+</div>
+</section>
+<section id="it-works" class="slide level1">
+<h1>It works !</h1>
+<p><a href="https://asciinema.org/a/p8Mg8WK689RXG0MhO1ggoBIyi"><img src="https://asciinema.org/a/p8Mg8WK689RXG0MhO1ggoBIyi.png" alt="asciicast" /></a></p>
+</section>
+<section id="section-2" class="slide level1">
+<h1></h1>
+<ul>
+<li>Run any app in the interpreter with “–interpreter”</li>
+<li>For streaming apps, in memory transfers of input and output streams! Seamless integration with other development tool.</li>
+</ul>
+</section>
+<section id="advantages" class="slide level1">
+<h1>Advantages</h1>
+<ul>
+<li>More immediate feedback, write and run</li>
+<li>faster than codegen + scala run because less overhead</li>
+<li>ability to inspect the full state of the interpreter at each instruction</li>
+<li>breakpoint and exit nodes</li>
+</ul>
+</section>
+<section id="section-3" class="slide level1">
+<h1></h1>
+<p><a href="https://asciinema.org/a/twkwh0Wt2vAjMQFLu6fqGVWK7"><img src="https://asciinema.org/a/twkwh0Wt2vAjMQFLu6fqGVWK7.png" alt="asciicast" /></a></p>
+</section>
+<section id="sky-is-the-limit" class="slide level1">
+<h1>Sky is the limit</h1>
+<ul>
+<li>embed spatial in other libraries ! (scala-flow!)</li>
+<li>interpret spatial code in a webapp using scala.js ?</li>
+</ul>
+</section>
+<section id="scala-flow" class="slide level1">
+<h1>scala-flow</h1>
+<ul>
+<li>scala-flow is a simulation and prototyping tool for data-flows with spatial integration</li>
+<li>Useful to write complex applications: originl motivation is because particle filters are not easy to debug</li>
+<li>scala-flow is typesafe and has a compositional/functionnal API.</li>
+</ul>
+</section>
+<section id="section-4" class="slide level1">
+<h1></h1>
+<p><a href="https://asciinema.org/a/YCr4mxI2j90T0alUHZzHY56vv"><img src="https://asciinema.org/a/YCr4mxI2j90T0alUHZzHY56vv.png" alt="asciicast" /></a></p>
+</section>
+<section id="important-concepts" class="slide level1">
+<h1>Important concepts</h1>
+<ul>
+<li>The data flow is made of connected nodes.</li>
+<li>Nodes broadcast packets to the forward nodes at given virtual times</li>
+<li>Scheduler enforce that every packet is sent at the right virtual time and in the order</li>
+<li>Source emit packets, sink consume nodes</li>
+</ul>
+</section>
+<section id="input-and-output-nodes" class="slide level1">
+<h1>Input and output nodes</h1>
+<ul>
+<li>Input nodes can be clocks that emit packets at a regular interval</li>
+<li>Output nodes can be plots that show multiple timeseries coming from different nodes, calculate the RMSE, simply display the content, etc …</li>
+</ul>
+<figure>
+<img src="plot.png" alt="Plot" /><figcaption>Plot</figcaption>
+</figure>
+</section>
+<section id="section-5" class="slide level1">
+<h1></h1>
+<pre><code>val sa: Source[A]
+val sb: Source[B]
+val sla: Source[List[A]]
+def f(x: A): C
+def b(x: A): Boolean
+
+sa.map(f): Source[C]
+sa.zip(sb): Source[(A, B)]
+sab.unzip: (Source[A], Source[B])
+sa.merge(sb): Source[Either[A, B]]
+sa.fusion(sa): Source[A]
+sa.foreach(f): Source[A]
+sa.filter(b): Source[A]
+sa.drop(n): Source[A]
+sa.accumulate(clock): Source[List[A]]
+sa.groupBy(A =&gt; B): Source[(B, A)]
+sla.reduce(r): Source[A]
+sa.takeWhile(b): Source[A]
+sa.muted: Source[B]
+sa.toTime: Source[Time]
+sa.latency: Source[A]
+sa.debug //print packets as they arrive
+//and more ...
+composable
+sa.zip(sb).map(g).filter(c) ...</code></pre>
+</section>
+<section id="simulation" class="slide level1">
+<h1>Simulation</h1>
+<ul>
+<li>possible to simulate fixed and random delays</li>
+<li>packets store the time they were initially emitted and, separately all the delays they encountered</li>
+</ul>
+</section>
+<section id="buffering" class="slide level1">
+<h1>Buffering</h1>
+<p>Loop are possible through lazy val</p>
+<pre><code>val sa: Source[A]
+def f(x: Source[(A, A)])
+lazy val zp = sa.zip(buffer).map(f)
+lazy val buffer = Buffer(zp)
+def out = zp</code></pre>
+</section>
+<section id="spatial" class="slide level1">
+<h1>Spatial</h1>
+<figure>
+<img src="http://paste.awesom.eu/jQsX" alt="code gist link of an example of spatial blocks" /><figcaption>code gist link of an example of spatial blocks</figcaption>
+</figure>
+</section>
+<section id="batch" class="slide level1">
+<h1>Batch</h1>
+<ul>
+<li>To integrate with spatial, we need some node to <strong>batch process</strong> the inputs instead of treating them as they arrive.</li>
+<li>To achieve that, we use multiple scheduler one for each batch and chain them</li>
+<li><strong>Problem</strong>: what if a node have inputs from different nodes that have different scheduler ?</li>
+</ul>
+</section>
+<section id="section-6" class="slide level1">
+<h1></h1>
+<ul>
+<li>If not solved, packets may arrive out of order or never at all.</li>
+<li>Synchronize them by creating replays and transfer schedulers!</li>
+<li>The replay nodes are created where needed automatically at the graph creation. It is hidden from the user.</li>
+</ul>
+</section>
+<section id="conclusion" class="slide level1">
+<h1>Conclusion</h1>
+<p>Those tools made it infinitely easier to develop my particle filter, I hope you can find it useful too.</p>
+<p>Thank you for your time and attention</p>
+</section>
+	    </div>
+	</div>
+
+	<script src="reveal.js/lib/js/head.min.js"></script>
+	<script src="reveal.js/js/reveal.js"></script>
+
+	<script>
+
+	 // Full list of configuration options available at:
+	 // https://github.com/hakimel/reveal.js#configuration
+	 Reveal.initialize({
+	     	     	     	                  // Push each slide change to the browser history
+             history: true,
+	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     	     viewDistance: 40,
+             // Optional reveal.js plugins
+             dependencies: [
+		 { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+		 { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+		 		 { src: 'reveal.js/plugin/notes/notes.js', async: true },
+             ]
+	 });
+
+	</script>
+		<script src="mermaid.min.js"></script>
+<script> mermaid.initialize({ startOnLoad: true, cloneCssStyles: false, logLevel: 1 }); </script>
+	    </body>
+</html>

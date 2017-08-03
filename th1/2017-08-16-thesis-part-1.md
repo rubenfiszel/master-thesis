@@ -1,5 +1,5 @@
 ---
-title: "Master thesis Pt I: Accelerated optimal sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter"
+title: "[thesis I] Accelerated sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter"
 author: Ruben Fiszel
 affiliation: Stanford University
 email: ruben.fiszel@epfl.ch
@@ -7,20 +7,13 @@ date: June 2017
 link-citations: true
 ---
 
-# Context
+### About
 
-This post is the part I out of III of my master thesis at the [DAWN lab](http://dawn.cs.stanford.edu/), Stanford. The central themes of this thesis are sensor fusion and spatial, an hardware accelerator language (Verilog is also one). This part is about an application of hardware acceleration, sensor fusion for drones. Part II will be about [scala-flow](https://github.com/rubenfiszel/scala-flow/), a library made during my thesis as a development tool for Spatial inspired by Simulink. This library eased the development of the filter but is also intended to be general purpose. Part III will be the development of an interpreter for spatial, and the spatial implementation of the RBPF presented in Part I. If you are only interested in the filter, you can skip the introduction.
+This post is the part I out of IV of my [master thesis](assets/thesis.png) at the [DAWN lab](http://dawn.cs.stanford.edu/), Stanford, under [Prof. Kunle](http://arsenalfc.stanford.edu/kunle) and [Prof. Odersky](http://lampwww.epfl.ch/~odersky/) supervision. The central themes of this thesis are sensor fusion and spatial, an hardware accelerator language (Verilog is also one, but tedious). 
 
----
-title: "Master thesis Pt I: Accelerated optimal sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter"
-author: Ruben Fiszel
-affiliation: Stanford University
-email: ruben.fiszel@epfl.ch
-date: June 2017
-link-citations: true
----
+This part is about an application of hardware acceleration, sensor fusion for drones. Part II will be about [scala-flow](https://github.com/rubenfiszel/scala-flow/), a library made during my thesis as a development tool for Spatial inspired by Simulink. This library eased the development of the filter but is also intended to be general purpose. Part III is about the development of an interpreter for spatial. Part IV about the spatial implementation of the asynchronous Rao-Blackwellized Particle filter presented in Part I. If you are only interested in the filter, you can skip the introduction.
 
-# Introduction
+# Introduction {-}
 
 ## Moore's law end
 
@@ -56,7 +49,7 @@ Embedded systems are limited by the amount of power at disposal from the battery
 
 Thus, developping drone applications with spatial demonstrates the advantages of the platform. As a matter of fact, the filter that has been developped was only made possible because it was run on an accelerating hardware. It would be irrealist to attempt to run it on more conventional micro-transistors. This is why the family in which belong the filter developped here, particles filters, being very computationally expensive, are very seldom used for drones.
 
-# Part I: Accelerated optimal sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter"
+# Sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter
 
 POSE is the combination of the position and orientation of an object. POSE estimation is important for drones. It is a subroutine of SLAM (Simultaneous localization and mapping) and it is a central part of motion planning and motion control. More accurate and more reliable POSE estimation results in more agile, more reactive and safer drones. Drones are an intellectually stimulating subject but in the near-future they might also see their usage increase exponentially. In this context, developping and implementing new filter for POSE estimation is both important for the field of robotics but also to demonstrate the importance of hardware acceleration. Indeed, the best and last filter presented here is only made possible because it can be hardware accelerated with Spatial. However, the spatial implementation will be presented in Part III.
 
@@ -115,7 +108,20 @@ The algorithm inputs are:
 
 ## Data generation 
 
-**TODO**
+The difficulties with using real flight data is that you need to get the *true* trajectory and that you need enough data to check the efficiency of the filters.
+
+
+To avoid those issues, the flight data is simulated through a model of trajectory generation.  This model as described in [@mueller_computationally_2015], The  motion  primitives  are defined by the quadrocopter’s initial state, the desired motion duration, and   any   combination   of   components   of   the   quadrocopter’s position,  velocity  and  acceleration  at  the  motion’s  end.  Closed form  solutions  for  the  primitives  are  given,  which  minimize  a cost  function  related  to  input  aggressiveness. 
+
+The bulk of the method is that a differential equation representing the difference of position, velocity and acceleration between the starting and ending state is solved with the [Pontryagin’s minimum principle](https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle) using the appropriate [Hamiltonian](https://en.wikipedia.org/wiki/Hamiltonian_(control_theory)).  Then, from that closed form solution, a per-axis cost can be calculated to pick the "least aggressive" trajectory out of different candidates. Finally, the feasibility of the trajectory is computed using the constraints of maximum thrust and body rate (angular velocity) limits.
+
+For the purpose of this work, a scala implementation of the model was realized. Then, some keypoints containing gaussian components for the position, velocity acceleration, and duration were tried until a feasible set of keypoints was found. This method of data generation is both fast and a good enough approximation of the actual trajectories that a drone would perform in the real world. 
+
+<video autoplay loop>
+  <source src="flight.webm" type="video/webm">
+</video>
+
+![Visualisation of an example of a synthetic generated flight trajectory](flight.webm){ width=400px }
 
 ## Quaternion
 
@@ -282,11 +288,11 @@ $\alpha \in [0, 1]$. Usually, $\alpha$ is set to a high-value like $0.98$. It is
 
 Figure 9 is the plot of the distance from the true quaternion after 15s of an arbitrary trajectory when $\alpha = 1.0$ meaning that the accelerometer does not correct the drift.
 
-![CF with alpha = 1.0](cf100.pdf)
+![CF with alpha = 1.0](cf100.png)
 
 Figure 10 is that same trajectory with $\alpha = 0.98$.
 
-![CF with alpha = 0.98](cf098.pdf)
+![CF with alpha = 0.98](cf098.png)
 
 ## Asynchronous Augmented Complementary Filter
 
@@ -395,6 +401,24 @@ Furthermore, it is provable that kalman filters are optimal linear filters.
 However, in our context, one component of the state, the attitude, is intrisically non-linear. Indeed, rotations and attitudes belong to $SO(3)$ which is not a vector space. Therefore, we cannot use *vanilla* kalman filters. The filters that we present thereafter relax those requirements.
 
 One example of such extension is the extended kalman filter (EKF) that we will present here. The EKF relax the linearity requirement by using differentiation tocalculate an approximation of the first order of the required linear functions. Our state transition function and measurement function can now be expressed in the free forms $f(\mathbf{x}_t)$ and $h(\mathbf{x}_t)$ and we define the matrix $\mathbf{F}_t$ and $\mathbf{H}_t$ as their jacobian.
+
+```graph
+ ┌───────┐                          ┌──────┐   ┌─────┐  ┌─────────┐
+ │       │                          │      │   │     │  │         │
+ │Map IMU├─┐   ┌─────┐  ┌───────┐   │      ├──>│P & Q├─>│Block out│
+ │       │ │   │     │  │       ├──>│Update│   │     │  │         │
+ └───────┘ └──>│     │  │       │   │      ├─┐ └─────┘  └─────────┘
+               │Merge├─>│ZipLast│   │      │ │                     
+┌─────────┐ ┌─>│     │  │       │<┐ └──────┘ │           ┌──────┐  
+│         │ │  │     │  │       │ │          │           │      │  
+│Map Vicon├─┘  └─────┘  └───────┘ │          │           │      │  
+│         │                       │          └──────────>│Buffer│  
+└─────────┘                       └──────────────────────┤      │  
+                                                         │      │  
+                                                         └──────┘  
+```
+
+![A graph of the EKF structure in scala-flow](empty.jpg)
 
 $${\mathbf{F}_t}_{10 \times 10} = \left . \frac{\partial f}{\partial \mathbf{x} } \right \vert _{\hat{\mathbf{x}}_{t-1},\mathbf{u}_{t-1}}$$
 
@@ -519,7 +543,8 @@ w_norm = sqrt(w[0]^2 + w[1]^2 + w[2]^2)
 ang = w_norm/2
 w_normalized = w/w_norm
 sin2 = sin(ang)
-qd = cos(ang) + w_normalized[0]*sin2*i + w_normalized[1]*sin2*j + w_normalized[2]*sin2*k
+qd = cos(ang) + w_normalized[0]*sin2*i + w_normalized[1]*sin2*j 
+	+ w_normalized[2]*sin2*k
 
 nq = q*qd
 
@@ -800,5 +825,8 @@ Graph that shows the tracking through time
 [^ded]: The etymology for "Dead reckoning" comes from the mariners of the XVIIth century that used to calculate the position of the vessel with log book. The interpretation of "dead" is subject to debate. Some argue that it is a mispelling of "ded" as in "deduced". Others argue that it should be read by its old meaning: *absolute*.
 
 [^moore]: The observation that the number of transistors in a dense integrated circuit doubles approximately every two years.
+
+
+## References
 
 

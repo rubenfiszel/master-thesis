@@ -1,7 +1,10 @@
-# Pt III: An interpreter for spatial and the spatial implementation of the accelerated Rao-Blackwellized Particle Filter
+# Spatial implementation of an asynchronous Rao-Blackwellized Particle Filter
 
 ## Spatial
 
+alea jacta est
 
-ds
+# Conclusion {-}
+
+alea jacta est
 

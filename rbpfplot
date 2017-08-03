@@ -1,0 +1,20 @@
+set terminal pdf enhanced
+set output 'bar.pdf'
+set multiplot layout 1, 2
+
+set style data histogram
+
+set style fill solid border rgb "black"
+set auto x
+set yrange [0:*]
+plot 'rbpf.dat' using 2:xtic(1) title col, \
+        '' using 3:xtic(1) title col, \
+        '' using 4:xtic(1) title col, \
+        '' using 5:xtic(1) title col, \
+        '' using 6:xtic(1) title col
+
+plot 'rpbfatt.dat' using 2:xtic(1) title col, \
+        '' using 3:xtic(1) title col, \
+        '' using 4:xtic(1) title col, \
+        '' using 5:xtic(1) title col, \
+        '' using 6:xtic(1) title col

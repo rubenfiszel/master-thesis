@@ -50,6 +50,20 @@ fi
 
 cp -r src/ build/
 cp images/* build/
+
+cd images
+for gif in *.gif
+do
+    echo "Processing $gif"
+    convert $gif "${gif%%.*}".png
+done
+for pdf in *.pdf
+do
+    echo "Processing $pdf"
+    convert $pdf "${pdf%%.*}".png
+done
+
+cd ..
 cp -r templates/ build/
 cp -r scripts/ build/
 
@@ -58,24 +72,34 @@ cd build/
 cp templates/thesis.md tmp_thesis.md
 replace_in_file tmp_thesis.md src/rbpf.md '${rbpf}' > tmp_thesis2.md
 replace_in_file tmp_thesis2.md src/flow.md '${flow}' > tmp_thesis3.md
-replace_in_file tmp_thesis3.md src/spatial.md '${spatial}' > tmp_thesis4.md
+replace_in_file tmp_thesis3.md src/interpreter.md '${interpreter}' > tmp_thesis4.md
+replace_in_file tmp_thesis4.md src/spatial.md '${spatial}' > tmp_thesis5.md
 
-pandoc tmp_thesis3.md \
+sed -i 's/.gif/-0.png/g' tmp_thesis5.md
+sed -i 's/.webm/.png/g' tmp_thesis5.md
+sed -ir 's/```scala/```{.scala bgcolor=bg autogobble=true framesep=2mm fontsize=\\scriptsize}/g' tmp_thesis5.md
+sed -ir 's/```graph/```{.text fontsize=\\footnotesize}/g' tmp_thesis5.md
+
+pandoc tmp_thesis5.md \
        --template=templates/tmpl.tex \
        --smart \
-       --include-in-header=templates/break-sections.tex \
        --reference-links \
        --standalone \
-       --number-sections \
        --default-image-extension=pdf \
        --toc \
+       --latex-engine-opt=-shell-escape \
        --highlight-style=tango \
+       --filter pandoc-minted \
        --filter pandoc-citeproc \
        --bibliography=src/thesis.bib \
        --csl templates/computer.csl \
-       -V fontsize=12pt \
-       --variable=geometry:a4paper \
-       -o thesis.pdf
+       -V fontsize=11pt \
+       --variable="geometry:a4paper, margin=4cm" \
+       -o thesis.tex
+
+
+#pdflatex -shell-escape thesis.tex
+xelatex -shell-escape thesis.tex 
 
 cp thesis.pdf ../../hakyll-website/assets/
 cp thesis.pdf ..
@@ -88,20 +112,32 @@ build_post() {
     rm -rf ../$4
     mkdir ../$4
     cp "tmp_${1}2.md" ../$4/$5
+    sed -i 's/.pdf/.png/g' ../$4/$5        
     cp ../images/* ../$4/
 
-    rm -rf ../../hakyll-website/posts/$4
-    cp -r ../$4 ../../hakyll-website/posts/
+    rm -rf ../../hakyll-website/drafts/$4
+    cp -r ../$4 ../../hakyll-website/drafts/
+    
     echo "post $1 written to $4"
 }
 
 if [ $blog = true ]; then
     build_post post1.md rbpf.md rbpf th1 2017-08-16-thesis-part-1.md
     build_post post2.md flow.md flow th2 2017-08-16-thesis-part-2.md
-    build_post post3.md spatial.md spatial th3 2017-08-16-thesis-part-3.md
+    build_post post3.md interpreter.md interpreter th3 2017-08-16-thesis-part-3.md        
+    build_post post4.md spatial.md spatial th4 2017-08-16-thesis-part-4.md
 
+    cp templates/computer.csl ../../hakyll-website/csl/
+    cp src/thesis.bib ../../hakyll-website/bib/    
+
+    cd ..
     rm -rf build/
-
-    cd ../../hakyll-website
+    
+    cd ../hakyll-website
     stack exec site build
+else
+    cd ..
+    rm -rf build/    
 fi
+
+
