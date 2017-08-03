@@ -94,7 +94,7 @@ pandoc tmp_thesis5.md \
        --bibliography=src/thesis.bib \
        --csl templates/computer.csl \
        -V fontsize=11pt \
-       --variable="geometry:a4paper, margin=4cm" \
+       --variable="geometry:a4paper, hmargin=4cm, bottom=4cm, top=3cm" \
        -o thesis.tex
 
 

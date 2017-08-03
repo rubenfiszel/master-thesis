@@ -601,6 +601,8 @@ The intuition of keeping track of multiple representative of the distribution is
 
 ## Particle Filter
 
+Particle filters are computationaly expensive. This is the reason why their usage is not very popular currently for low-powered embedded systems like drones. However, they are used in Avionics for planes since the computational resources are less scarce and the precision crucial. Accelerating hardware could widen the usage of particle filters to embedded systems.
+
 Particle filters are sequential monte carlo methods. Like all monte carlo method, they rely on repeated sampling for estimation of a distribution. 
 
 ![Monte carlo estimation of pi](mc.gif)
@@ -611,7 +613,7 @@ $$p(\mathbf{x}) = \sum w^{(i)}\delta(\mathbf{x} - \mathbf{x}^{(i)})$$ where $\de
 
 ### Importance sampling 
 
-The weights are computed through importance sampling. With importance sampling, each particle does not represent equally the distribution. Importance sampling enables to use sampling from another distribution to estimate properties from the target distribution of interest. In most cases, it can be used to focus sampling on a specific region. But in our case, it enables us to reweight particles based on their likelihood from the measurements.
+The weights are computed through importance sampling. With importance sampling, each particle does not represent equally the distribution. Importance sampling enables to use sampling from another distribution to estimate properties from the target distribution of interest. In most cases, it can be used to focus sampling on a specific region of the distribution. In our case, by choosing the right importance distribution (the dynamics of the model as we will see later), we can reweight particles based on the likelihood from the measurements ($p(\mathbf{y} | \mathbf{x})$.
 
 Importance sampling is based on the identity:
 
@@ -622,16 +624,69 @@ $$
 \end{aligned}
 $$
 
-### Sequential Importnce Samplng
+Thus, it can be approximated as
+$$
+\begin{aligned}
+\mathbb{E}[\mathbf{g}(\mathbf{x}) | \mathbf{y}_{1:T}] &\approx \frac{1}{N} \sum_i^N \frac{p(\mathbf{x}^{(i)}|\mathbf{y}_{1:T})}{\mathbf{\pi}(\mathbf{x}^{(i)}|\mathbf{y}_{1:T})}\mathbf{g}(\mathbf{x}^{(i)})
+&\approx \sum^N_i w^{(i)} \mathbf{g}(\mathbf{x}^{(i)})
+\end{aligned}
+$$
 
-** TODO **
+where $N$ samples of $\mathbf{x}$ are drawn from the importance distribution $\mathbf{\pi}(\mathbf{x}|\mathbf{y}_{1:T})$
 
+And the weights are defined as: 
 
-Particle filters are very computionally expensive and that is why their usage is not very popular currently for low-powered embedded systems like drones (But they are used in Avionics). Using accelerated hardware is one way to enable them on drones.
+$$w^{(i)} = \frac{1}{N} \frac{p(\mathbf{x}^{(i)}|\mathbf{y}_{1:T})}{\mathbf{\pi}(\mathbf{x}^{(i)}|\mathbf{y}_{1:T})}$$
+
+Computing $p(\mathbf{x}^{(i)}|\mathbf{y}_{1:T}$ is hard (if not impossible), but fortunately we can compute the unnormalized weight instead:
+
+$$w^{(i)}* = p(\mathbf{y}_{1:T}|\mathbf{x}^{(i)})p(\mathbf{x}^{(i))}{\mathbf{\pi}(\mathbf{x}^{(i)}|\mathbf{y}_{1:T})}$$ 
+
+and normalizing it afterwards
+
+$$\sum^N_i w^{(i)*} = 1 \Rightarrow w^{(i)} = \frac{w^{*(i)}}{\sum^N_j w^{*(i)}}$$
+
+### Sequential Importance Sampling
+
+The last equation becomes more and more computationally expensive as T grows larger (the joint variable of the time series grows larger). Fortunately, Sequential Importance Sampling is an alternative recurisve algorithm that has a fixed amount of computation at each iteration:
+
+$$
+\begin{aligned}
+p(\mathbf{x}_{0:k} | \mathbf{y}_{0:k}) &\propto p(\mathbf{y}_k | \mathbf{x}_{0:k}, \mathbf{y}_{1:k-1})p(\mathbf{x}_k | \mathbf{y}_{1:k-1}) \\
+&\propto p(\mathbf{y}_k | \mathbf{x}_{k})p(\mathbf{x}_k | \mathbf{x}_{0:k-1}, \mathbf{y}_{1:k-1})p(\mathbf{x}_{0:k-1} | \mathbf{y}_{1:k-1}) \\
+&\propto p(\mathbf{y}_k | \mathbf{x}_{k})p(\mathbf{x}_k | \mathbf{x}_{k-1})p(\mathbf{x}_{0:k-1} | \mathbf{y}_{1:k-1}) 
+\end{aligned}
+$$
+
+The importance distribution is such that 
+$\mathbf{x}^i_{0:k} \sim \pi(\mathbf{x}_{0:k} | \mathbf{y}_{1:k})$ with the according importance weight:
+$$w^{(i)}_k \propto \frac{p(\mathbf{y}_k | \mathbf{x}^{(i)}_{k})p(\mathbf{x}^{(i)}_k | \mathbf{x}^{(i)}_{k-1})p(\mathbf{x}^{(i)}_{0:k-1} | \mathbf{y}_{1:k-1})}{\pi(\mathbf{x}_{0:k} | \mathbf{y}_{1:k})}$$
+
+We can express the importance distribution recursively:
+$$\pi(\mathbf{x}_{0:k} | \mathbf{y}_{1:k}) = \pi(\mathbf{x}_{k} |\mathbf{x}_{0:k-1},  \mathbf{y}_{1:k})\pi(\mathbf{x}_{0:k-1} | \mathbf{y}_{1:k-1})$$
+
+The recursive structure propagates to the weight itself:
+
+$$
+\begin{aligned}
+w^{(i)}_k &\propto \frac{p(\mathbf{y}_k | \mathbf{x}^{(i)}_{k})p(\mathbf{x}^{(i)}_k | \mathbf{x}^{(i)}_{k-1})}{\pi(\mathbf{x}_{k} |\mathbf{x}_{0:k-1},  \mathbf{y}_{1:k})} \frac{p(\mathbf{x}^{(i)}_{0:k-1} | \mathbf{y}_{1:k-1})}{\pi(\mathbf{x}_{0:k-1} | \mathbf{y}_{1:k-1})} \\
+&\propto \frac{p(\mathbf{y}_k | \mathbf{x}^{(i)}_{k})p(\mathbf{x}^{(i)}_k | \mathbf{x}^{(i)}_{k-1})}{\pi(\mathbf{x}_{k} |\mathbf{x}_{0:k-1},  \mathbf{y}_{1:k})} w^{(i)}_{k-1}
+\end{aligned}
+$$
+
+We can further simplify the formuly by choosing the importance distribution to be the dynamics of the model:
+$$\pi(\mathbf{x}_{k} |\mathbf{x}_{0:k-1},  \mathbf{y}_{1:k}) = p(\mathbf{x}^{(i)}_k | \mathbf{x}^{(i)}_{k-1})$$
+$$ w^{*(i)}_k = p(\mathbf{y}_k | \mathbf{x}^{(i)}_{k}) w^{(i)}_{k-1}$$
+
+As previously, it is then only needed to normalize the resulting weight.
+
+$$\sum^N_i w^{(i)*} = 1 \Rightarrow w^{(i)} = \frac{w^{*(i)}}{\sum^N_j w^{*(i)}}$$
 
 ### Resampling
 
-When the number of effective particles is too low ($N/10$), we apply systematic resampling. The idea behind resampling is simple. The distribution is represented by a number of particles with different weights. As time goes, the repartition of weights degenerate. A large subset of particles ends up having negligible weight which make them irrelevant. In the most extreme case, one particle represents the whole distribution. To avoid that degeneration, when the weights are too unbalanced, we resample from the weights distribution: pick N times among the particle and assign them a weight of $1/N$, each pick has odd $w_i$ to pick the particle $p_i$. Thus, some particles with large weights are splitted up into smaller clone particle and others with small weight are never picked. This process is similar to evolution, at each generation, the most promising branch survive and replicate while the less promising die off.
+When the number of effective particles is too low (less than $1/10$ of N having weight $1/10$), we apply systematic resampling. The idea behind resampling is simple. The distribution is represented by a number of particles with different weights. As time goes, the repartition of weights degenerate. A large subset of particles ends up having negligible weight which make them irrelevant. In the most extreme case, one particle represents the whole distribution.
+
+To avoid that degeneration, when the weights are too unbalanced, we resample from the weights distribution: pick N times among the particle and assign them a weight of $1/N$, each pick has odd $w_i$ to pick the particle $p_i$. Thus, some particles with large weights are splitted up into smaller clone particle and others with small weight are never picked. This process is similar to evolution, at each generation, the most promising branch survive and replicate while the less promising die off.
 
 A popular method for resampling is systematic sampling as described by [@doucet_tutorial_2009]:
 
@@ -641,13 +696,21 @@ Sample $U_1 \sim \mathcal{U} [0, \frac{1}{N} ]$ and define $U_i = U_1 + \frac{i-
 
 ### Introduction
 
-Compared to a plain PF, RPBF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RPBF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. 
+Compared to a plain particle filter, RPBF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RPBF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RPBF can be seen as the "average" of many gaussians.
 
-This main inspiration from this approach is [@vernaza_rao-blackwellized_2006]. However, it differs by:
+Indeed, the benefit of particle filters is that they assume no particular form for the posterior distribution and transformation of the state. But as the state widens in dimensions, the number of needed particles to keep a good estimation grows exponentially. This is a consequence of ["the curse of dimensionality"}(https://en.wikipedia.org/wiki/Curse_of_dimensionality) and is quite intuitive: for each dimension, we must now consider all additional combination of state. In our context, we have 10 dimensions ($\mathbf{v}$,$\mathbf{p}$,$\mathbf{q}$) and it would be very computationally expensive to simulate a too large number of particles. 
 
-- adapt the filter to drones by taking into account that the system is too dynamic for assuming that the accelerometer simply output the gravity vector. This is solved by augmenting the state with the acceleration as shown later.
-- not use measurements of the IMU as control inputs (this is usually used for wheeled vehicles because of the drift from the wheels) but have both control inputs and measurements.
+Kalman filters on the other hand do not suffer from such exponential growth, but as explained previously, they are inadequate for non-linear transformation. RPBF is the best of both world by combining a particle filter for the non-linear components of the state (the attitude) as a latent variable, and kalman filters for the linear components of the state (velocity and position). Each individual particle has now both a linear state $\mathbf{x}$ and a latent variable $\boldsymbol{\theta}$. For ease of notation, the linear state as designated by $x_t$ will be referred to as the state even though the actual state we are concerned with should include the latent variable.
+
+### Related work 
+
+Related work of this approach is [@vernaza_rao-blackwellized_2006]. However, it differs by:
+
+- adapting the filter to drones by taking into account that the system is too dynamic for assuming that the accelerometer simply output the gravity vector. This is solved by augmenting the state with the acceleration as shown later.
+- not using measurements of the IMU as control inputs (this is usually used for wheeled vehicles because of the drift from the wheels) but have both control inputs and measurements.
 - add an attitude sensor.
+
+### Latent variable 
 
 We introduce the latent variable $\boldsymbol{\theta}$
 
@@ -655,23 +718,23 @@ The latent variable $\boldsymbol{\theta}$ has for sole component the attitude: $
 
 $q_t$ is estimated from the product of the attitude of all particles $\mathbf{\theta^{(i)}} = \mathbf{q}^{(i)}_t$ as the "average" quaternion $\mathbf{q}_t = avgQuat(\mathbf{q}^n_t)$. $x^n$ designates the product of all n arbitrary particle. 
 
-The weight definition is:
+As stated in the previous section, The weight definition is:
 
 $$w^{(i)}_t = \frac{p(\boldsymbol{\theta}^{(i)}_{0:t} | \mathbf{y}_{1:t})}{\pi(\boldsymbol{\theta}^{(i)}_{0:t} | \mathbf{y}_{1:t})}$$
 
-From the definition, it is proovable that:
+From the definition and the previous section, it is provable that:
 
 $$w^{(i)}_t \propto \frac{p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1})p(\boldsymbol{\theta}^{(i)}_t | \boldsymbol{\theta}^{(i)}_{t-1})}{\pi(\boldsymbol{\theta}^{(i)}_t | \boldsymbol{\theta}^{(i)}_{1:t-1}, \mathbf{y}_{1:t})} w^{(i)}_{t-1}$$
 
-We choose the dynamic of the model as the importance distribution:
+We choose the dynamics of the model as the importance distribution:
 
 $$\pi(\boldsymbol{\theta}^{(i)}_t | \boldsymbol{\theta}^{(i)}_{1:t-1}, \mathbf{y}_{1:t}) = p(\boldsymbol{\theta}^{(i)}_t | \boldsymbol{\theta}^{(i)}_{t-1}) $$
 
 Hence, 
 
-$$w^{(i)}_t \propto p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1}) w^{(i)}_{t-1}$$
+$$w^{*(i)}_t \propto p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1}) w^{(i)}_{t-1}$$
 
-We then sum all $w^{(i)}_t$ to find the normalization constant and retrieve the actual $w^{(i)}_t$
+We then sum all $w^{*(i)}_t$ to find the normalization constant and retrieve the actual $w^{(i)}_t$
 
 ### State 
 
@@ -818,7 +881,7 @@ where $t2 = t1 + \Delta t$, $\mathbf{p}_{t2}$ is the latest kalman prediction an
 
 ## Results
 
-We present a comparison of the 4 filters in 6 settings. All of them share a sampling frequency of **200Hz** for the IMU and **4Hz** for the Vicon. The RBPF is set to **1000** particles
+We present a comparison of the 4 filters in 6 settings. The metrics is the RMSE of the l2-norm of the position and of the Froebius norm of the attitude as described previously. All of the filters share a sampling frequency of **200Hz** for the IMU and **4Hz** for the Vicon. The RBPF is set to **1000** particles
 
 In all scenarios, the covariance matrices of the sensors measurement are diagonal:
 
@@ -891,7 +954,7 @@ Figure 1.14 is the plot of the tracking of the position (x, y, z) and attitute (
 
 ## Conclusion			 
 									  
-**TODO**
+The Rao-Blackwellized Particle Filter developped is more accurate than the alternatives, mathematically sound and computationaly feasible. When implemented on hardware, this filter can be executed in real time with sensors of high sampling rate, this filter could improve POSE estimation for all the existing drone and other robots. These improvements could unlock new abilities and increase the safeness of drone.
 
 [^ded]: The etymology for "Dead reckoning" comes from the mariners of the XVIIth century that used to calculate the position of the vessel with log book. The interpretation of "dead" is subject to debate. Some argue that it is a mispelling of "ded" as in "deduced". Others argue that it should be read by its old meaning: *absolute*.
 
