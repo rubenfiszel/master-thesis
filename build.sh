@@ -78,7 +78,7 @@ replace_in_file tmp_thesis4.md src/spatial.md '${spatial}' > tmp_thesis5.md
 sed -i 's/.gif/-0.png/g' tmp_thesis5.md
 sed -i 's/.webm/.png/g' tmp_thesis5.md
 sed -ir 's/```scala/```{.scala bgcolor=bg autogobble=true framesep=2mm fontsize=\\scriptsize}/g' tmp_thesis5.md
-sed -ir 's/```graph/```{.text fontsize=\\footnotesize}/g' tmp_thesis5.md
+sed -ir 's/```graph/```{.text fontsize=\\footnotesize samepage=true}/g' tmp_thesis5.md
 
 pandoc tmp_thesis5.md \
        --template=templates/tmpl.tex \

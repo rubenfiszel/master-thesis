@@ -8,37 +8,39 @@ The Moore's law [^moore] has prevailed in the computation world for the last 4 d
 
 ## The rise of Hardware
 
-Hardware and Software designate here respectively programs that are executed as code for a general purpose processing unit and programs that are encoded in the circuits. The dichotomy is not very well-defined and we can think of it as a spectrum. General-purpose computing on graphics processing units (GPGPU) is in-between in the sense that it is general purpose but relevant only for embarrassingly parallel tasks. Very efficient when appropriate and used well. They have benefited from high-investment and many generations of iterations and hence, for some tasks, can rivalize or even surpass Hardware.
+Hardware and Software designate here respectively programs that are executed as code for a general purpose processing unit and programs that are synthesized as circuits. The dichotomy is not very well-defined and we can think of it as a spectrum. General-purpose computing on graphics processing units (GPGPU) is in-between in the sense that it is general purpose but relevant only for embarrassingly parallel tasks [^embarpar] and very efficient when used well. They have benefited from high-investment and many generations of iterations and hence, for some tasks, can rivalize or even surpass Hardware.
 
 ![Hardware vs Software](hwsf.jpg)
 
-Hardware has always been there but application-specific integrated circuit (ASIC) has prohibitive costs upfront (in the range of $100M for a tapeout). Reprogrammable hardware like field-programmable gate array (FPGA) have only been used marginally and for some specific industry like high-frequency trading. But now Hardware might be the only solution (until a computing revolution happen, like quantum computing, but this is not realist for the near future) to increase performance. But hardware do not enjoy the same quality of tool, language and integrated development environment (IDE) as software. This is the motivation behind Spatial.
+Hardware has always been there but application-specific integrated circuit (ASIC) has prohibitive costs upfront (in the range of $100M for a tapeout). Reprogrammable hardware like field-programmable gate array (FPGA) have only been used marginally and for some specific industries like high-frequency trading. But now Hardware is the next natural step to increase performance, at least until a computing revolution happen, like quantum computing, but this is not realist for the near future. However, hardware do not enjoy the same quality of tooling, language and integrated development environments (IDE) as software. This is one the motivation behind Spatial: bridging the gap between Software and Hardware by abstracting control flows through language constructions.
 
 ## Hardware as companion accelerators
 
-In most case, hardware would be inappropriate: running an OS as hardware would be unrealistic. However, as a companion to a central-processing unit (CPU also called "the host"), you are able to get the best of both world. The flexibility of software on a CPU with the speed of hardware. In this setup, hardware is considered an "accelerator" (Hence, the term "accelerating hardware"). It accelerates the most demanding subroutines of the CPU. This companionship is already present in modern computer desktops under the form of GPUs for *shader* operations and sound card for complex sound transformation/output. 
+In most case, hardware would be inappropriate: running an OS as hardware would be impracticable. Nevertheless, as a companion to a central-processing unit (CPU also called "the host"), it is possible to get the best of both world. The flexibility of software on a CPU with the speed of hardware. In this setup, hardware is considered an "accelerator" (Hence, the term "accelerating hardware"). It accelerates the most demanding subroutines of the CPU. This companionship is already present in modern computer desktops under the form of GPUs for *shader* operations and sound card for complex sound transformation/output. 
 
 ## The right metric: Perf/Watt
 
-The right metric for accelerator is performance by energy, as measured in FLOPS per Watt. This is a fair metric for the comparison of different hardware because it shows the intrinsic value of the architecture. If the metric was solely performance, then it would suffice to combine multiple of the same architecture. Perf per dollar is not a good metric either because you should also account for the cost of energy at runtime. Hence, Perf/Watt seems like a fair metric to compare architectures.
+The right metric for accelerator is performance by energy, as measured in FLOPS per Watt. This is a fair metric for the comparison of different hardware and architecture because it reveals its intrinsic properties as a computing element.. If the metric was solely performance, then it would suffice to stack the same hardware and eventually a reach the scale of a super-computer. Perf per dollar is not a good metric either because you should also account for the cost of energy at runtime. Hence, Perf/Watt seems like a fair metric to compare architectures.
 
 ## Spatial 
 
-At the dawn lab, under the lead of [Prof. Kunle](http://arsenalfc.stanford.edu/kunle) and his grad students, is developed a scala DSL [spatial](https://github.com/stanford-ppl/spatial-lang) and its compiler to program Hardware in a higher-level, more user-friendly, more productive language than Verilog. In particular, the control flows are automatically generated when possible. This should enable software engineers to unlock the potential of Hardware. A custom CGRA, Plasticine, has been developed in parallel to Spatial. It leverages some recurrent patterns, in particular parallel patterns and aims to be the most efficient reprogrammable architecture for Spatial.
+At the dawn lab, under the lead of [Prof. Kunle](http://arsenalfc.stanford.edu/kunle) and his grad students, is developed a scala DSL [spatial](https://github.com/stanford-ppl/spatial-lang) and its compiler to program Hardware in a higher-level, more user-friendly, more productive language than Verilog. In particular, the control flows are automatically generated when possible. This should enable software engineers to unlock the potential of Hardware. A custom CGRA, Plasticine, has been developed in parallel to Spatial. It leverages some recurrent patterns: the parallel patterns and aims to be the most efficient reprogrammable architecture for Spatial.
 
-There is a large upfront cost but once at a big enough scale, Plasticine could be deployed as an accelerator for most demanding server applications and embedded systems with heavy computing requirements.
+There is a large upfront cost but once at a big enough scale, Plasticine could be deployed as an accelerator in a wide range of use-cases, from the most demanding server applications to embedded systems with heavy computing requirements.
 
 ## Embedded systems and drones
 
 Embedded systems are limited by the amount of power at disposal from the battery and might also have size constraints. At the same time, especially for autonomous vehicles, there is a great need for computing power.
 
-Thus, developing drone applications with spatial demonstrates the advantages of the platform. As a matter of fact, the filter implementation was only made possible because it was run on an accelerating hardware. It would be unfeasible to run it on more conventional micro-transistors. This is why the family in which belong the filter developed here, particles filters, being very computationally expensive, are very seldom used for drones.
+Thus, developing drone applications with spatial demonstrates the advantages of the platform. As a matter of fact, the filter implementation was only made possible because it is run on an accelerating hardware. It would be unfeasible to run it on more conventional micro-transistors. This is why the family in which belong the filter developed here, particles filters, being very computationally expensive, are very seldom used for drones.
 
 # Sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter
 
-POSE is the combination of the position and orientation of an object. POSE estimation is important for drones. It is a subroutine of SLAM (Simultaneous localization and mapping) and it is a central part of motion planning and motion control. More accurate and more reliable POSE estimation results in more agile, more reactive and safer drones. Drones are an intellectually stimulating subject but in the near-future they might also see their usage increase exponentially. In this context, developing and implementing new filter for POSE estimation is both important for the field of robotics but also to demonstrate the importance of hardware acceleration. Indeed, the best and last filter presented here is only made possible because it can be hardware accelerated with Spatial. However, the spatial implementation will be presented in Part III.
+POSE is the combination of the position and orientation of an object. POSE estimation is important for drones. Indeed, It is a subroutine of SLAM (Simultaneous localization and mapping) and it is a central part of motion planning and motion control. More accurate and more reliable POSE estimation results in more agile, more reactive and safer drones. Drones are an intellectually stimulating subject but in the near-future they might also see their usage increase exponentially. In this context, developing and implementing new filter for POSE estimation is both important for the field of robotics but also to demonstrate the importance of hardware acceleration. Indeed, the best and last filter presented here is only made possible because it can be hardware accelerated with Spatial. However, the spatial implementation will be presented in Part III.
 
-Before expanding on the Rao-Blackwellized particle filter, we will introduce here several other filters for POSE estimation for highly dynamic objects: Complementary filter, Kalman Filter, Extended Kalman Filter and finally Rao-Blackwellized Particle filter. The order is from the most conceptually simple, to the most complex. This order is justified because complex filters aim to alleviate some of the flaws of their simpler counterpart. It is important to understand what are those weakness and how we can alleviate them.
+Before expanding on the Rao-Blackwellized particle filter, we will introduce here several other filters for POSE estimation for highly dynamic objects: Complementary filter, Kalman Filter, Extended Kalman Filter, Particle Filter and finally Rao-Blackwellized Particle filter. The order is from the most conceptually simple, to the most complex. This order is justified because complex filters aim to alleviate some of the flaws of their simpler counterpart. It is important to understand which one and how. 
+
+All the following filters are developed and tested in scala-flow. scala-flow will be expanded in part 2 of this thesis. For now, we will focus on the model and the results, and leave the implementation details for later.
 
 ## Drones and collision avoidance
 
@@ -54,7 +56,7 @@ The flamewheel f450 is the typical drone in this category. It is surprisingly fa
 
 ## Sensor fusion
 
-Sensor fusion is combining of sensory data or data derived from disparate sources such that the resulting information has less uncertainty than would be possible when these sources were used individually. In the context of drones, it is very useful because it enables to combine many unprecise sensor measurement to form a more precise measurement like having precise positionning from 2 less precise GPS (dual GPS setting). It can also permit to combine sensors with different sampling rates: typically precise sensors with low sampling rate and less precise sensors with high sampling rate. Both cases are gonna be relevant here. 
+Sensor fusion is the combination of sensory data or data derived from disparate sources such that the resulting information has less uncertainty than would be possible if these sources were to be used individually. In the context of drones, it is very useful because it enables to combine many unprecise sensor measurement to form a more precisre one like having precise positionning from 2 less precise GPS (dual GPS setting). It can also permit to combine sensors with different sampling rates: typically precise sensors with low sampling rate and less precise sensors with high sampling rate. Both cases are gonna be relevant here. 
 
 A fundamental explanation why this is possible comes from the central limit theorem: one sample from a distribution with a low variance is as good as n sample from a distribution with variance $n$ times higher.
 
@@ -63,14 +65,13 @@ $$\bar{X} = \frac{1}{n}\sum X_i$$
 $$\mathbb{V}(\bar{X}) = \frac{\sigma^2}{n}  ~~~~~ \mathbb{E}(\bar{X}) = \mu$$
 
 
-
 ## Notes on notation and conventions
 
 The referential by default is the fixed world frame.
 
 - $\mathbf{x}$ designates a vector
-- $x_t$ is the random variable of x at time t
-- $x_{t1:t2}$ is the product of the random variable of x between t1 included and t2 included
+- $x_t$ is the random variable x at time t
+- $x_{t1:t2}$ is the product of the random variable x between t1 included and t2 included
 - $x^{(i)}$ designates the random variable x of the arbitrary particle i
 - $\hat{x}$ designates an estimated variable
 
@@ -95,8 +96,7 @@ The algorithm inputs are:
 
 The difficulties with using real flight data is that you need to get the *true* trajectory and that you need enough data to check the efficiency of the filters.
 
-
-To avoid those issues, the flight data is simulated through a model of trajectory generation.  This model as described in [@mueller_computationally_2015], The motion primitives are defined by the quadcopter’s initial state, the desired motion duration, and any combination of components of the quadrocopter’s position, velocity and acceleration at the motion’s end. Closed form solutions for the primitives are given, which minimize a cost function related to input aggressiveness. 
+To avoid those issues, the flight data is simulated through a model of trajectory generation from [@mueller_computationally_2015]. Data generated this way are called synthetic data. The algorithm input are the motion primitives defined by the quadcopter’s initial state, the desired motion duration, and any combination of components of the quadcopter’s position, velocity and acceleration at the motion’s end. The algorithm is essentially a closed form solution for the given primitives. The closed form solution minimizes a cost function related to the input aggressiveness. 
 
 The bulk of the method is that a differential equation representing the difference of position, velocity and acceleration between the starting and ending state is solved with the [Pontryagin’s minimum principle](https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle) using the appropriate [Hamiltonian](https://en.wikipedia.org/wiki/Hamiltonian_(control_theory)).  Then, from that closed form solution, a per-axis cost can be calculated to pick the "least aggressive" trajectory out of different candidates. Finally, the feasibility of the trajectory is computed using the constraints of maximum thrust and body rate (angular velocity) limits.
 
@@ -110,13 +110,17 @@ For the purpose of this work, a scala implementation of the model was realized. 
 
 ## Quaternion
 
-Quaternions are extensions of complex numbers but with 3 imaginary parts. Unit quaternions can be used to represent orientation, also referred to as attitude. Quaternions algebra make rotation composition simple and quaternions avoid the issue of gimbal lock. In all filters presented, they will be used to represent the attitude.
+Quaternions are extensions of complex numbers with 3 imaginary parts. Unit quaternions can be used to represent orientation, also referred to as attitude. Quaternions algebra make rotation composition simple and quaternions avoid the issue of gimbal lock [^gimbal]. In all filters presented,  quaternions represent the attitude.
 
 $$\mathbf{q} = (q.r, q.i, q.j, q.k)^t = (q.r, \boldsymbol{\varrho})^T$$
 
-Quaternion rotations composition is: $q_2 q_1$ which results in $q_1$ being rotated by the rotation represented by $q_2$. From this, we can deduce that angular velocity integrated over time is simply $q^t$ if $q$ is the local quaternion rotation by unit of time.
+Quaternion rotations composition is: $q_2 q_1$ which results in $q_1$ being rotated by the rotation represented by $q_2$. From this, we can deduce that angular velocity integrated over time is simply $q^t$ if $q$ is the local quaternion rotation by unit of time. The product of two quaternions (also called Hamilton product) is computable by regrouping the same type of imaginary and real components together and accordingly to the identity:
 
-Rotation of a vector by a quaternion is done by: $q v q^*$ where $q$ is the quaternion representing the rotation, $q^*$ its conjugate and $v$ the vector to be rotated.
+$$i^2=j^2=k^2=ijk=-1$$
+
+Rotation of a vector by a quaternion is done by: $q v q^*$ where $q$ is the quaternion representing the rotation, $q^*$ its conjugate and $v$ the vector to be rotated. The conjugate of a quaternion is: 
+
+$$q^* = - \frac{1}{2} (q + iqi + jqj + kqk)$$
 
 The distance of between two quaternions, useful as an error metric is defined by the squared Frobenius norms of attitude matrix differences [@markley_averaging_2007].
 
@@ -254,7 +258,7 @@ $k$ is a contant and the first observation is $y_1$
 
 ## Complementary Filter
 
-The complementary filter is the simplest of all filter and very common to retrieve the attitude because of its low computational complexity. The gyroscope and accelerometer both provide a measurement that can help us to estimate the attitude. The gyroscope indeed gives us a noisy measurement of the angular velocity from which we can retrieve the new attitude from the past one by time integration: $\mathbf{q}_t = \mathbf{q}_{t-1}*R2Q(\Delta t \mathbf{\omega})$.
+The complementary filter is the simplest of all filter and commonly used to retrieve the attitude because of its low computational complexity. The gyroscope and accelerometer both provide a measurement that can help us to estimate the attitude. Indeed, the gyroscope reads noisy measurement of the angular velocity from which we can retrieve the new attitude from the past one by time integration: $\mathbf{q}_t = \mathbf{q}_{t-1}*R2Q(\Delta t \mathbf{\omega})$.
 
 This is commonly called "Dead reckoning"[^ded] and is prone to accumulation error, referred as drift. Indeed, like Brownian motions, even if the process is unbiased, the variance grows with time. Reducing the noise cannot solve the issue entirely: even with extremely precise instruments, you are subject to floating-point errors.
 
@@ -305,7 +309,7 @@ We can observe here the long-term importance of being able to correct the drift,
 
 As explained previously, in this highly-dynamic setting, combining the gyroscope and the accelerometer to retrieve the attitude is not satisfactory. However, we can reuse the intuition from the complementary filter, which is to combine precise but drifting short-term measurements to other measurements that do not suffer from drift. This enable a simple and computationally inexpensive novel filter that we will be able to use later as a baseline. In this case, the short-term measurements are the acceleration and angular velocity from the IMU, and the non drifting measurements come from the Vicon. 
 
-We will also add the property that the data from the sensors are asynchronous. This is a consequence of the sensors having different sampling rate. 
+We will also add the property that the data from the sensors are asynchronous. As with all following filters, we deal with asynchronicity by updating the state to the most likely state so far for any new sensor measurement incoming. This is a consequence of the sensors having different sampling rate. 
 
 * **IMU** update
 $$\mathbf{v}_t = \mathbf{v}_{t-1} + \Delta t_v \mathbf{a_A}_t$$
@@ -411,13 +415,13 @@ To be truly asynchronous, you also have to account for the different sampling ra
 The strategy chosen here is as follows:
 
 1. Multiple prediction steps without any update step may happen without making the algorithm inconsistent. 
-2. An update is **always** immediately preceded by a prediction step. This is a consequence of the requirement that the innovation must measure the difference between the predicted measurement from the state at the exact current time and the measurements. Thus, if the measurements are not synchronized with the control inputs, use the most likely control input for the prediction step, which might result in simply repeating them. Repeating the last control input was the method used for the accelerometer and the gyroscope data as control input.
+2. An update is **always** immediately preceded by a prediction step. This is a consequence of the requirement that the innovation must measure the difference between the predicted measurement from the state at the exact current time and the measurements. Thus, if the measurements are not synchronized with the control inputs, use the most likely control input for the prediction step. Repeating the last control input was the method used for the accelerometer and the gyroscope data as control input.
 
 
 ## Extended Kalman Filters
 
 
-In the previous section, we have shown that the Kalman Filter is only applicable when both the process model and the measurement model are linear Gaussian process. This has two aspects:
+In the previous section, we have shown that the Kalman Filter is only applicable when both the process model and the measurement model are linear Gaussian process. 
 
 * The noise of the measurements and of the state-transition must be Gaussian 
 * The state-transition function and the measurement to state function must be linear.
@@ -696,7 +700,7 @@ Sample $U_1 \sim \mathcal{U} [0, \frac{1}{N} ]$ and define $U_i = U_1 + \frac{i-
 
 ### Introduction
 
-Compared to a plain particle filter, RPBF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RPBF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RPBF can be seen as the "average" of many gaussians.
+Compared to a plain particle filter, RPBF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RPBF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RPBF can be seen as the "average" of many Gaussians. Each particle is an optimal kalman filter conditioned on the particle's latent variable, the attitude.
 
 Indeed, the benefit of particle filters is that they assume no particular form for the posterior distribution and transformation of the state. But as the state widens in dimensions, the number of needed particles to keep a good estimation grows exponentially. This is a consequence of ["the curse of dimensionality"}(https://en.wikipedia.org/wiki/Curse_of_dimensionality): for each dimension, we would have to consider all additional combinations of state. In our context, we have 10 dimensions ($\mathbf{v}$,$\mathbf{p}$,$\mathbf{q}$) and it would be very computationally expensive to simulate a too large number of particles. 
 
@@ -954,11 +958,14 @@ Figure 1.14 is the plot of the tracking of the position (x, y, z) and attitute (
 
 ## Conclusion			 
 									  
-The Rao-Blackwellized Particle Filter developed is more accurate than the alternatives, mathematically sound and computationally feasible. When implemented on hardware, this filter can be executed in real time with sensors of high sampling rate, this filter could improve POSE estimation for all the existing drone and other robots. These improvements could unlock new abilities and increase the safeness of drone.
+The Rao-Blackwellized Particle Filter developed is more accurate than the alternatives, mathematically sound and computationally feasible. When implemented on hardware, this filter can be executed in real time with sensors of high and asynchronous sampling rate. It could improve POSE estimation for all the existing drone and other robots. These improvements could unlock new abilities, potentials and increase the safeness of drone.
 
 [^ded]: The etymology for "Dead reckoning" comes from the mariners of the XVIIth century that used to calculate the position of the vessel with log book. The interpretation of "dead" is subject to debate. Some argue that it is a misspelling of "ded" as in "deduced". Others argue that it should be read by its old meaning: *absolute*.
 
 [^moore]: The observation that the number of transistors in a dense integrated circuit doubles approximately every two years.
 
+[^embarpar]: An embarrassingly parallel task is one where little or no effort is needed to separate the problem into a number of parallel tasks. This is often the case where there is little or no dependency or need for communication between those parallel tasks, or for results between them.
+
+[^gimbal]: Gimbal lock is the loss of one degree of freedom in a three-dimensional, three-gimbal mechanism that occurs when the axes of two of the three gimbals are driven into a parallel configuration, "locking" the system into rotation in a degenerate two-dimensional space. 
 <!--  LocalWords:  moore nm moorelaw hwsf png
  -->

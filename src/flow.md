@@ -24,12 +24,16 @@ Data get emitted from sources (nodes with no input), processed and tranformed by
 
 Nodes all mix-in the common trait `Node`. Every nodes also mix-in the trait `Source[A]` whose type parameter `A` indicates the type parameters of the packets emitted by this node. Indeed, nodes can only have one output. Every nodes also minx-in the trait `SourceX[A, B, ...]` where X is the arity  of the number of input for that nodes and replace by the actual arity (1, 2, 3, ...). This is similar to `FunctionX` which is the type of functions in scala.
 
-- `Source0` indicates that the node take exactly 0 input.
+- `Source0` indicates that the node takes exactly 0 input.
 - `Source1[A]` indicates that the node has 1 input whose packets are of type A. 
 - `Source2[A,B]` indicates that the nodes has 2 inputs whose packets are respectively of type `A` and `B`
 - etc ...
 
 Since all nodes mix-in a `SourceX`, the compiler can check that the inputs of each node are of the right type.
+
+All `SourceX` must define `def listenI(x: A)` where I goes from 1 to X and A correspond to the corresponding type parameter of `SourceX`. `def listenI(x: A)` defines the action to take whenever a packet is received from the input I. In most cases, it is a transformation of `x` followed by a broadcasting (with the function `def broadcast(x: R)`) to the nodes that have for source this node.
+
+There is a special case, `SourceN[A, R]` which represent nodes that have *-arity of type `A` and emit packets of type `R`. For instance, the `Plot` nodes take * number of sources and display them all on the same plot. The only constraint is that all the source nodes must emit the same kind of data of type A. Else it would not make sense to compare them. For plot specifically, `A` has also a view bound of `Data` which means that there exists a conversion from `A` to a `Seq[Float]`, to ensure that `A` is displayable in a multiplot as timeseries. The x-axis, the time, correspond to the timestamp of emission contained in the packet.
 
 An intermediary node that applies a transformation mixs-in the trait `OpX[A, B, ..., R]` where `A, B` is the type of the input, and `R` is the type of the output. Indeed, 
 
@@ -91,59 +95,73 @@ Below is the scala-flow code corresponding to a data-flow that enable to compare
   Plot(pqs, filters:_*)
 ```
 
+![scala-flow program](empty.jpg)
+
 ```{.text samepage=true}
- ┌────────────────────┐ ┌────────────────────┐
- │TrajectoryClock 0.01│ │TrajectoryClock 0.05│
- └─────┬────────────┬─┘ └────────┬───────────┘
-       │            │            │            
-       v            v            v            
-   ┌───────┐   ┌────────┐   ┌─────────┐       
-   │Map IMU│   │toPoints│   │Map Vicon│       
-   └──┬──┬─┘   └────┬───┘   └───┬──┬──┘       
-      │  │          │           │  │          
-      │  │          │    ┌──────┘  │          
-      │  └──────────┼────┼─────────┼┐         
-      └───────────┐ │    │         ││         
-     ┌────────────┼─┘    │         ││         
-     │            │      │         ││         
-     v            v      v         vv         
- ┌───────┐ ┌───────────────────┐ ┌────────┐   
- │toPandQ│ │ParticleFilterVicon│ │EKFVicon│   
- └───┬───┘ └──────────┬────────┘ └────┬───┘   
-     │                │               │       
-     └──────────────┐ │ ┌─────────────┘       
-                    │ │ │                     
-                    v v v                     
-                  ┌───────┐                   
-                  │ Plot  │                   
-                  └───────┘                  
+         ┌────────────────────┐ ┌────────────────────┐
+         │TrajectoryClock 0.01│ │TrajectoryClock 0.05│
+         └─────┬────────────┬─┘ └────────┬───────────┘
+               │            │            │            
+               v            v            v            
+           ┌───────┐   ┌────────┐   ┌─────────┐       
+           │Map IMU│   │toPoints│   │Map Vicon│       
+           └──┬──┬─┘   └────┬───┘   └───┬──┬──┘       
+              │  │          │           │  │          
+              │  │          │    ┌──────┘  │          
+              │  └──────────┼────┼─────────┼┐         
+              └───────────┐ │    │         ││         
+             ┌────────────┼─┘    │         ││         
+             │            │      │         ││         
+             v            v      v         vv         
+         ┌───────┐ ┌───────────────────┐ ┌────────┐   
+         │toPandQ│ │     RBPFVicon     │ │EKFVicon│   
+         └───┬───┘ └──────────┬────────┘ └────┬───┘   
+             │                │               │       
+             └──────────────┐ │ ┌─────────────┘       
+                            │ │ │                     
+                            v v v                     
+                          ┌───────┐                   
+                          │ Plot  │                   
+                          └───────┘                  
 ```				  
+
+![Graph representation of the data-flow](empty.jpg)
+
+## Block
+
+A block is a node that actually represents a group of node. That node can be summarized by its input and output such that from an outside perspective, it can be considered as a simple node. Similar to the way an interface or an API hide its implementation details, a block hides its inner workings to the rest of the data-flow as long as the block process and emit the right type of packet. This logic extend to the graphical representation. Blocks are represented as nodes in the high-level graph but expanded in an independent graph below.
+
+Similar to `OpX[A, B, ..., R]` , there exists `BlockX[A, B, ..., R]` which all extend `Block[R]` and take X sources as input. All `Block[R]` must define an out method of the form: `def out: Source[R]`.
 
 The filters are block with the following signatures:
 
 ```scala
-case class ParticleFilterVicon(rawSource1: Source[(Acceleration, Omega)],
-                               rawSource2: Source[(Position, Attitude)],
-                               N: Int,
-                               covAcc: Real,
-                               covGyro: Real,
-                               covViconP: Real,
-                               covViconQ: Real)							   
+case class RBPFVicon(rawSource1: Source[(Acceleration, Omega)],
+                     rawSource2: Source[(Position, Attitude)],
+                     N: Int,
+                     covAcc: Real,
+                     covGyro: Real,
+                     covViconP: Real,
+                     covViconQ: Real)	
+	extends Block2[(Acceleration, Omega), (Position, Attitude), (Position, Attitude)] {
+	
+		def imu = source1
+		def vicon = source2
+		
+		def out = ...
+	}
 ```
+
+![Signature of the block of the particle filter](empty.jpg)
 
 and similar for EKFVicon. 
 
-## Blocks
+The observant reader might notice that the above block take as arguments `rawSource` and not `Source` directly. However, the packets are incoming from `Source` (`def imu = source1`). This is a consequence of intermediary `Source` potentially needing to be generated during the graph creation to synchronize multiple scheduler together. 
 
-## Flow graphical representation
 
 ## Buffer and cycles
 
-## Data
-
 ## Source API
-
-### FP
 
 Here is a simplified description of the API of each source. 
 
@@ -292,17 +310,45 @@ implicit class TimeSource(source: Source[Time]) {
 
 ```
 
+![API of the Sources](empty.jpg)
+
 The real API includes also a `name` and `silent` parameter. Both are only relevant for the graphical representation. The name of the block will be overriden by name if present and the node will be skipped in the graphical representation if silent is present.
 
-## Block
+## Batch
 
+A batch is a node that process its input in "batch" mode. All the other nodes process their input in "stream" mode. By "stream" mode, we mean that the node is able to process the input one-by-one, as soon as it arrives. The "batch" mode means that the node can only process i
 
 
 ## Scheduling
 
-## Batch
+Scheduling is the core mechanism of scala-flow. Scheduling ensure that packets gets emitted by the sending nodes and received by the recipient nodes at the "right time". Since scala-flow is a simulation tool, the "scala-flow time" does not correspond at all to the real time. Scheduling emits the packets as fast as it can. Therefore, since time is an arbitrary component of the packet, the only constraint that scheduling must satisfy is emitting the packets from all nodes in the right order.
+
+Scheduling is achieved by one or many Schedulers. Schedulers are essentially queue of actions. The actions are side-effect functions that emit packets to the right node by the intermediary of channels. In the trivial case where there is no Batch, only one scheduler is needed. 
+
 
 ## Replay
+
+## Graph construction
+
+### InitHook
+
+### ModelHook
+
+### NodeHook
+
+To gather the nodes and their connection between each other, a `NodeHook` is used. Every node must have access to a `NodeHook` to add itself to the registry. For the nodes that take no input, the `Source0`, the `NodeHook` is passed as an implicit parameter. For the following nodes, the `NodeHook` is propagated since all others nodes use as `NodeHook` the one from their `source1`. This is similar to the way `Scheduler` are propagated through the graph.
+
+### Graphical representation
+
+The graphical representation is in the `ASCII` format. The library [ascii-graphs](https://github.com/mdr/ascii-graphs) is used to generate the output in `ASCII` from sets of vertices and edges.  The set of vertices and edges is retrieved from the set of nodes contained in `NodeHook`.
+
+### FlowApp
+
+A `FlowApp[A, B]` is an extension of the scala `App`. Its type parameters correspond to the type parameter of the `InitHook` and `ModelHook`
+
+### Channel
+
+A single FlowApp can be run multiple times
 
 ## Spatial integration
 
