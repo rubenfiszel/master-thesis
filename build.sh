@@ -79,6 +79,9 @@ sed -i 's/.gif/-0.png/g' tmp_thesis5.md
 sed -i 's/.webm/.png/g' tmp_thesis5.md
 sed -ir 's/```scala/```{.scala bgcolor=bg autogobble=true framesep=2mm fontsize=\\scriptsize}/g' tmp_thesis5.md
 sed -ir 's/```graph/```{.text fontsize=\\footnotesize samepage=true}/g' tmp_thesis5.md
+sed -ir 's/```mermaid/```{.mermaid format=png loc=media width=1920}/g' tmp_thesis5.md
+
+mkdir -p media
 
 pandoc tmp_thesis5.md \
        --template=templates/tmpl.tex \
@@ -90,8 +93,7 @@ pandoc tmp_thesis5.md \
        --toc-depth=2 \
        --latex-engine-opt=-shell-escape \
        --highlight-style=tango \
-       --filter pandoc-minted \
-       --filter pandoc-citeproc \
+       --filter mermaid-filter --filter pandoc-minted --filter pandoc-citeproc \
        --bibliography=src/thesis.bib \
        --csl templates/computer.csl \
        -V fontsize=11pt \
