@@ -135,7 +135,7 @@ if [ $blog = true ]; then
     cp src/thesis.bib ../../hakyll-website/bib/    
 
     cd ..
-    rm -rf build/
+#    rm -rf build/
     
     cd ../hakyll-website
     stack exec site build

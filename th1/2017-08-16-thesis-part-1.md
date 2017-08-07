@@ -17,51 +17,53 @@ This part is about an application of hardware acceleration, sensor fusion for dr
 
 ## Moore's law end
 
-The Moore's law [^moore] has ruled computation for the last 4 decades. With each generation of processor, the promise of an exponentially faster execution. Transistors are reaching the scale of 10nm, only a 100 time bigger than an atom. Unfortunately, the quantum rules of physics which govern the infinitesimally, start manifest themselves. In particular, quantum tunneling move electrons from classicly unsurmountable barrier, making computations approximate, containing a non negligible fraction of errors. 
+The Moore's law [^moore] has prevailed in the computation world for the last 4 decades. With each generation of processor, the promise of an exponentially faster execution. Transistors are reaching the scale of 10nm, only 100 times bigger than an atom. Unfortunately, the quantum rules of physics which govern the infinitesimally, start to manifest themselves. In particular, quantum tunneling move electrons from classically insurmountable barrier, making computations approximate, containing a non negligible fraction of errors. 
 
 ![The number of transistors throughout the years. We can observe a recent start of a decline](moorelaw.png)
 
 ## The rise of Hardware
 
-Hardware and Software designate here respectively programs that are executed as code for a general purpose processing unit and programs that are encoded in the circuits. The dichotomy is not very well defined and we can think of it as a spectrum. General-purpose computing on graphics processing units (GPGPU) is in-between. Very efficient when appropriate and used well. They have benefited from high-investment and many generation of iterations and hence, for some tasks, can rivalize or even surpass Hardware.
+Hardware and Software designate here respectively programs that are executed as code for a general purpose processing unit and programs that are synthesized as circuits. The dichotomy is not very well-defined and we can think of it as a spectrum. General-purpose computing on graphics processing units (GPGPU) is in-between in the sense that it is general purpose but relevant only for embarrassingly parallel tasks [^embarpar] and very efficient when used well. They have benefited from high-investment and many generations of iterations and hence, for some tasks, can rivalize or even surpass Hardware.
 
 ![Hardware vs Software](hwsf.jpg)
 
-Hardware has always been there but application-specific integrated circuit (ASIC) has prohibitive costs upfront (in the range of $100M for a tapeout). Reprogrammable hardware like field-programmable gate array (FPGA) have only been used marginally and for some specific industry like high-frequency trading. But now Hardware might be the only solution (until a computing revolution happen, like quantum computing, but this is not realist for the near future) to increase performance. But hardware do not enjoy the same quality of tool, language and integrated development environment (IDE) as software. This is the motivation behind Spatial.
+Hardware has always been there but application-specific integrated circuit (ASIC) has prohibitive costs upfront (in the range of $100M for a tapeout). Reprogrammable hardware like field-programmable gate array (FPGA) have only been used marginally and for some specific industries like high-frequency trading. But now Hardware is the next natural step to increase performance, at least until a computing revolution happen, like quantum computing, but this is not realist for the near future. However, hardware do not enjoy the same quality of tooling, language and integrated development environments (IDE) as software. This is one the motivation behind Spatial: bridging the gap between Software and Hardware by abstracting control flows through language constructions.
 
 ## Hardware as companion accelerators
 
-In most case, hardware would be inappropriate: running an OS as hardware would be irrealist. However, as a companion to a central-processing unit (CPU also called "the host"), you are able to get the best of both world. The flexibility of software on a CPU with the speed of hardware. In this setup, hardware is considered an "accelerator" (Hence, the term "accelerating hardware"). It accelerates the most demanding subroutines of the CPU. This companionship is already present in modern computer desktops under the form of GPUs for *shader* operations and sound card for complex sound transformation/output. 
+In most case, hardware would be inappropriate: running an OS as hardware would be impracticable. Nevertheless, as a companion to a central-processing unit (CPU also called "the host"), it is possible to get the best of both world. The flexibility of software on a CPU with the speed of hardware. In this setup, hardware is considered an "accelerator" (Hence, the term "accelerating hardware"). It accelerates the most demanding subroutines of the CPU. This companionship is already present in modern computer desktops under the form of GPUs for *shader* operations and sound card for complex sound transformation/output. 
 
 ## The right metric: Perf/Watt
 
-The right metric for accelerator is performance by energy, as measured in FLOPS per Watt. This is a fair metric for the comparison of different hardware because it shows the intrisic value of the architecture. If the metric was solely performance, then it would suffice to combine multiple of the same architecture. Perf per dollar is not a good metric either because you should also account for the cost of energy at runtime. Hence, Perf/Watt seems like a fair metric to compare architectures.
+The right metric for accelerator is performance by energy, as measured in FLOPS per Watt. This is a fair metric for the comparison of different hardware and architecture because it reveals its intrinsic properties as a computing element.. If the metric was solely performance, then it would suffice to stack the same hardware and eventually a reach the scale of a super-computer. Perf per dollar is not a good metric either because you should also account for the cost of energy at runtime. Hence, Perf/Watt seems like a fair metric to compare architectures.
 
 ## Spatial 
 
-At the dawn lab, under the lead of [Prof. Kunle](http://arsenalfc.stanford.edu/kunle) and his grad students, is developped a scala DSL [spatial](https://github.com/stanford-ppl/spatial-lang) and its compiler to program Hardware in a higher-level, more user-friendly, more productive language than Verilog. In particular, the control flows are automatically generated when possible. This should enable software engineers to unlock the potential of Hardware. A custom CGRA, Plasticine, has been developped in parralel to Spatial. It leverages some recurrent patterns, in particular parralel patterns and aims to be the most efficient reprogrammable architecture for Spatial.
+At the dawn lab, under the lead of [Prof. Kunle](http://arsenalfc.stanford.edu/kunle) and his grad students, is developed a scala DSL [spatial](https://github.com/stanford-ppl/spatial-lang) and its compiler to program Hardware in a higher-level, more user-friendly, more productive language than Verilog. In particular, the control flows are automatically generated when possible. This should enable software engineers to unlock the potential of Hardware. A custom CGRA, Plasticine, has been developed in parallel to Spatial. It leverages some recurrent patterns: the parallel patterns and aims to be the most efficient reprogrammable architecture for Spatial.
 
-There is a large upfront cost but once at a big enough scale, Plasticine could be deployed as an accelerator for most demanding server applications and embedded systems with heavy computing requirements.
+There is a large upfront cost but once at a big enough scale, Plasticine could be deployed as an accelerator in a wide range of use-cases, from the most demanding server applications to embedded systems with heavy computing requirements.
 
 ## Embedded systems and drones
 
 Embedded systems are limited by the amount of power at disposal from the battery and might also have size constraints. At the same time, especially for autonomous vehicles, there is a great need for computing power.
 
-Thus, developping drone applications with spatial demonstrates the advantages of the platform. As a matter of fact, the filter that has been developped was only made possible because it was run on an accelerating hardware. It would be irrealist to attempt to run it on more conventional micro-transistors. This is why the family in which belong the filter developped here, particles filters, being very computationally expensive, are very seldom used for drones.
+Thus, developing drone applications with spatial demonstrates the advantages of the platform. As a matter of fact, the filter implementation was only made possible because it is run on an accelerating hardware. It would be unfeasible to run it on more conventional micro-transistors. This is why the family in which belong the filter developed here, particles filters, being very computationally expensive, are very seldom used for drones.
 
 # Sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter
 
-POSE is the combination of the position and orientation of an object. POSE estimation is important for drones. It is a subroutine of SLAM (Simultaneous localization and mapping) and it is a central part of motion planning and motion control. More accurate and more reliable POSE estimation results in more agile, more reactive and safer drones. Drones are an intellectually stimulating subject but in the near-future they might also see their usage increase exponentially. In this context, developping and implementing new filter for POSE estimation is both important for the field of robotics but also to demonstrate the importance of hardware acceleration. Indeed, the best and last filter presented here is only made possible because it can be hardware accelerated with Spatial. However, the spatial implementation will be presented in Part III.
+POSE is the combination of the position and orientation of an object. POSE estimation is important for drones. Indeed, It is a subroutine of SLAM (Simultaneous localization and mapping) and it is a central part of motion planning and motion control. More accurate and more reliable POSE estimation results in more agile, more reactive and safer drones. Drones are an intellectually stimulating subject but in the near-future they might also see their usage increase exponentially. In this context, developing and implementing new filter for POSE estimation is both important for the field of robotics but also to demonstrate the importance of hardware acceleration. Indeed, the best and last filter presented here is only made possible because it can be hardware accelerated with Spatial. However, the spatial implementation will be presented in Part III.
 
-Before expanding on the Rao-Blackwellized particle filter, we will introduce here several other filters for POSE estimation for highly dynamic objects: Complementary filter, Kalman Filter, Extended Kalman Filter and finally Rao-Blackwellized Particle filter. The order is from the most conceptually simple, to the most complex. This order is justified because complex filters aim to alleviate some of the flaws of their simpler counterpart. It is important to understand what are those weakness and how we can alleviate them.
+Before expanding on the Rao-Blackwellized particle filter, we will introduce here several other filters for POSE estimation for highly dynamic objects: Complementary filter, Kalman Filter, Extended Kalman Filter, Particle Filter and finally Rao-Blackwellized Particle filter. The order is from the most conceptually simple, to the most complex. This order is justified because complex filters aim to alleviate some of the flaws of their simpler counterpart. It is important to understand which one and how. 
+
+All the following filters are developed and tested in scala-flow. scala-flow will be expanded in part 2 of this thesis. For now, we will focus on the model and the results, and leave the implementation details for later.
 
 ## Drones and collision avoidance
 
-The original motivation for the development of accelerated POSE estimation is for the task of collision avoidance by quadcopters. In particular, a collision avoidance algorithm developped at the [ASL lab](https://asl.stanford.edu/) and demonstrated here [(https://youtu.be/kdlhfMiWVV0)](https://www.youtube.com/watch?v=kdlhfMiWVV0) 
+The original motivation for the development of accelerated POSE estimation is for the task of collision avoidance by quadcopters. In particular, a collision avoidance algorithm developed at the [ASL lab](https://asl.stanford.edu/) and demonstrated here [(https://youtu.be/kdlhfMiWVV0)](https://www.youtube.com/watch?v=kdlhfMiWVV0) 
 
 ![Ross Allen fencing with his drone](fencing.png)
 
-where the drone avoids the sword attack froms its creator. At first, it was thought of accelerating the whole algorithm but it was found that one of the most demanding subroutine was pose estimation.  Moreover, it was wished to increase the processing rate of the filter such that it could match the input with the fastest sampling rate: its inertial measurement unit (IMU) containing an accelerometer, a gyroscope and a magnetometer.
+where the drone avoids the sword attack from its creator. At first, it was thought of accelerating the whole algorithm but it was found that one of the most demanding subroutine was pose estimation.  Moreover, it was wished to increase the processing rate of the filter such that it could match the input with the fastest sampling rate: its inertial measurement unit (IMU) containing an accelerometer, a gyroscope and a magnetometer.
 
 The flamewheel f450 is the typical drone in this category. It is surprisingly fast and agile. Given the proper command, it can generate enough thrust to avoid in a very short lapse of time any incoming object.
 
@@ -69,7 +71,7 @@ The flamewheel f450 is the typical drone in this category. It is surprisingly fa
 
 ## Sensor fusion
 
-Sensor fusion is combining of sensory data or data derived from disparate sources such that the resulting information has less uncertainty than would be possible when these sources were used individually. In the context of drones, it is very useful because it enables to combine many unprecise sensor measurement to form a more precise measurement like having precise positionning from 2 less precise GPS (dual GPS setting). It can also permit to combine sensors with different sampling rates: typically precise sensors with low sampling rate and less precise sensors with high sampling rate. Both cases are gonna be relevant here. 
+Sensor fusion is the combination of sensory data or data derived from disparate sources such that the resulting information has less uncertainty than would be possible if these sources were to be used individually. In the context of drones, it is very useful because it enables to combine many unprecise sensor measurement to form a more precisre one like having precise positionning from 2 less precise GPS (dual GPS setting). It can also permit to combine sensors with different sampling rates: typically precise sensors with low sampling rate and less precise sensors with high sampling rate. Both cases are gonna be relevant here. 
 
 A fundamental explanation why this is possible comes from the central limit theorem: one sample from a distribution with a low variance is as good as n sample from a distribution with variance $n$ times higher.
 
@@ -78,14 +80,13 @@ $$\bar{X} = \frac{1}{n}\sum X_i$$
 $$\mathbb{V}(\bar{X}) = \frac{\sigma^2}{n}  ~~~~~ \mathbb{E}(\bar{X}) = \mu$$
 
 
-
 ## Notes on notation and conventions
 
 The referential by default is the fixed world frame.
 
 - $\mathbf{x}$ designates a vector
-- $x_t$ is the random variable of x at time t
-- $x_{t1:t2}$ is the product of the random variable of x between t1 included and t2 included
+- $x_t$ is the random variable x at time t
+- $x_{t1:t2}$ is the product of the random variable x between t1 included and t2 included
 - $x^{(i)}$ designates the random variable x of the arbitrary particle i
 - $\hat{x}$ designates an estimated variable
 
@@ -110,28 +111,31 @@ The algorithm inputs are:
 
 The difficulties with using real flight data is that you need to get the *true* trajectory and that you need enough data to check the efficiency of the filters.
 
-
-To avoid those issues, the flight data is simulated through a model of trajectory generation.  This model as described in [@mueller_computationally_2015], The  motion  primitives  are defined by the quadrocopter’s initial state, the desired motion duration, and   any   combination   of   components   of   the   quadrocopter’s position,  velocity  and  acceleration  at  the  motion’s  end.  Closed form  solutions  for  the  primitives  are  given,  which  minimize  a cost  function  related  to  input  aggressiveness. 
+To avoid those issues, the flight data is simulated through a model of trajectory generation from [@mueller_computationally_2015]. Data generated this way are called synthetic data. The algorithm input are the motion primitives defined by the quadcopter’s initial state, the desired motion duration, and any combination of components of the quadcopter’s position, velocity and acceleration at the motion’s end. The algorithm is essentially a closed form solution for the given primitives. The closed form solution minimizes a cost function related to the input aggressiveness. 
 
 The bulk of the method is that a differential equation representing the difference of position, velocity and acceleration between the starting and ending state is solved with the [Pontryagin’s minimum principle](https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle) using the appropriate [Hamiltonian](https://en.wikipedia.org/wiki/Hamiltonian_(control_theory)).  Then, from that closed form solution, a per-axis cost can be calculated to pick the "least aggressive" trajectory out of different candidates. Finally, the feasibility of the trajectory is computed using the constraints of maximum thrust and body rate (angular velocity) limits.
 
-For the purpose of this work, a scala implementation of the model was realized. Then, some keypoints containing gaussian components for the position, velocity acceleration, and duration were tried until a feasible set of keypoints was found. This method of data generation is both fast and a good enough approximation of the actual trajectories that a drone would perform in the real world. 
+For the purpose of this work, a scala implementation of the model was realized. Then, some keypoints containing Gaussian components for the position, velocity acceleration, and duration were tried until a feasible set of keypoints was found. This method of data generation is both fast and a good enough approximation of the actual trajectories that a drone would perform in the real world. 
 
 <video autoplay loop>
   <source src="flight.webm" type="video/webm">
 </video>
 
-![Visualisation of an example of a synthetic generated flight trajectory](flight.webm){ width=400px }
+![Visualization of an example of a synthetic generated flight trajectory](flight.webm){ width=400px }
 
 ## Quaternion
 
-Quaternions are extensions of complex numbers but with 3 imaginary parts. Unit quaternions can be used to represent orientation, also referred to as attitude. Quaternions algebra make rotation composition simple and quaternions avoid the issue of gimbal lock. In all filters presented, they will be used to represent the attitude.
+Quaternions are extensions of complex numbers with 3 imaginary parts. Unit quaternions can be used to represent orientation, also referred to as attitude. Quaternions algebra make rotation composition simple and quaternions avoid the issue of gimbal lock [^gimbal]. In all filters presented,  quaternions represent the attitude.
 
 $$\mathbf{q} = (q.r, q.i, q.j, q.k)^t = (q.r, \boldsymbol{\varrho})^T$$
 
-Quaternion rotations composition is: $q_2 q_1$ which results in $q_1$ being rotated by the rotation represented by $q_2$. From this, we can deduce that angular velocity integrated over time is simply $q^t$ if $q$ is the local quaternion rotation by unit of time.
+Quaternion rotations composition is: $q_2 q_1$ which results in $q_1$ being rotated by the rotation represented by $q_2$. From this, we can deduce that angular velocity integrated over time is simply $q^t$ if $q$ is the local quaternion rotation by unit of time. The product of two quaternions (also called Hamilton product) is computable by regrouping the same type of imaginary and real components together and accordingly to the identity:
 
-Rotation of a vector by a quaternion is done by: $q v q^*$ where $q$ is the quaternion representing the rotation, $q^*$ its conjugate and $v$ the vector to be rotated.
+$$i^2=j^2=k^2=ijk=-1$$
+
+Rotation of a vector by a quaternion is done by: $q v q^*$ where $q$ is the quaternion representing the rotation, $q^*$ its conjugate and $v$ the vector to be rotated. The conjugate of a quaternion is: 
+
+$$q^* = - \frac{1}{2} (q + iqi + jqj + kqk)$$
 
 The distance of between two quaternions, useful as an error metric is defined by the squared Frobenius norms of attitude matrix differences [@markley_averaging_2007].
 
@@ -161,7 +165,7 @@ We introduce some helper matrices.
 
 ## Model 
 
-The drone is assumed to have rigid-body physics. It is submitted to the gravity and its own inertia. A rigid body is a solid body in which deformation is zero or so small it can be neglected. The distance between any two given points on a rigid body remains constant in time regardless of external forces exerted on it. This enable to summarise the forces from the rotor as a thrust oriented in the direction normal to the plane formed by the 4 rotosrs, and an angular velocity.
+The drone is assumed to have rigid-body physics. It is submitted to the gravity and its own inertia. A rigid body is a solid body in which deformation is zero or so small it can be neglected. The distance between any two given points on a rigid body remains constant in time regardless of external forces exerted on it. This enable to summarize the forces from the rotor as a thrust oriented in the direction normal to the plane formed by the 4 rotors, and an angular velocity.
 
 Those variables are sufficient to describe the evolution of our drone with rigid-body physics:
 
@@ -175,18 +179,18 @@ Those variables are sufficient to describe the evolution of our drone with rigid
 
 The sensors at disposition are:
 
-- **Accelerometer**: It generates $\mathbf{a_A}$ a measurement of the total acceleration in the body frame referrential the drone is submitted to at a **high** sampling rate. If the object is submitted to no acceleration then the accelerometer measure the earth's gravity field from. From that information, it could be possible to retrieve the attitude. Unfortunately, we are in a highly dynamic setting. Thus, it is possible when we can substract the drone's acceleration from the thrust to the total acceleration. This would require to know exactly the force exerced by the rotors at each instant. In this work, we assume that doing that separation, while being theoretically possible, is too impractical.
+- **Accelerometer**: It generates $\mathbf{a_A}$ a measurement of the total acceleration in the body frame referential the drone is submitted to at a **high** sampling rate. If the object is submitted to no acceleration then the accelerometer measure the earth's gravity field from. From that information, it could be possible to retrieve the attitude. Unfortunately, we are in a highly dynamic setting. Thus, it is possible when we can subtract the drone's acceleration from the thrust to the total acceleration. This would require to know exactly the force exerted by the rotors at each instant. In this work, we assume that doing that separation, while being theoretically possible, is too impractical.
 The measurements model is: 
 $$\mathbf{a_A}(t) = \mathbf{R}_{f2b}\{\mathbf{q}(t)\}\mathbf{a}(t) + \mathbf{a_A}^\epsilon$$ where the covariance matrix of the noise of the accelerometer is ${\mathbf{R}_{\mathbf{a_A}}}_{3 \times 3}$ and $$\mathbf{a_A}^\epsilon \sim \mathcal{N}(\mathbf{0}, \mathbf{R}_{\mathbf{a_A}})$$. 
 
-- **Gyroscope**:It generates $\mathbf{\boldsymbol{\omega}_G}$ a measurement of the angular velocity in the body frame of the drone at the last timestep  at a **high** sampling rate. The measurement model is: 
+- **Gyroscope**:It generates $\mathbf{\boldsymbol{\omega}_G}$ a measurement of the angular velocity in the body frame of the drone at the last timestep at a **high** sampling rate. The measurement model is: 
 $$\mathbf{\boldsymbol{\omega}_G}(t) = \boldsymbol{\omega} + \mathbf{\boldsymbol{\omega}_G}^\epsilon$$ where the covariance matrix of the noise of the accelerometer is ${\mathbf{R}_{\mathbf{\boldsymbol{\omega}_G}}}_{3 \times 3}$ and $$\mathbf{\boldsymbol{\omega}_G}^\epsilon_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R}_{\mathbf{\boldsymbol{\omega}_G}})$$.
 
-- **Position**: It generates $\mathbf{p_V}$ a measurement of the current positionat a **low** sampling rate. This is usually provided by a **Vicon** (for indoor), **GPS**, a **Tango** or any other position sensor. 
+- **Position**: It generates $\mathbf{p_V}$ a measurement of the current position at a **low** sampling rate. This is usually provided by a **Vicon** (for indoor), **GPS**, a **Tango** or any other position sensor. 
 The measurement model is: 
 $$\mathbf{p_V}(t) = \mathbf{p}(t) + \mathbf{p_V}^\epsilon$$ where the covariance matrix of the noise of the position is ${\mathbf{R}_{\mathbf{p_V}}}_{3 \times 3}$ and $$\mathbf{p_V}^\epsilon \sim \mathcal{N}(\mathbf{0}, \mathbf{R}_{\mathbf{p_V}})$$. 
 
-- **Attitude**: It generates $\mathbf{q_V}$ a measurement of the current attitute. This is usually provided in addition to the position by a **Vicon** or a **Tango** at a **low** sampling rate or the **Magnemoter** at a **high** sampling rate if the environment permit it (no high magnetic interference nearby like iron contamination). The magnetometer retrieve the attitude by assuming that the sensed magnetic field corresponds to the earth's magnetic field.
+- **Attitude**: It generates $\mathbf{q_V}$ a measurement of the current attitute. This is usually provided in addition to the position by a **Vicon** or a **Tango** at a **low** sampling rate or the **Magnemoter** at a **high** sampling rate if the environment permit it (no high magnetic interference nearby like iron contamination). The magnetometer retrieves the attitude by assuming that the sensed magnetic field corresponds to the earth's magnetic field.
 The measurement model is: 
 $$\mathbf{q_V}(t) = \mathbf{q}(t)*R2Q(\mathbf{q_V}^\epsilon)$$ where the $3 \times 3$ covariance matrix of the noise of the attitude in radian before being converted by $R2Q$ is ${\mathbf{R}_{\mathbf{q_V}}}_{3 \times 3}$ and $$\mathbf{q_V}^\epsilon \sim \mathcal{N}(\mathbf{0}, \mathbf{R}_{\mathbf{q_V}})$$. 
 
@@ -216,10 +220,10 @@ Some sensors are more relevant indoor and some others outdoor:
 
 We assume that since the biases of the sensor could be known prior to the flight, the sensor have been calibrated and output measurements with no bias. Some filters like the [ekf2](https://dev.px4.io/en/tutorials/tuning_the_ecl_ekf.html) of the px4 flight stack keep track of the sensor biases but this is a state augmentation that was not deemed worthwhile.
 
-### Control inputs 
+## Control inputs 
 
 Observations from the control input are not strictly speaking measurements but input of the state-transition model.
-The IMU is a sensor, thus stricly speaking, its measurements are not control inputs. However, in the literature, it is standard to use its measurements as control inputs. One of the advantage is that the accelerometer measures acceleration and angular velocity, raw values close from the input we need in our state-transition. If we used a transformation of the thrust sent as command to the rotors, we would have to account for the rotors unprecision, the wind and other disturbances. Another advantage is that since the IMU has very high sampling rate, we can update very frequently the state with new transitions. The drawback is that the accelerometer is noisy. Fortunately, we can take into account the noise as a process model noise.
+The IMU is a sensor, thus strictly speaking, its measurements are not control inputs. However, in the literature, it is standard to use its measurements as control inputs. One of the advantage is that the accelerometer measures acceleration and angular velocity, raw values close from the input we need in our state-transition. If we used a transformation of the thrust sent as command to the rotors, we would have to account for the rotors imprecision, the wind and other disturbances. Another advantage is that since the IMU has very high sampling rate, we can update very frequently the state with new transitions. The drawback is that the accelerometer is noisy. Fortunately, we can take into account the noise as a process model noise.
 
 The control inputs at disposition are:
 
@@ -227,7 +231,7 @@ The control inputs at disposition are:
 - **Angular velocity**: $\mathbf{\boldsymbol{\omega}_G}_t$ from the gyroscope.
 
 
-### Model dynamic
+## Model dynamic
 
 - $\mathbf{a}(t+1) = \mathbf{R}_{b2f}\{\mathbf{q}(t+1)\}(\mathbf{a_A}_t + \mathbf{a_A}^\epsilon_t)$ where $\mathbf{a}^\epsilon_t \sim \mathcal{N}(\mathbf{0}, \mathbf{Q}_{\mathbf{a}_t })$
 - $\mathbf{v}(t+1) = \mathbf{v}(t) + \Delta t \mathbf{a}(t) + \mathbf{v}^\epsilon_t$ where $\mathbf{v}^\epsilon_t \sim \mathcal{N}(\mathbf{0}, \mathbf{Q}_{\mathbf{v}_t })$
@@ -245,7 +249,7 @@ States contain variables that enable us to keep track of some of those hidden va
 
 ## Observation
 
-Observations are revealed variables conditionned under the variables of our dynamic model. Our ultimate goal is to deduce the states from the observations. 
+Observations are revealed variables conditioned under the variables of our dynamic model. Our ultimate goal is to deduce the states from the observations. 
 
 Observations contain the control input $\mathbf{u}$ and the measurements $\mathbf{z}$.
 
@@ -269,11 +273,11 @@ $k$ is a contant and the first observation is $y_1$
 
 ## Complementary Filter
 
-The complementary filter is the simplest of all filter and very common to retrieve the attitude because of its low computational complexity. The gyroscope and accelerometer both provide a measurement that can help us to estimate the attitude. The gyroscope indeed gives us a noisy measurement of the angular velocity from which we can retrieve the new attitude from the past one by time integration: $\mathbf{q}_t = \mathbf{q}_{t-1}*R2Q(\Delta t \mathbf{\omega})$.
+The complementary filter is the simplest of all filter and commonly used to retrieve the attitude because of its low computational complexity. The gyroscope and accelerometer both provide a measurement that can help us to estimate the attitude. Indeed, the gyroscope reads noisy measurement of the angular velocity from which we can retrieve the new attitude from the past one by time integration: $\mathbf{q}_t = \mathbf{q}_{t-1}*R2Q(\Delta t \mathbf{\omega})$.
 
-This is commonly called "Dead reckoning"[^ded] and is prone to accumulation error, referred as drift. Indeed, like brownian motions, even if the process is unbiased, the variance grows with time. Reducing the noise cannot solve the issue entirely: even with extremely precise instruments, you are subject to floating point errors.
+This is commonly called "Dead reckoning"[^ded] and is prone to accumulation error, referred as drift. Indeed, like Brownian motions, even if the process is unbiased, the variance grows with time. Reducing the noise cannot solve the issue entirely: even with extremely precise instruments, you are subject to floating-point errors.
 
-Fortunately, even though the accelerometer gives us a highly noisy (vibrations, wind, etc ... ) measurement of the orientation, it is not subject to drift because it does not rely on accumulation. Indeed, if not subject to other accelerations, the accelerometer measures the gravity field orientation. Since this field is oriented toward earth, it is possible to retrieve the current rotation from that field and by extension the attitude. However, in the case of a drone, it is subject to continuous and signifiant acceleration and vibration. Hence, the assumption that we retrieve the gravity field directly is wrong. Nevertheless, We could solve this by substracting the acceleration deduced from the thrust control input. It is unpractical so this approach is not pursued in this work, but understanding this filter is still useful.
+Fortunately, even though the accelerometer gives us a highly noisy (vibrations, wind, etc ... ) measurement of the orientation, it is not subject to drift because it does not rely on accumulation. Indeed, if not subject to other accelerations, the accelerometer measures the gravity field orientation. Since this field is oriented toward earth, it is possible to retrieve the current rotation from that field and by extension the attitude. However, in the case of a drone, it is subject to continuous and significant acceleration and vibration. Hence, the assumption that we retrieve the gravity field directly is wrong. Nevertheless, We could solve this by subtracting the acceleration deduced from the thrust control input. It is unpractical so this approach is not pursued in this work, but understanding this filter is still useful.
 
 The idea of the filter itself is to combine the precise "short-term" measurements of the gyroscope subject to drift with the "long-term" measurements of the accelerometer. 
 
@@ -318,9 +322,9 @@ We can observe here the long-term importance of being able to correct the drift,
 
 ## Asynchronous Augmented Complementary Filter
 
-As explained previously, in this highly-dynamic setting, combining the gyroscope and the accelerometer to retrieve the attitude is not satisfactory. However, we can reuse the intuition from the complementary filter, which is to combine precise but drifting short-term measurements to other measurements that do not suffer from drift. This enable a simple and computionally inexpensive novel filter that we will be able to use later as a baseline. In this case, the short-term measurements are the acceleration and angular velocity from the IMU, and the non drifting measurements come from the Vicon. 
+As explained previously, in this highly-dynamic setting, combining the gyroscope and the accelerometer to retrieve the attitude is not satisfactory. However, we can reuse the intuition from the complementary filter, which is to combine precise but drifting short-term measurements to other measurements that do not suffer from drift. This enable a simple and computationally inexpensive novel filter that we will be able to use later as a baseline. In this case, the short-term measurements are the acceleration and angular velocity from the IMU, and the non drifting measurements come from the Vicon. 
 
-We will also add the property that the data from the sensors are asynchronous. This is a consequence of the sensors having different sampling rate. 
+We will also add the property that the data from the sensors are asynchronous. As with all following filters, we deal with asynchronicity by updating the state to the most likely state so far for any new sensor measurement incoming. This is a consequence of the sensors having different sampling rate. 
 
 * **IMU** update
 $$\mathbf{v}_t = \mathbf{v}_{t-1} + \Delta t_v \mathbf{a_A}_t$$
@@ -416,32 +420,32 @@ By keeping track of the uncertainty, we can optimally combine the normals by kno
 
 ## Asynchronous Kalman Filter
 
-It is not necessary to apply the full kalman update at each measurement. Indeed, $\mathbf{H}$ can be sliced to correspond to the measurements currently available.
+It is not necessary to apply the full Kalman update at each measurement. Indeed, $\mathbf{H}$ can be sliced to correspond to the measurements currently available.
 
 To be truly asynchronous, you also have to account for the different sampling rates. There is two cases :
 
 * The required data for the update step (the control inputs) can arrive multiple time before any of the data of the update step (the measurements) occur. 
 * Inversely, it is possible that the measurements occur at a higher sampling rate than the control inputs.
 
-The strategy chosen here is as follow:
+The strategy chosen here is as follows:
 
 1. Multiple prediction steps without any update step may happen without making the algorithm inconsistent. 
-2. An update is **always** immediatly preceded by a prediction step. This is a consequence of the requirement that the innovation must measure the difference between the predicted measurement from the state at the exact current time and the measurements. Thus, if the measurements are not synchronised with the control inputs, use the most likely control input for the prediction step, which might result in simply repeating them. Repeating the last control input was the method used for the accelerometer and the gyroscope data as control input.
+2. An update is **always** immediately preceded by a prediction step. This is a consequence of the requirement that the innovation must measure the difference between the predicted measurement from the state at the exact current time and the measurements. Thus, if the measurements are not synchronized with the control inputs, use the most likely control input for the prediction step. Repeating the last control input was the method used for the accelerometer and the gyroscope data as control input.
 
 
 ## Extended Kalman Filters
 
 
-In the previous section, we have shown that the Kalman Filter is only applicable when both the process model and the measurement model are linear gaussian process. This has two aspects:
+In the previous section, we have shown that the Kalman Filter is only applicable when both the process model and the measurement model are linear Gaussian process. 
 
-* The noise of the measurements and of the state-transition must be gaussian 
+* The noise of the measurements and of the state-transition must be Gaussian 
 * The state-transition function and the measurement to state function must be linear.
 
-Furthermore, it is provable that kalman filters are optimal linear filters. 
+Furthermore, it is provable that Kalman filters are optimal linear filters. 
 
-However, in our context, one component of the state, the attitude, is intrisically non-linear. Indeed, rotations and attitudes belong to $SO(3)$ which is not a vector space. Therefore, we cannot use *vanilla* kalman filters. The filters that we present thereafter relax those requirements.
+However, in our context, one component of the state, the attitude, is intrinsically non-linear. Indeed, rotations and attitudes belong to $SO(3)$ which is not a vector space. Therefore, we cannot use *vanilla* Kalman filters. The filters that we present thereafter relax those requirements.
 
-One example of such extension is the extended kalman filter (EKF) that we will present here. The EKF relax the linearity requirement by using differentiation tocalculate an approximation of the first order of the required linear functions. Our state transition function and measurement function can now be expressed in the free forms $f(\mathbf{x}_t)$ and $h(\mathbf{x}_t)$ and we define the matrix $\mathbf{F}_t$ and $\mathbf{H}_t$ as their jacobian.
+One example of such extension is the extended Kalman filter (EKF) that we will present here. The EKF relax the linearity requirement by using differentiation to calculate an approximation of the first order of the required linear functions. Our state transition function and measurement function can now be expressed in the free forms $f(\mathbf{x}_t)$ and $h(\mathbf{x}_t)$ and we define the matrix $\mathbf{F}_t$ and $\mathbf{H}_t$ as their Jacobian.
 
 
 $${\mathbf{F}_t}_{10 \times 10} = \left . \frac{\partial f}{\partial \mathbf{x} } \right \vert _{\hat{\mathbf{x}}_{t-1},\mathbf{u}_{t-1}}$$
@@ -462,7 +466,7 @@ $${\mathbf{H}_t}_{7 \times 7} = \left . \frac{\partial h}{\partial \mathbf{x} } 
 
 ### EKF for POSE
 
-#### State 
+### State 
 
 For the EKF, we are gonna use the following state:
 
@@ -470,7 +474,7 @@ $$\mathbf{x}_t = (\mathbf{v}_t, \mathbf{p}_t, \mathbf{q}_t)^T$$
 
 Initial state $\mathbf{x}_0$ at $(\mathbf{0}, \mathbf{0}, (1, 0, 0, 0))$
 
-#### Indoor Measurements model
+### Indoor Measurements model
 
 1. Position: 
 $$\mathbf{p_V}(t) = \mathbf{p}(t)^{(i)} + \mathbf{p_V}^\epsilon_t$$ where $\mathbf{p_V}^\epsilon_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R}_{\mathbf{p_V}_t })$
@@ -478,7 +482,7 @@ $$\mathbf{p_V}(t) = \mathbf{p}(t)^{(i)} + \mathbf{p_V}^\epsilon_t$$ where $\math
 $$\mathbf{q_V}(t) = \mathbf{q}(t)^{(i)}*R2Q(\mathbf{q_V}^\epsilon_t)$$ where $\mathbf{q_V}^\epsilon_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R}_{\mathbf{q_V}_t })$
 
 
-#### Kalman prediction
+### Kalman prediction
 
 The model dynamic defines the following model, state-transition function $f(\mathbf{x}, \mathbf{u})$ and process noise $\mathbf{w}$ with covariance matrix $\mathbf{Q}$
 
@@ -500,7 +504,7 @@ $$\hat{\mathbf{x}}^{-(i)}_t = f(\mathbf{x}^{(i)}_{t-1}, \mathbf{u}_t)$$
 $$\mathbf{\Sigma}^{-(i)}_t = \mathbf{F}_{t-1} \mathbf{\Sigma}^{-(i)}_{t-1}  \mathbf{F}_{t-1}^T + \mathbf{Q}_t$$
 
 
-#### Kalman measurements update
+### Kalman measurements update
 
 $$\mathbf{z}_t = h(\mathbf{x}_t) + \mathbf{v}_t$$
 
@@ -534,15 +538,15 @@ $\mathbf{R}'_{\mathbf{q_V}}$ has to be $4 \times 4$ and has to represent the cov
 
 We transform this rotation vector into a quaternion using our function $R2Q$. We can compute the new covariance matrix $\mathbf{R}'_{\mathbf{q_V}}$ using Unscented Transform.
 
-#### Unscented Transform
+### Unscented Transform
 
 The unscented transform (UT) is a mathematical function used to estimate statistics after applying a given nonlinear transformation to a probability distribution. The idea is to use points that are representative of the original distribution, sigma points. We apply the transformation to those sigma points and calculate the new statistics using the transformed sigma points. The sigma points must have the same mean and covariance than the original distribution.  
 
-The minimal set of symmetric sigma points can be found using the covariance of the initial distribution. The $2N + 1$ minimal symmetric set of sigma points are the mean and the set of points corresponding to the mean plus and minus one of the direction corresponding to the covariance matrix. In one dimension, the square root of the variance is enough. In N-dimension, you must use the cholesky decomposition of the covariance matrix. The cholesky decomposition find the matrix $L$ such that $\Sigma = LL^t$.
+The minimal set of symmetric sigma points can be found using the covariance of the initial distribution. The $2N + 1$ minimal symmetric set of sigma points are the mean and the set of points corresponding to the mean plus and minus one of the direction corresponding to the covariance matrix. In one dimension, the square root of the variance is enough. In N-dimension, you must use the Cholesky decomposition of the covariance matrix. The Cholesky decomposition find the matrix $L$ such that $\Sigma = LL^t$.
 
-![Unscented tranform](unscented.jpg)
+![Unscented tranformation](unscented.jpg)
 
-#### Kalman update
+### Kalman update
 
 $$\mathbf{S} = \mathbf{H}_t \mathbf{\Sigma}^{-}_t \mathbf{H}_t^T + \mathbf{R}_t$$
 $$\hat{\mathbf{z}} = h(\hat{\mathbf{x}}^{-}_t)$$
@@ -551,7 +555,7 @@ $$\mathbf{\Sigma}_t = \mathbf{\Sigma}^-_t + \mathbf{K} \mathbf{S} \mathbf{K}^T$$
 $$\hat{\mathbf{x}}_t = \hat{\mathbf{x}}^{-}_t + \mathbf{K}(\mathbf{z}_t - \hat{\mathbf{z}})$$
 
 
-## F partial derivatives 
+### F partial derivatives 
 
 ```python
 Q.<i,j,k> = QuaternionAlgebra(SR, -1, -1)
@@ -589,11 +593,11 @@ The EKF has 3 flaws in our case:
 
 - The linearization gives an approximate form which result in approximation errors
 - The prediction step of the EKF assume that the linearized form of the transformation can capture all the information needed to apply the transformation to the gaussian distribution pre-transformation. Unfortunately, this is only true near the region of the mean. The transformation of the tail of the gaussian distribution may need to be very different.
-- It attempts to define a gaussian covariance matrix for the attitude quaternion. This does not make sense because it does not account for the requirement of the quaternion being in a 4 dimensional unit sphere.
+- It attempts to define a Gaussian covariance matrix for the attitude quaternion. This does not make sense because it does not account for the requirement of the quaternion being in a 4 dimensional unit sphere.
 
-The Unscented Kalman Filter (UKF) does not suffer from the two first flaws, but it is more computationally expensive as it requires a cholesky factorisation that grows exponentially in complexity with the number of dimensions.
+The Unscented Kalman Filter (UKF) does not suffer from the two first flaws, but it is more computationally expensive as it requires a Cholesky factorisation that grows exponentially in complexity with the number of dimensions.
 
-Indeed, the UKF applies an unscented transformation to sigma points of the current approximated distribution. The statistics of the new approximated gaussian are found through this unscented transform. The EKF linearizes the transformation, the UKF approximates the resulting gaussian after the transformation. Hence, the UKF can take into account the effects of the transformation away from the mean which might be drastically different.
+Indeed, the UKF applies an unscented transformation to sigma points of the current approximated distribution. The statistics of the new approximated Gaussian are found through this unscented transform. The EKF linearizes the transformation, the UKF approximates the resulting Gaussian after the transformation. Hence, the UKF can take into account the effects of the transformation away from the mean which might be drastically different.
 
 The implementation of an UKF still suffer greatly from quaternion not belonging to a vector space. The approach taken by [@edgar_quaternion-based_nodate] is to use the error quaternion defined by $\mathbf{e}_i = \mathbf{q}_i\bar{\mathbf{q}}$. This approach has the benefit that similar quaternion differences result in similar error. But apart from that, it does not have any profound justification. We must compute a sound average weighted quaternion of all sigma points. An algorithm is described in the following section.
 
@@ -620,7 +624,7 @@ Particle filters are computationaly expensive. This is the reason why their usag
 
 Particle filters are sequential monte carlo methods. Like all monte carlo method, they rely on repeated sampling for estimation of a distribution. 
 
-![Monte carlo estimation of pi](mc.gif)
+![Monte Carlo estimation of pi](mc.gif)
 
 The particle filter itself a weighted particle representation of the posterior:
 
@@ -711,11 +715,11 @@ Sample $U_1 \sim \mathcal{U} [0, \frac{1}{N} ]$ and define $U_i = U_1 + \frac{i-
 
 ### Introduction
 
-Compared to a plain particle filter, RPBF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RPBF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RPBF can be seen as the "average" of many gaussians.
+Compared to a plain particle filter, RPBF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RPBF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RPBF can be seen as the "average" of many Gaussians. Each particle is an optimal kalman filter conditioned on the particle's latent variable, the attitude.
 
-Indeed, the benefit of particle filters is that they assume no particular form for the posterior distribution and transformation of the state. But as the state widens in dimensions, the number of needed particles to keep a good estimation grows exponentially. This is a consequence of ["the curse of dimensionality"}(https://en.wikipedia.org/wiki/Curse_of_dimensionality) and is quite intuitive: for each dimension, we must now consider all additional combination of state. In our context, we have 10 dimensions ($\mathbf{v}$,$\mathbf{p}$,$\mathbf{q}$) and it would be very computationally expensive to simulate a too large number of particles. 
+Indeed, the benefit of particle filters is that they assume no particular form for the posterior distribution and transformation of the state. But as the state widens in dimensions, the number of needed particles to keep a good estimation grows exponentially. This is a consequence of ["the curse of dimensionality"}(https://en.wikipedia.org/wiki/Curse_of_dimensionality): for each dimension, we would have to consider all additional combinations of state. In our context, we have 10 dimensions ($\mathbf{v}$,$\mathbf{p}$,$\mathbf{q}$) and it would be very computationally expensive to simulate a too large number of particles. 
 
-Kalman filters on the other hand do not suffer from such exponential growth, but as explained previously, they are inadequate for non-linear transformation. RPBF is the best of both world by combining a particle filter for the non-linear components of the state (the attitude) as a latent variable, and kalman filters for the linear components of the state (velocity and position). Each individual particle has now both a linear state $\mathbf{x}$ and a latent variable $\boldsymbol{\theta}$. For ease of notation, the linear state as designated by $x_t$ will be referred to as the state even though the actual state we are concerned with should include the latent variable.
+Kalman filters on the other hand do not suffer from such exponential growth, but as explained previously, they are inadequate for non-linear transformations. RPBF is the best of both world by combining a particle filter for the non-linear components of the state (the attitude) as a latent variable, and Kalman filters for the linear components of the state (velocity and position). For ease of notation, the linear component of the state will be referred to as the state and designated by $\mathbf{x}$  even though the actual state we are concerned with should include the latent variable $\boldsymbol{\theta}$.
 
 ### Related work 
 
@@ -765,9 +769,9 @@ $$\mathbf{q}^{(i)}_{t+1} = \mathbf{q}^{(i)}_t*R2Q({\Delta t} (\mathbf{\boldsymbo
 
 $\mathbf{\boldsymbol{\omega}_G}^\epsilon_t$ represents the error from the control input and is sampled from $\mathbf{\boldsymbol{\omega}_G}^\epsilon_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R}_{\mathbf{\boldsymbol{\omega}_G}_t })$
 
-Initial attitude $\mathbf{q_0}$ is sampled such that the drone pitch and roll are none (parralel to the ground) but the yaw is unknown and uniformly distributed.
+Initial attitude $\mathbf{q_0}$ is sampled such that the drone pitch and roll are none (parallel to the ground) but the yaw is unknown and uniformly distributed.
 
-Note that $\mathbf{q}(t+1)$ is known in the [model dynamic](#model-dynamic) because the model is conditionned under $\boldsymbol{\theta}^{(i)}_{t+1}$.
+Note that $\mathbf{q}(t+1)$ is known in the [model dynamic](#model-dynamic) because the model is conditioned under $\boldsymbol{\theta}^{(i)}_{t+1}$.
 
 ### Indoor Measurement model
 
@@ -840,10 +844,10 @@ Our measurements might have different sampling rate so instead of doing full kal
 For indoor, there is only one kind of sensor for the Kalman update: $\mathbf{p_V}$
 
 
-### Attitude reweighting
+### Attitude re-weighting
 
 In the [measurement model](
-#measurements-model), the attitude defines another reweighting for importance sampling.
+#measurements-model), the attitude defines another re-weighting for importance sampling.
 
 $$p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1}) = \mathcal{N}(Q2R({\mathbf{q}^{(i)}}^{-1}\mathbf{q_V}_t);~ 0 ,~ \mathbf{R}_{\mathbf{q_V}})$$
 
@@ -867,7 +871,7 @@ $$p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1}) = \mat
 			   $$\mathbf{x}^{(i)}_t = \mathbf{H}_t\{\boldsymbol{\theta}^{(i)}_t\} \mathbf{x}^{(i)}_{t-1} + \mathbf{K}(\mathbf{p_V}_t - \hat{\mathbf{z}})$$
 			   $$p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1}) = \mathcal{N}(\mathbf{q_V}_t; \mathbf{q}^{(i)}_t,~ \mathbf{R}_{\mathbf{q_V}_t } )\mathcal{N}(\mathbf{p_V}_t; \hat{\mathbf{z}}_t, \mathbf{S})$$
 		   - **Other sensors (Outdoor)**:
-		   As for **Vicon** but use the corresponding partial kalman update
+		   As for **Vicon** but use the corresponding partial Kalman update
 		   
       3. Update $w^{(i)}_t$: $w^{(i)}_t = p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1}) w^{(i)}_{t-1}$	  
   - Normalize all $w^{(i)}$ by scalaing by $1/(\sum w^{(i)})$ such that $\sum w^{(i)}= 1$
@@ -879,9 +883,9 @@ $$p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1}) = \mat
 As highlighted in the Algorithm summary, the RPBF if easily extensible to other sensors. Indeed, measurements are either: 
 
 - giving information about position or velocity and their update is similar to the vicon position update as a kalman partial update
-- giving information about the orientation and their update is similar to the vicon attitude update as a pure importance sampling reweighting.
+- giving information about the orientation and their update is similar to the vicon attitude update as a pure importance sampling re-weighting.
 
-As a proof-of-conceptalternative Rao-blackwellized particle filter specialized for outdoor has been developped that integrates the following sensors:
+As a proof-of-conceptalternative Rao-blackwellized particle filter specialized for outdoor has been developed that integrates the following sensors:
 
 - IMU with accelerometer, gyroscope **and magnetometer**
 - Altimeter
@@ -896,9 +900,9 @@ where $t2 = t1 + \Delta t$, $\mathbf{p}_{t2}$ is the latest kalman prediction an
 
 ## Results
 
-We present a comparison of the 4 filters in 6 settings. The metrics is the RMSE of the l2-norm of the position and of the Froebius norm of the attitude as described previously. All of the filters share a sampling frequency of **200Hz** for the IMU and **4Hz** for the Vicon. The RBPF is set to **1000** particles
+We present a comparison of the 4 filters in 6 settings. The metrics is the RMSE of the l2-norm of the position and of the Froebius norm of the attitude as described previously. All the filters share a sampling frequency of **200Hz** for the IMU and **4Hz** for the Vicon. The RBPF is set to **1000** particles
 
-In all scenarios, the covariance matrices of the sensors measurement are diagonal:
+In all scenarios, the covariance matrices of the sensors' measurements are diagonal:
 
 - $\mathbf{R}_{\mathbf{a_A}} = \sigma^2_{\mathbf{\mathbf{a_A}}} \mathbf{I}_{3 \times 3}$
 - $\mathbf{R}_{\mathbf{\boldsymbol{\omega}_G}} = \sigma^2_{\mathbf{\boldsymbol{\omega}_G}} \mathbf{I}_{3 \times 3}$
@@ -969,11 +973,17 @@ Figure 1.14 is the plot of the tracking of the position (x, y, z) and attitute (
 
 ## Conclusion			 
 									  
-The Rao-Blackwellized Particle Filter developped is more accurate than the alternatives, mathematically sound and computationaly feasible. When implemented on hardware, this filter can be executed in real time with sensors of high sampling rate, this filter could improve POSE estimation for all the existing drone and other robots. These improvements could unlock new abilities and increase the safeness of drone.
+The Rao-Blackwellized Particle Filter developed is more accurate than the alternatives, mathematically sound and computationally feasible. When implemented on hardware, this filter can be executed in real time with sensors of high and asynchronous sampling rate. It could improve POSE estimation for all the existing drone and other robots. These improvements could unlock new abilities, potentials and increase the safeness of drone.
 
-[^ded]: The etymology for "Dead reckoning" comes from the mariners of the XVIIth century that used to calculate the position of the vessel with log book. The interpretation of "dead" is subject to debate. Some argue that it is a mispelling of "ded" as in "deduced". Others argue that it should be read by its old meaning: *absolute*.
+[^ded]: The etymology for "Dead reckoning" comes from the mariners of the XVIIth century that used to calculate the position of the vessel with log book. The interpretation of "dead" is subject to debate. Some argue that it is a misspelling of "ded" as in "deduced". Others argue that it should be read by its old meaning: *absolute*.
 
 [^moore]: The observation that the number of transistors in a dense integrated circuit doubles approximately every two years.
+
+[^embarpar]: An embarrassingly parallel task is one where little or no effort is needed to separate the problem into a number of parallel tasks. This is often the case where there is little or no dependency or need for communication between those parallel tasks, or for results between them.
+
+[^gimbal]: Gimbal lock is the loss of one degree of freedom in a three-dimensional, three-gimbal mechanism that occurs when the axes of two of the three gimbals are driven into a parallel configuration, "locking" the system into rotation in a degenerate two-dimensional space. 
+<!--  LocalWords:  moore nm moorelaw hwsf png
+ -->
 
 
 ## References

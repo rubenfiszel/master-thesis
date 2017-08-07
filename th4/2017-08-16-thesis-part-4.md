@@ -15,9 +15,68 @@ This part is about the spatial implementation of the asynchronous Rao-Blackwelli
 
 # Spatial implementation of an asynchronous Rao-Blackwellized Particle Filter
 
-## Spatial
+### Parallel patterns
 
-alea jacta est
+Parallel patterns ....
+
+**TODO**
+
+### Controls flows 
+
+Control flows (or flow of control) is the order in which individual statements, instructions or function calls of an imperative program are executed or evaluated.
+Sequential
+Parallel
+Pipeline:
+	Inner Pipe: Basic form of pipelining; Pipelining of primitive instructions.
+	Coarse-Grain: Pipelining of parralel patterns
+	Stream Pipe: ASAP with FIFOs stack or Streams: Stream(*)
+	
+**TODO**	
+
+## Memories
+
+
++-------+-----------------+-----+
+|On-Chip|`FIFO[T](depth)`     |     |
++-------+-----------------+-----+
+|On-Chip|                 |     |
++-------+-----------------+-----+
+|On-Chip|                 |     |
++-------+-----------------+-----+
+|On-Chip|                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+|       |                 |     |
++-------+-----------------+-----+
+
+
+## Numeric types
+
+## A matrix library as stdlib
+
+
+## Mini Particle Filter
+
+
+## Rao Blackwellized Particle Filter
+
 
 # Conclusion {-}
 
