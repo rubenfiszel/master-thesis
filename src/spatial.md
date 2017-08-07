@@ -18,6 +18,10 @@ Pipeline:
 	
 **TODO**	
 
+## Memories
+
+## Numeric types
+
 ## A matrix library as stdlib
 
 

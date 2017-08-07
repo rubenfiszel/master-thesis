@@ -12,7 +12,7 @@ An Hardware Description Language (HDL) is used to describe the circuits on which
 
 Spatial is an (HDL) born out of the difficulties and complexity of doing Hardware. An HDL compiles to RTL which is equivalent to assembly in the software world and then the RTL is synthesized as Hardware (either as ASIC or as a bitstream reconfiguration data). The current alternatives available are Verilog, VHDL, Chisel and many others. What set apart Spatial from the crowd is that Spatial has a higher level of abstraction by leveraging parallel patterns and abstracting control flows as language constructs. Parallel patterns and control flows are detailed in Part IV.
 
-Spatial is both a language and a compiler. The Spatial language is embedded in scala as a domain specific language (DSL). The compiler is defined as Argon traversals, transformers and codegens.
+Spatial is at the same time a language, an Intermediate Representation (IR)  and a compiler. The Spatial language is embedded in scala as a domain specific language (DSL). The compiler is defined as Argon traversals, transformers and codegens and referred to as "the staging compiler".
 
 ## Argon
 
@@ -20,10 +20,16 @@ Spatial is built on top of Argon, a fork of Lightweight Modular Staging (LMS). A
 
 Using Argon, language designers can specify a DSL and write their custom compiler for it:
 
-- **two-staged**: There is only a single meta-stage and a single object-stage. The idea behind Argon is that the meta-program is constructing an Intermediate Representation (IR) programmatically in Scala through the frontend DSL, transform that IR and finally codegen the object program. All of this happening at runtime.
+- **two-staged**: There is only a single meta-stage and a single object-stage. The idea behind Argon is that the meta-program is constructing an IR programmatically in Scala through the frontend DSL, transform that IR and finally codegen the object program. All of this happening at runtime.
 - **heterogenous**: The meta-program is in Scala but the generated meta-program does not have to be in Scala as well. For instance, for FPGA, the target language is Chisel.
-- **typed**: The DSL is typed which ensure that Scala can typecheck the construction of the IR. Furthermore, the IR is itself typed. The IR being typed ensure that the DSL author write sound DSL.
+- **typed**: The DSL is typed which ensure that Scala can typecheck the construction of the IR. Furthermore, the IR is itself typed. The IR being typed ensure that language authors write sound DSL, IR and DSL to IR transformations.
 - **automatic staging annotations**: The staging annotations are part of the frontend DSL. Implicit conversions exists from unstaged type to staged types. The staging annotations exists under the form of typeclass instances and inheritance.
+
+## Staged type
+
+A staged type is a type that belongs to the specified DSL and has a staging annotation. Only instances of a staged type will be transformed into the initial IR.
+
+**TODO**
 
 Indeed, for a type to be considered a staged type, it must inherit from `MetaAny` and have an existing typeclass instance of `Type`. The justification behind the dual proof of membership is that the `Type` view bound is more elegant to constrain on in most cases, but suffer from the fact that it is impossible to specialize method such that they treat differently staged and unstaged types. Only inheritance ensure correct dispatching of methods according to whether the argument is staged or not. Implementing the typeclass and dual proof of membership was among our contribution to argon.
 
@@ -66,24 +72,78 @@ Attempt2.equal(Staged(), Staged())
 
 ![Example of inheritance solving correct dispatching](empty.jpg)
 
-## Argon meta-program flow
+## IR
+
+The IR in argon is a "sea-of-nodes" representation of the object-program while it is going through the different passes of the staging compiler. The IR nodes are leaves of the Exp tree. The Exp tree leaves are:
+
+**TODO**
+
+- A
+- B
+- C
+
+```mermaid
+graph TD
+	Exp
+	Dyn
+	Bound
+	Sym
+	Const
+	Param
+	Exp-->Dyn
+	Dyn-->Bound
+	Dyn-->Sym
+	Exp-->Const
+	Const-->Param
+```
+
+## Transformer and traversal
+
+**TODO**
+
+## Meta-expansion
+
+Since the DSL are embedded in Scala, it is possible to use the scala language as a meta-programming tool.
+
+**TODO**
+
+## Codegen
+
+After the IR has been transformed through all the passes, it is sufficiently processed to go directly through the codegen. The codegen is a traversal
+
+**TODO**
+
+
+## Argon staged programming flow
 
 ```mermaid
 graph LR
-    prog(Program)
-	AST
-	subgraph compiler
-	IR
-	passes
-	codegen
+	subgraph scala Compile Time: 1st stage
+    prog(Meta-Program)
+	scalac
 	end
-	target
-	prog-->AST
-	AST-->IR
-	IR==>passes
-	passes-->IR
-	passes-->codegen
+	subgraph scala Runtime: 2nd stage
+    exec(Executable <br/>Meta-Program)
+	expanded(expanded <br/>DSL nodes)
+	OIR(raw IR)
+	subgraph passes
+	transformer
+	IR(IR)
+	end
+	codegen
+	target(Object <br/>Program)
+	end
+	prog-->scalac
+	scalac-->exec
+	exec-->|meta <br/>-expansion|expanded
+	expanded-->|staging|OIR
+	OIR-->transformer
+	IR-->transformer
+	transformer-->IR
+	IR-->codegen
 	codegen-->target
+    classDef elem fill:#ccf;	
+	class prog,exec,expanded,OIR,IR,target elem
 ```
 
 ## Simulation in Spatial
@@ -94,4 +154,78 @@ Building an interpreter for Spatial was a requirement for having a spatial integ
 
 ## Interpreter
 
-- **runtime generator**:
+A compiler ...
+
+An interpreter ...
+
+Here, the interpreter is implemented as an alternative to codegen
+
+```mermaid
+graph LR
+	subgraph scala Compile Time: 1st stage
+    prog(Meta-Program)
+	scalac
+	end
+	subgraph scala Runtime: 2nd stage
+    exec(Executable <br/>Meta-Program)
+	expanded(expanded <br/>DSL nodes)
+	OIR(raw IR)
+	subgraph passes
+	transformer
+	IR(IR)
+	end
+	interpreter
+	end
+	prog-->scalac
+	scalac-->exec
+	exec-->|meta <br/>-expansion|expanded
+	expanded-->|staging|OIR
+	OIR-->transformer
+	IR-->transformer
+	transformer-->IR
+	IR-->interpreter
+    classDef elem fill:#ccf;	
+	class prog,exec,expanded,OIR,IR elem
+```
+
+
+The largest benefit of this approach is that the interpreter sees an IR that has already been processed and can mirror more closely what would the generated code do. If one of the pass fails or throw an error, then running the interpreter will also show that error.
+
+The currently implemented modules of the Spatial IR for the interpreter are:
+
+- `Controllers  `
+- `FileIOs		`
+- `Debuggings	`
+- `HostTransfers`
+- `Regs			`
+- `Strings		`
+- `FixPts		`
+- `FltPts		`
+- `Arrays		`
+- `Streams		`
+- `Structs		`
+- `SRAMs		`
+- `DRAMs		`
+- `Booleans		`
+- `Counters		`
+- `Vectors		`
+- `FIFOs		`
+- `FSMs			`
+- `RegFiles		`
+- `Maths		`
+- `LUTs         `
+
+## Debugging
+
+Breakpoint and exit
+
+**TODO**
+
+## Implementation
+
+The interpreter core is a central memory that contain the value of all symbols, and an auxilliary memory that contain the temporary bound values.
+
+## Usage
+
+**TODO**
+
