@@ -425,7 +425,7 @@ The automatic insertion is the reason why nodes must define all `rawSourceI` but
 
 When the graph involves multiple schedulers, depending on the graph structure, the synchronization between them might require additional replays. 
 
-```{.mermaid loc=media format=png width=1000}
+```mermaid
 graph LR
 	subgraph scheduler 1
 	sA(sourceA)
@@ -446,7 +446,7 @@ graph LR
 
 In the above structure, no replay need to be created because all sources of the node "Node" share the same scheduler. It suffices to wait for the closing callback of that scheduler.
 
-```{.mermaid loc=media format=png width=1000}
+```mermaid
 graph LR
 	subgraph scheduler 1
 	sA(sourceA)
@@ -471,7 +471,7 @@ graph LR
 
 In the above structure, intermediary replays must be created so that the node "Node" sources share the same scheduler. 
 
-```{.mermaid loc=media format=png width=1000}
+```mermaid
 graph LR
 	subgraph scheduler 1
 	sA(sourceA)

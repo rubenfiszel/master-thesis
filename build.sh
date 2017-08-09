@@ -5,6 +5,7 @@ echo "Start building"
 interactive_spellcheck=false
 batch_spellcheck=false
 blog=false
+inc=false
 
 # Process command line arguments
 while test $# -gt 0
@@ -22,6 +23,10 @@ do
 	    blog=true
 	    shift		
             ;;
+        --inc)
+	    inc=true
+	    shift		
+            ;;	
         *)
 	    echo "unrecognized option $1"
             ;;
@@ -52,16 +57,18 @@ cp -r src/ build/
 cp images/* build/
 
 cd images
-for gif in *.gif
-do
-    echo "Processing $gif"
-    convert $gif "${gif%%.*}".png
-done
-for pdf in *.pdf
-do
-    echo "Processing $pdf"
-    convert $pdf "${pdf%%.*}".png
-done
+if [ $inc = false ]; then
+    for gif in *.gif
+    do
+	echo "Processing $gif"
+	convert $gif "${gif%%.*}".png
+    done
+    for pdf in *.pdf
+    do
+	echo "Processing $pdf"
+	convert $pdf "${pdf%%.*}".png
+    done
+fi
 
 cd ..
 cp -r templates/ build/
@@ -79,7 +86,7 @@ sed -i 's/.gif/-0.png/g' tmp_thesis5.md
 sed -i 's/.webm/.png/g' tmp_thesis5.md
 sed -ir 's/```scala/```{.scala bgcolor=bg autogobble=true framesep=2mm fontsize=\\scriptsize}/g' tmp_thesis5.md
 sed -ir 's/```graph/```{.text fontsize=\\footnotesize samepage=true}/g' tmp_thesis5.md
-sed -ir 's/```mermaid/```{.mermaid format=png loc=media width=1920}/g' tmp_thesis5.md
+sed -ir 's/```mermaid/```{.mermaid format=svg loc=media}/g' tmp_thesis5.md
 
 mkdir -p media
 
@@ -100,6 +107,18 @@ pandoc tmp_thesis5.md \
        --variable="geometry:a4paper, hmargin=4cm, bottom=4cm, top=3cm" \
        -o thesis.tex
 
+if [ $inc = false ]; then
+    for svg in media/*.svg
+    do
+	echo "Processing $svg"
+	phantomjs ../rasterize.js $svg "${svg%%.*}".pdf 
+	#    inkscape $svg --export-pdf="${svg%%.*}".pdf 
+    done
+fi
+
+sed -i 's/\\includegraphics{\(media\/diagram-10\).svg}/\\begin{wrapfigure}{L}{5cm}\\vspace{-1cm}\\centering\\includegraphics[width=4cm]{\1.pdf}\\caption{Flow diagram of the argon compiler}\\vspace{-1cm}\\end{wrapfigure}/g' thesis.tex
+sed -i 's/\\includegraphics{\(media\/diagram-12\).svg}/\\begin{wrapfigure}{R}{5cm}\\centering\\includegraphics{\1.pdf}\\caption{Flow diagram of the argon interpreter}\\vspace{-3cm}\\end{wrapfigure}/g' thesis.tex
+sed -i 's/\\includegraphics{\(.*\).svg}/\\begin{figure}\\centering\\includegraphics{\1.pdf}\\end{figure}/g' thesis.tex
 
 #pdflatex -shell-escape thesis.tex
 xelatex -shell-escape thesis.tex
