@@ -3,7 +3,7 @@ title: "Accelerated Sensor Fusion for Drones and a Simulation Framework for Spat
 author: Ruben Fiszel
 email: ruben.fiszel@epfl.ch
 link-citations: true
-abstract: "We present here a novel asynchronous Rao-Blackwellized Particle Filter for POSE estimation of drones and its implementation on hardware with the spatial language. We also present contributions to the spatial language under the form of development tools: scala-flow, a prototyping data-flow tool inspired by Simulink with a spatial integration. Finally, as a required component of scala-flow's spatial integration, an interpreter for the spatial language was also developed."
+abstract: "Drones POSE (position and orientation) estimation on drones rely on sensor fusion of its different sensors. The complexity of this task is to provide a good estimation in real-time. We have developped a novel application of an asynchronous Rao-Blackwellized Particle Filter and its implementation on hardware with the Spatial language. We have also build a new development tool: scala-flow, a data-flow simulation tool inspired by Simulink with a Spatial integration. Finally, we have build an interpreter for the Spatial language which made possible the integration of Spatial in scala-flow."
 documentclass: report
 toc-title: "Table of Contents"
 pandoc-minted:
@@ -36,10 +36,6 @@ ${minpf}
 ## Rao-Blackwellized Particle Filter
 
 ${rbpfc}
-
-## Spatial syntax
-
-${lang-ref}
 
 # References {-}
 
