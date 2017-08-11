@@ -81,16 +81,19 @@ replace_in_file tmp_thesis.md src/rbpf.md '${rbpf}' > tmp_thesis2.md
 replace_in_file tmp_thesis2.md src/flow.md '${flow}' > tmp_thesis3.md
 replace_in_file tmp_thesis3.md src/interpreter.md '${interpreter}' > tmp_thesis4.md
 replace_in_file tmp_thesis4.md src/spatial.md '${spatial}' > tmp_thesis5.md
+replace_in_file tmp_thesis5.md src/lang-ref.tex '${lang-ref}' > tmp_thesis6.md
+replace_in_file tmp_thesis6.md src/minpf.md '${minpf}' > tmp_thesis7.md
+replace_in_file tmp_thesis7.md src/rbpfc.md '${rbpfc}' > tmp_thesis8.md
 
-sed -i 's/.gif/-0.png/g' tmp_thesis5.md
-sed -i 's/.webm/.png/g' tmp_thesis5.md
-sed -ir 's/```scala/```{.scala bgcolor=bg autogobble=true framesep=2mm fontsize=\\scriptsize}/g' tmp_thesis5.md
-sed -ir 's/```graph/```{.text fontsize=\\footnotesize samepage=true}/g' tmp_thesis5.md
-sed -ir 's/```mermaid/```{.mermaid format=svg loc=media}/g' tmp_thesis5.md
+sed -i 's/.gif/-0.png/g' tmp_thesis8.md
+sed -i 's/.webm/.png/g' tmp_thesis8.md
+sed -ir 's/```scala/```{.scala bgcolor=bg autogobble=true framesep=2mm fontsize=\\scriptsize}/g' tmp_thesis8.md
+sed -ir 's/```graph/```{.text fontsize=\\footnotesize samepage=true}/g' tmp_thesis8.md
+sed -ir 's/```mermaid/```{.mermaid format=svg loc=media}/g' tmp_thesis8.md
 
 mkdir -p media
 
-pandoc tmp_thesis5.md \
+pandoc tmp_thesis8.md \
        --template=templates/tmpl.tex \
        --smart \
        --reference-links \

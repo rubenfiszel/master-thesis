@@ -885,7 +885,7 @@ As highlighted in the Algorithm summary, the RPBF if easily extensible to other 
 - giving information about position or velocity and their update is similar to the vicon position update as a kalman partial update
 - giving information about the orientation and their update is similar to the vicon attitude update as a pure importance sampling re-weighting.
 
-As a proof-of-conceptalternative Rao-blackwellized particle filter specialized for outdoor has been developed that integrates the following sensors:
+A proof-of-concept alternative Rao-blackwellized particle filter specialized for outdoor has been developed that integrates the following sensors:
 
 - IMU with accelerometer, gyroscope **and magnetometer**
 - Altimeter

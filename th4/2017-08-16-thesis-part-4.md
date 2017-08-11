@@ -15,13 +15,58 @@ This part is about the spatial implementation of the asynchronous Rao-Blackwelli
 
 # Spatial implementation of an asynchronous Rao-Blackwellized Particle Filter
 
-### Parallel patterns
+A Rao-Blackwellized Particle Filter turned out to be an ambitious application, the most complex that was developed so far on Spatial. We gained some insights specific to the application and some others specific to the particularities of Spatial. At the time of the writing, some spatial bugs did not allow to synthesize fully the application but it ran correctly in the simulation mode and the area usage fitted on a Zynq board.
 
-Parallel patterns ....
+## Language primitives
 
-**TODO**
++-----------------------------------------+--------------------------------------------+
+|                   Syntax                |                                            |
+|                                         |                                            |
++=========================================+============================================+
+|`min until max [by stride]`$~~~~~~~~~~~$ |Declares a counter                          |
+|$~~~~~~~$`[par factor]`                  |                                            |
+| **or** `min::max [par factor]`          |                                            |
+|$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$|                                            |
++-----------------------------------------+--------------------------------------------+
+|`FSM(init)(continue)`$~~~~~~~~~~~~~~~~~$ |Declares an FSM whose init state is `init`, |
+|$~~~~~~~$`{action}{next}`                |transifit                                   |
+|$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$|                                            |
++-----------------------------------------+--------------------------------------------+
+|`Foreach(counter+){body}`                |                                            |
+|$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$|                                            |
++-----------------------------------------+--------------------------------------------+
+|`Reduce(accum)(counter+)`$~~~~~~~~~~~~~~$|                                            |
+|$~~~~~~~$`{func}{reduce}`                |                                            |
+|$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$|                                            |
++-----------------------------------------+--------------------------------------------+
+|`MemReduce(accum)(counter+)`$~~~~~~~~~~~$|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa          |
+|$~~~~~~~$`{func}{reduce}`                |                                            |
+|$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$|                                            |
++-----------------------------------------+--------------------------------------------+
+|`Stream(*){body}`                        |                                            |
+|$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$|                                            |
++-----------------------------------------+--------------------------------------------+
+|`Parallel{body}`                         |                                            |
+|$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$|                                            |
++-----------------------------------------+--------------------------------------------+
+|`Pipe{body}`                             |                                            |
+|$~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~$|                                            |
++-----------------------------------------+--------------------------------------------+
+|`if (cond) {body}`$~~~~~~~~~~~~~~        |                                            |
+|`[else if(cond) {body}`                  |                                            |
+|`[else {body}]`                          |                                            |
++-----------------------------------------+--------------------------------------------+
 
-### Controls flows 
+
+
+
+## Parallel patterns
+
+Parallel patterns [@prabhakar_generating_2016,]
+
+
+
+## Controls flows 
 
 Control flows (or flow of control) is the order in which individual statements, instructions or function calls of an imperative program are executed or evaluated.
 Sequential
@@ -33,54 +78,72 @@ Pipeline:
 	
 **TODO**	
 
+
+
 ## Memories
 
+### On-Chip
 
-+-------+-----------------+-----+
-|On-Chip|`FIFO[T](depth)`     |     |
-+-------+-----------------+-----+
-|On-Chip|                 |     |
-+-------+-----------------+-----+
-|On-Chip|                 |     |
-+-------+-----------------+-----+
-|On-Chip|                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
-|       |                 |     |
-+-------+-----------------+-----+
++-----------------------------------------+--------------------------------------------+
+|                   Syntax                |                                            |
+|                                         |                                            |
++=========================================+============================================+
+|`FIFO[T](depth)`                             |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
 
+
+### Off-Chip
+
++-----------------------------------------+--------------------------------------------+
+|                   Syntax                |                                            |
+|                                         |                                            |
++=========================================+============================================+
+|`FIFO[T](depth)`                             |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
+|                                         |                                            |
++-----------------------------------------+--------------------------------------------+
 
 ## Numeric types
 
+FixPt vs FltPt 
+
 ## A matrix library as stdlib
 
+### Views
+
+### Meta-Programming
 
 ## Mini Particle Filter
 
+The full Mini Particle Filter source code application is contained in the Appendix and publicly available as a Spatial App on [github](https://github.com/stanford-ppl/spatial-apps/blob/develop/src/MiniParticleFilter.scala).
 
-## Rao Blackwellized Particle Filter
+## Rao-Blackwellized Particle Filter
 
+The full Rao-Blackwellized source code application is contained in the [Appendix](#rao_blackwellized-particle-filter-3) and publicly available as a Spatial App on [github](https://github.com/stanford-ppl/spatial-apps/blob/develop/src/RaoBlackParticleFilter.scala).
+
+## Conclusion
 
 # Conclusion {-}
 
-alea jacta est
+
 
 
 

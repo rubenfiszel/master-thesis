@@ -1,0 +1,407 @@
+\pagebreak
+
+\begin{table*}
+\vspace{-3cm}
+\centering
+\small
+
+\newsavebox{\counterx}
+\begin{lrbox}{\counterx}
+\begin{lstlisting}[language=SpatialTable]
+min until max by stride* par factor*
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\fsmSignature}
+\begin{lrbox}{\fsmSignature}
+\begin{lstlisting}[language=SpatialTable]
+FSM(init)(continue){action}{next}
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\foreachSignature}
+\begin{lrbox}{\foreachSignature}
+\begin{lstlisting}[language=SpatialTable]
+Foreach(counter+){body}
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\reduceSignature}
+\begin{lrbox}{\reduceSignature}
+\begin{lstlisting}[language=SpatialTable]
+Reduce(accum)(counter+){func}{reduce}
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\memreduceSignature}
+\begin{lrbox}{\memreduceSignature}
+\begin{lstlisting}[language=SpatialTable]
+MemReduce(accum)(counter+){func}{reduce}
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\streamStar}
+\begin{lrbox}{\streamStar}
+\begin{lstlisting}[language=SpatialTable]
+Stream(*){body}
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\parallelSignature}
+\begin{lrbox}{\parallelSignature}
+\begin{lstlisting}[language=SpatialTable]
+Parallel{body}
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\pipeSignature}
+\begin{lrbox}{\pipeSignature}
+\begin{lstlisting}[language=SpatialTable]
+DummyPipe{body}
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\ifSignature}
+\begin{lrbox}{\ifSignature}
+\begin{lstlisting}[language=SpatialTable]
+if (cond){body} 
+[else if (cond){body} ] 
+[else {body} ]
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\sequentialTag}
+\begin{lrbox}{\sequentialTag}
+\begin{lstlisting}[language=SpatialTable]
+Sequential.(Foreach|Reduce|MemReduce)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\pipeTag}
+\begin{lrbox}{\pipeTag}
+\begin{lstlisting}[language=SpatialTable]
+Pipe(ii*).(Foreach|Reduce|MemReduce)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\streamTag}
+\begin{lrbox}{\streamTag}
+\begin{lstlisting}[language=SpatialTable]
+Stream.(Foreach|Reduce|MemReduce)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\parallelTag}
+\begin{lrbox}{\parallelTag}
+\begin{lstlisting}[language=SpatialTable]
+Parallel.(Foreach|Reduce|MemReduce)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\fifoSyntax}
+\begin{lrbox}{\fifoSyntax}
+\begin{lstlisting}[language=SpatialTable]
+FIFO[T](depth)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\filoSyntax}
+\begin{lrbox}{\filoSyntax}
+\begin{lstlisting}[language=SpatialTable]
+FILO[T](depth)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\lineBufferSyntax}
+\begin{lrbox}{\lineBufferSyntax}
+\begin{lstlisting}[language=SpatialTable]
+LineBuffer[T](r, c)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\lutSyntax}
+\begin{lrbox}{\lutSyntax}
+\begin{lstlisting}[language=SpatialTable]
+LUT[T](dims+)(elements+)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\regSyntax}
+\begin{lrbox}{\regSyntax}
+\begin{lstlisting}[language=SpatialTable]
+Reg[T](reset*)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\regfileSyntax}
+\begin{lrbox}{\regfileSyntax}
+\begin{lstlisting}[language=SpatialTable]
+RegFile[T](dims+)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\sramSyntax}
+\begin{lrbox}{\sramSyntax}
+\begin{lstlisting}[language=SpatialTable]
+SRAM[T](dims+)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\argInSyntax}
+\begin{lrbox}{\argInSyntax}
+\begin{lstlisting}[language=SpatialTable]
+ArgIn[T]
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\argOutSyntax}
+\begin{lrbox}{\argOutSyntax}
+\begin{lstlisting}[language=SpatialTable]
+ArgOut[T]
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\hostIOSyntax}
+\begin{lrbox}{\hostIOSyntax}
+\begin{lstlisting}[language=SpatialTable]
+HostIO[T]
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\dramSyntax}
+\begin{lrbox}{\dramSyntax}
+\begin{lstlisting}[language=SpatialTable]
+DRAM[T](dims+)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\streamInSyntax}
+\begin{lrbox}{\streamInSyntax}
+\begin{lstlisting}[language=SpatialTable]
+StreamIn[T](bus)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\streamOutSyntax}
+\begin{lrbox}{\streamOutSyntax}
+\begin{lstlisting}[language=SpatialTable]
+StreamOut[T](bus)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\parameterSyntax}
+\begin{lrbox}{\parameterSyntax}
+\begin{lstlisting}[language=SpatialTable]
+default (min::max)
+default (min::stride::max)
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\accelSyntax}
+\begin{lrbox}{\accelSyntax}
+\begin{lstlisting}[language=SpatialTable]
+Accel{body}
+\end{lstlisting}
+\end{lrbox}
+
+\newsavebox{\accelStarSyntax}
+\begin{lrbox}{\accelStarSyntax}
+\begin{lstlisting}[language=SpatialTable]
+Accel(*){body}
+\end{lstlisting}
+\end{lrbox}
+
+
+\begin{tabular}{lll}
+\hspace{-4.5cm} &
+%\toprule
+
+
+\begin{tabular}{l}
+
+\multicolumn{1}{l}{\bf{(a) Host Interfaces}}  \\
+\midrule 
+\multirow{1}{*}{\usebox{\accelSyntax}} \\
+A blocking accelerator design. \\
+\vspace{-6pt} \\
+
+\multirow{1}{*}{\usebox{\accelStarSyntax}} \\
+A non-blocking accelerator design. \\
+\\
+
+\multicolumn{1}{l}{\bf{(b) Control Structures}}  \\
+\midrule 
+
+\multirow{1}{*}{\usebox{\counterx}} \\
+A counter over the range [\textbf{\footnotesize{\texttt{min}}},\textbf{\footnotesize{\texttt{max}}}). \\
+~~~\textbf{\footnotesize{\texttt{stride}}}: optional counter stride, default is 1 \\
+~~~\textbf{\footnotesize{\texttt{factor}}}: optional counter parallelization, default is 1 \\
+%& \\
+\vspace{-9pt}\\
+
+\multirow{3}{*}{\usebox{\ifSignature}} \\
+\\
+\vspace{-3pt}\\
+Data-dependent execution. \\
+Doubles as a multiplexer if all bodies return scalar values. \\
+~~~\textbf{\footnotesize{\texttt{cond}}}: condition for execution of associated body \\
+~~~\textbf{\footnotesize{\texttt{body}}}: arbitrary expression \\
+\vspace{-9pt} \\
+
+\multirow{1}{*}{\usebox{\fsmSignature}} \\ %& \multirow{6}{*}{\usebox{\fsmExample}} \\
+%& An arbitrary state machine with an internal state of type \texttt{T}. \\ 
+An arbitrary finite state machine, similar to a \emph{while} loop. \\
+~~~\textbf{\footnotesize{\texttt{init}}}: the FSM's initial state \\
+~~~\textbf{\footnotesize{\texttt{continue}}}: the ``while'' condition for the FSM \\
+~~~\textbf{\footnotesize{\texttt{action}}}: arbitrary expression, executed each iteration \\
+~~~\textbf{\footnotesize{\texttt{next}}}: function calculating the next state \\
+
+\vspace{-9pt}\\
+
+\multirow{1}{*}{\usebox{\foreachSignature}} \\ %& \multirow{6}{*}{\usebox{\fsmExample}} \\
+%& An arbitrary state machine with an internal state of type \texttt{T}. \\ 
+A parallelizable \emph{for} loop. \\
+~~~\textbf{\footnotesize{\texttt{counter}}}: counter(s) defining the loop's iteration domain \\
+~~~\textbf{\footnotesize{\texttt{body}}}: arbitrary expression, executed each loop iteration \\
+\vspace{-9pt}\\
+
+\multirow{1}{*}{\usebox{\reduceSignature}} \\
+A scalar reduction loop, parallelized as a tree. \\
+~~~\textbf{\footnotesize{\texttt{accum}}}: the reduction's accumulator register \\
+~~~\textbf{\footnotesize{\texttt{counter}}}: counter(s) defining the loop's iteration domain \\
+~~~\textbf{\footnotesize{\texttt{func}}}: arbitrary expression which produces a scalar value \\
+~~~\textbf{\footnotesize{\texttt{reduce}}}: associative reduction between two scalar values \\
+\vspace{-9pt}\\
+
+\multirow{1}{*}{\usebox{\memreduceSignature}} \\
+Reduction over addressable memories. \\
+~~~\textbf{\footnotesize{\texttt{accum}}}: an addressable, on-chip memory for accumulation \\
+~~~\textbf{\footnotesize{\texttt{counter}}}: counter(s) defining the loop's iteration domain \\
+~~~\textbf{\footnotesize{\texttt{func}}}: arbitrary expression returning an on-chip memory \\
+~~~\textbf{\footnotesize{\texttt{reduce}}}: associative reduction between two scalar values \\
+\vspace{-9pt}\\
+
+
+\multirow{1}{*}{\usebox{\streamStar}} \\
+A streaming loop which never terminates. \\
+~~~\textbf{\footnotesize{\texttt{body}}}: arbitrary expression, executed each loop iteration \\
+\vspace{-9pt}\\
+
+\multirow{1}{*}{\usebox{\parallelSignature}} \\
+Overrides normal compiler scheduling. All statements \\
+in the body are instead scheduled in a \emph{fork-join} fashion. \\
+~~~\textbf{\footnotesize{\texttt{body}}}: arbitrary sequence of controllers \\
+\vspace{-9pt}\\
+
+\multirow{1}{*}{\usebox{\pipeSignature}} \\
+A ``loop'' with exactly one iteration. \\
+Inserted by the compiler, generally not written explicitly. \\
+~~~\textbf{\footnotesize{\texttt{body}}}: arbitrary expression \\
+
+\end{tabular} & 
+
+\begin{tabular}{l}
+\multicolumn{1}{l}{\bf{(c) Optional Scheduling Directives}}  \\
+\midrule 
+
+\multirow{1}{*}{\usebox{\sequentialTag}} \\
+Sets loop to run sequentially. \\
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\pipeTag}} \\
+Sets loop to be pipelined. \\
+~~~\textbf{\footnotesize{\texttt{ii}}}: optional overriding initiation interval \\
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\streamTag}} \\
+Sets loop to be streaming. \\
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\parallelTag}} \\
+Informs the compiler that the loop is parallelizable. \\
+\\
+
+\multicolumn{1}{l}{\bf{(d) On-Chip Memories}}  \\
+\midrule
+
+\multirow{1}{*}{\usebox{\fifoSyntax}} \\
+FIFO (queue) with a capacity of \textbf{\footnotesize{\texttt{depth}}} elements of type \textbf{\footnotesize{\texttt{T}}} \\ 
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\filoSyntax}} \\
+A FILO (stack) with a capacity of \textbf{\footnotesize{\texttt{depth}}} elements of type \textbf{\footnotesize{\texttt{T}}} \\
+\vspace{-10pt}\\ 
+
+\multirow{1}{*}{\usebox{\lineBufferSyntax}} \\
+On-chip buffered scratchpad containing \textbf{\footnotesize{\texttt{r}}} buffers of \textbf{\footnotesize{\texttt{c}}} elements \\ 
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\lutSyntax}} \\
+Read-only Lookup Table containing supplied \textbf{\footnotesize{\texttt{elements}}} of type \textbf{\footnotesize{\texttt{T}}} \\ 
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\regSyntax}} \\
+Register holding a value of type \textbf{\footnotesize{\texttt{T}}}, with optional \textbf{\footnotesize{\texttt{reset}}} value \\ 
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\regfileSyntax}} \\
+Register file of elements of type \textbf{\footnotesize{\texttt{T}}} with given dimensions\\ 
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\sramSyntax}} \\
+On-chip scratchpad of elements of type \textbf{\footnotesize{\texttt{T}}} with given dimensions\\ 
+\\
+
+
+\multicolumn{1}{l}{\bf{(e) Shared Host/Accelerator Memories}}  \\
+\midrule
+
+\multirow{1}{*}{\usebox{\argInSyntax}} \\
+Accelerator register initialized by the host \\
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\argOutSyntax}} \\
+Accelerator register visible to the host after accelerator execution \\
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\hostIOSyntax}} \\
+Accelerator register which the host may read and write at any time. \\
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\dramSyntax}} \\
+Burst-addressable, host-allocated off-chip memory. \\
+%Memory is accessible by both the accelerator and the host. \\ 
+\\
+
+
+\multicolumn{1}{l}{\bf{(f) External Interfaces}}  \\
+\midrule
+
+\multirow{1}{*}{\usebox{\streamInSyntax}} \\
+Streaming input from a \textbf{\footnotesize{\texttt{bus}}} of external pins. \\ 
+\vspace{-10pt}\\
+
+\multirow{1}{*}{\usebox{\streamOutSyntax}} \\
+Streaming output to a \textbf{\footnotesize{\texttt{bus}}} of external pins. \\ 
+\\
+
+\multicolumn{1}{l}{\bf{(g) Design Space Parameters}}  \\
+\midrule 
+\multirow{2}{*}{\usebox{\parameterSyntax}} \\
+\\
+A compiler-aware design parameter with given \textbf{\footnotesize{\texttt{default}}} value. \\
+Automated DSE explores the range [\textbf{\footnotesize{\texttt{min}}}, \textbf{\footnotesize{\texttt{max}}}] with optional \textbf{\footnotesize{\texttt{stride}}}.
+
+\\
+\\
+\\
+
+\end{tabular} \\
+
+\end{tabular}
+
+\caption{A subset of Spatial's syntax.
+%An overview of Spatial's syntax for host interfaces, control structures, scheduling directives, memory templates, streaming interfaces, and design space parameters. 
+Square brackets (e.g. \texttt{[T]}) represent a template's type parameter. Parameters followed by a '\texttt{+}' denotes an argument which can be given one or more times, while a '\texttt{*}' denotes that an argument is optional. \texttt{DRAMs}, \texttt{LUTs}, \texttt{RegFiles}, and \texttt{SRAMs} can be allocated with an arbitrary number of dimensions. \texttt{Foreach}, \texttt{Reduce}, and \texttt{MemReduce} support multi-dimensional iteration domains. }
+\label{t:syntaxTable}
+\end{table*}

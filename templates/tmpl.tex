@@ -8,9 +8,195 @@ $else$
 \usepackage{lmodern}[cmss]
 $endif$
 
+\usepackage{multirow}
 % \usepackage[compact]{titlesec}
+\usepackage{listings}
+
+\lstdefinelanguage{Spatial}{
+  basicstyle=\fontsize{7}{7}\selectfont\tt,frame=tlbr,framesep=4pt,framerule=0pt,
+  tabsize=2,
+  basewidth={0.55em, 0.4em},%
+  numbers=left,
+  showspaces=false,  
+  keywordstyle=\bfseries,   
+  breaklines=true,
+  columns=fixed,
+  %xleftmargin=0.25in, 
+  firstnumber=auto,
+  showstringspaces=false,
+  escapechar=@,
+  escapeinside={(*@}{@*)},
+  morestring=[b]",
+  morestring=[b]',
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  backgroundcolor=\color{backcolour},   
+  commentstyle=\color{codeorange}, %\bfseries,
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  keywordstyle=[2]\color{blue},
+  keywords=[2]{val, def},
+  keywordstyle=[3]\color{blue}\bfseries,
+  keywords=[3]{Float, Int, String, T, Void, Bit},
+  keywordstyle=[4]\color{orange}\bfseries,
+  keywords=[4]{Matrix, Array},
+  keywordstyle=[5]\color{orange}\bfseries,
+  keywords=[5]{StreamIn, StreamOut, DRAM, ArgIn, ArgOut, HostIO, RegFile, Reg, SRAM, FIFO, FILO, LUT, LineBuffer},
+  keywordstyle=[6]\bfseries,
+  keywords=[6]{enq, deq, load, store, scatter, gather, :=, value, push, pop, peek},
+  keywordstyle=[7]\color{magenta},
+  keywords=[7]{until, par, by},
+  keywordstyle=\color{magenta}\bfseries,
+  morekeywords={Foreach,Reduce,MemReduce,MemFold,Fold,Accel,Stream,FSM,Sequential,if,else,Parallel,Pipe}
+}
+
+\lstdefinelanguage{SpatialTable}{
+  frame=tb,
+  framexleftmargin=4pt,
+  framextopmargin=0pt,
+  framexbottommargin=0pt, 
+  basicstyle=\fontsize{8}{8}\selectfont\tt,
+  framesep=2pt,
+  framerule=0pt,
+  tabsize=2,
+  %basewidth={0.0em, 0.0em}, % {0.54em, 0.4em},%
+  numbers=none,
+  showspaces=false,  
+  keywordstyle=\bfseries,   
+  breaklines=true,
+  columns=fixed,
+  xleftmargin=0.0in, %0.25in, 
+  firstnumber=auto,
+  showstringspaces=false,
+  escapechar=@,
+  escapeinside={(*@}{@*)},
+  morestring=[b]",
+  morestring=[b]',
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  %backgroundcolor=\color{backcolour},   
+  commentstyle=\color{codeorange}\bfseries,
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  keywordstyle=[2]\color{blue},
+  keywords=[2]{val, def},
+  keywordstyle=[3]\color{blue}\bfseries,
+  keywords=[3]{Float, Int, String, T, Void, Bit},
+  keywordstyle=[4]\color{orange}\bfseries,
+  keywords=[4]{Matrix, Array},
+  keywordstyle=[5]\color{orange}\bfseries,
+  keywords=[5]{StreamIn, StreamOut, DRAM, ArgIn, ArgOut, HostIO, RegFile, Reg, SRAM, FIFO, FILO, LUT, LineBuffer},
+  keywordstyle=[6]\bfseries,
+  keywords=[6]{enq, deq, load, store, scatter, gather,:=,<<=, value, push, pop, peek, continue, action, next, func, reduce, body},
+  keywordstyle=[7]\color{magenta},
+  keywords=[7]{until, par, by},
+  keywordstyle=\color{magenta}\bfseries,
+  morekeywords={Foreach,Reduce,MemReduce,MemFold,Fold,Accel,Stream,FSM, if, else, Parallel, Pipe,Sequential, [, ] }
+}
+
+
+\lstdefinelanguage{Pseudo}{
+  morestring=[b]",
+  morestring=[b]',
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morekeywords={For, End, Foreach}
+}
+\lstdefinelanguage{Spatial}{
+  basicstyle=\fontsize{7}{7}\selectfont\tt,frame=tlbr,framesep=4pt,framerule=0pt,
+  tabsize=2,
+  basewidth={0.55em, 0.4em},%
+  numbers=left,
+  showspaces=false,  
+  keywordstyle=\bfseries,   
+  breaklines=true,
+  columns=fixed,
+  %xleftmargin=0.25in, 
+  firstnumber=auto,
+  showstringspaces=false,
+  escapechar=@,
+  escapeinside={(*@}{@*)},
+  morestring=[b]",
+  morestring=[b]',
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  backgroundcolor=\color{backcolour},   
+  commentstyle=\color{codeorange}, %\bfseries,
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  keywordstyle=[2]\color{blue},
+  keywords=[2]{val, def},
+  keywordstyle=[3]\color{blue}\bfseries,
+  keywords=[3]{Float, Int, String, T, Void, Bit},
+  keywordstyle=[4]\color{orange}\bfseries,
+  keywords=[4]{Matrix, Array},
+  keywordstyle=[5]\color{orange}\bfseries,
+  keywords=[5]{StreamIn, StreamOut, DRAM, ArgIn, ArgOut, HostIO, RegFile, Reg, SRAM, FIFO, FILO, LUT, LineBuffer},
+  keywordstyle=[6]\bfseries,
+  keywords=[6]{enq, deq, load, store, scatter, gather, :=, value, push, pop, peek},
+  keywordstyle=[7]\color{magenta},
+  keywords=[7]{until, par, by},
+  keywordstyle=\color{magenta}\bfseries,
+  morekeywords={Foreach,Reduce,MemReduce,MemFold,Fold,Accel,Stream,FSM,Sequential,if,else,Parallel,Pipe}
+}
+
+\lstdefinelanguage{SpatialTable}{
+  frame=tb,
+  framexleftmargin=4pt,
+  framextopmargin=0pt,
+  framexbottommargin=0pt, 
+  basicstyle=\fontsize{8}{8}\selectfont\tt,
+  framesep=2pt,
+  framerule=0pt,
+  tabsize=2,
+  %basewidth={0.0em, 0.0em}, % {0.54em, 0.4em},%
+  numbers=none,
+  showspaces=false,  
+  keywordstyle=\bfseries,   
+  breaklines=true,
+  columns=fixed,
+  xleftmargin=0.0in, %0.25in, 
+  firstnumber=auto,
+  showstringspaces=false,
+  escapechar=@,
+  escapeinside={(*@}{@*)},
+  morestring=[b]",
+  morestring=[b]',
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  %backgroundcolor=\color{backcolour},   
+  commentstyle=\color{codeorange}\bfseries,
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  keywordstyle=[2]\color{blue},
+  keywords=[2]{val, def},
+  keywordstyle=[3]\color{blue}\bfseries,
+  keywords=[3]{Float, Int, String, T, Void, Bit},
+  keywordstyle=[4]\color{orange}\bfseries,
+  keywords=[4]{Matrix, Array},
+  keywordstyle=[5]\color{orange}\bfseries,
+  keywords=[5]{StreamIn, StreamOut, DRAM, ArgIn, ArgOut, HostIO, RegFile, Reg, SRAM, FIFO, FILO, LUT, LineBuffer},
+  keywordstyle=[6]\bfseries,
+  keywords=[6]{enq, deq, load, store, scatter, gather,:=,<<=, value, push, pop, peek, continue, action, next, func, reduce, body},
+  keywordstyle=[7]\color{magenta},
+  keywords=[7]{until, par, by},
+  keywordstyle=\color{magenta}\bfseries,
+  morekeywords={Foreach,Reduce,MemReduce,MemFold,Fold,Accel,Stream,FSM, if, else, Parallel, DummyPipe, Pipe,Sequential, [, ] }
+}
+
+
+\lstdefinelanguage{Pseudo}{
+  morestring=[b]",
+  morestring=[b]',
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morekeywords={For, End, Foreach}
+}
+
+
 \usepackage{wrapfig}
-%\usepackage{float}
+\usepackage{float}
+\restylefloat{table}
 \usepackage{xcolor}
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
 
