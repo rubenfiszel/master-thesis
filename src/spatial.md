@@ -5,7 +5,13 @@ A Rao-Blackwellized Particle Filter turned out to be an ambitious application, t
 
 ## Area
 
-The capacity of an FPGA is defined by its synthetizable area. **TODO**: define better
+The capacity of an FPGA is defined by its total resources: the synthetizable area and the memories. Synthetizable area is defined by the number of logic cells. Logic cells simulate any of the primitive logic gates through a lookup table (LUT). 
+
+Memories are Scratchpad memory (SPM), high-speed internal writable cells used for temporary storage of calculations, data, and other work in progress. SPM are divided into 3 kinds:
+
+- BRAM is a single cycle addressable memory that can contain up to 20Kb. There are commonly on the order of magnitude of up to a thousand BRAM.
+- DRAM is burst-addressable (up to 512 bits at once) off-chip memory that has a capacity on the order of Gb. The DRAM is visible to the CPU and can be used as an interface mechanism to the FPGA.
+- Registers are single elements memory (non-addressable). When used as part of a group of registers, they make possible parallel access. 
 
 ## Parallel patterns
 
@@ -13,32 +19,37 @@ Parallel patterns [@prabhakar_generating_2016] are a core set of operations that
 
 - `FlatMap` 
 - `Fold`
-- `GroupBy`
 
 `filter` is also an important pattern but can be expressed in term of a `flatMap` (`l.flatMap(x => if (b(x)) List(x) else Nil)`). `Foreach` is a `Fold` with a `Unit` accumulator. `Reduce` can be expressed as a `Fold` (The `Reduce` operator from `Spatial` is actually a fold that ignores the accumulator on the first iterator). By reducing these patterns to their essence, and offering parallel implementation for them, Spatial can offer powerful parallelization that fit most, if not all use-cases.
+
+In spatial, `FlatMap` is actually composed by chaining a native `Map` and a `FIFO`.
 
 
 ## Control flows 
 
-Control flows (or flow of control) is the order in which individual statements, instructions or function calls of an imperative program are executed or evaluated. Spatial offers 3 kinds of Control flows.
+Control flows (or flow of control) is the order in which individual statements, instructions or function calls of an imperative program are executed or evaluated. Spatial offers 3 kinds of Control flows. 
 
-- Sequential: Each inner sequence of operation is done in sequence, one after the other.  
-  **syntax**: `Sequential { body } ` or for parallel pattern annotation `Sequential.Foreach ...`
+Spatial has hierarchical loop nesting. When loops are nested, every loop is an outer loop except the innermost loop. When there is no nesting, the loop is an inner loop.
+Control flows are outer loop annotations in Spatial. The 3 kind of annotation are:
+
+- Sequential: The set of operation inside the annotated outer loop is done in sequence, one after the other. The first operation of the next iteration is never started before the last operation of the current iteration.
+  **syntax**: parallel pattern annotation `Sequential.Foreach ...`
 	
-- Parallel: Each inner sequence of operation is done in parallel, with as many duplicated hardware as the parallelization factor.  
-  **syntax**: `Parallel { body } ` or for parallel pattern annotation `Parallel.Foreach ...`
+- Parallel: The set of operation inside the annotated body is done in parallel. Loops can be given a paralellization factor, which duplicate as many hardware as the parallelization factor.  
+  **syntax**: `Parallel { body } `, parallel counter annotation `(0 to N par parFactor)`.
 
 - Pipe:
-	Each sequence of inner operation is pipelined
+	The set of inner operation is pipelined
 	Divided in 3 subkinds:
     - Inner Pipe: Basic form of pipelining; Only chosen when all the inner operations are primitive operations and hence, no buffering is needed. 
-	- Coarse-Grain: Pipelining of parallel patterns: When the inner operations involve inner loop, a coarse-grain retiming and buffering must be done to increase the pipe throughput
+	- Coarse-Grain: Pipelining of parallel patterns: When loops are nested, a coarse-grain retiming and buffering must be done to increase the pipe throughput
 	**syntax**: `Pipe { body } ` or for parallel pattern annotation `Pipe.Foreach ...`.   
-	Syntax shared for Inner pipe or Coarse-grain but chosen depending on wether the inner operations are all "primitives" or not
+	Syntax shared for Inner pipe or Coarse-grain but chosen depending on whether the inner operations are all "primitives" or not
 	
-	- Stream Pipe: As soon as an operation is done, it is stored in a FIFO such that the pipelining is always done in an as soon as possible manner. Use the `Stream(*)` syntax
-	**syntax**: `Stream(*) { body } ` or for parallel pattern annotation `Stream.Foreach ...`	
+	- Stream Pipe: As soon as an operation is done, it must be stored in an hardware unit that support a FIFO interface (enqueue, dequeue), such that the pipelining is always achieved in an as soon as possible manner. Use the `Stream` syntax
+	**syntax**: `Stream { body } ` or for parallel pattern annotation `Stream.Foreach ...`	
 	
+When not annotated, the outer loop is a Pipe by default.
 
 ${lang-ref}
 
@@ -181,11 +192,11 @@ The full Rao-Blackwellized source code application is contained in the [Appendix
 
 ## Insights
 
-- When writing complex applications, one must be careful about writing functions. Indeed, functions are always applied and inlined during meta-expansion. This results in the IR growing exponentially and cause the compiler phase to be long. Staged functions will be brought to Spatial to reduce the IR exponential growth in the future. However, the intrinsic nature of hardware result in function application being "inlined" since the circuit are duplicated when synthetized. This is why, factoring should not be done the same way in Spatial than in Software. In Software, a good factorization rule is to avoid all repetition of the **code** by generalizing all common parts into functions. For Spatial, the factorization must be thought of avoiding all repetition of the **synthetized hardware** by reusing as many memories, signal and wires as possible.
+- When writing complex applications, one must be careful about writing functions. Indeed, functions are always applied and inlined during meta-expansion. This results in the IR growing exponentially and cause the compiler phase to take a long time. Staged functions will be brought to Spatial to reduce the IR exponential growth in the future. However, the intrinsic nature of hardware must result in function application being "inlined" since the circuit are by definition duplicated when synthetized. This is why, factoring should not be done the same way in Spatial than in Software. In Software, a good factorization rule is to avoid all repetition of the **code** by generalizing all common parts into functions. For Spatial, the factorization must be thought of as avoiding all repetition of the **synthetized hardware** by reusing as many memories, signal and wires as possible.
 - Changing the numeric type matters: floating-point operations are much costlier in term of area than fixed-point and should be used with parsimony when the area resources are limited.
-- Pipelining 
-- Doing in-place operation seem like a great idea at first, but it breaks pipelining so it has to be used with caution.
-- Reducing the number of operation between first read and write is crucial because else coarse grain pipelining will have to create many intermediate buffers to ensure parallel access at different stage of the pipeline. Furthermore, the order of execution is not rearranged by the compiler so in some case, simply changing the order of a few line of codes can make a tremendous difference in the needed buffering.
+- Paralellization can be achieved through pipelining. Indeed, a pipeline will attempt to use all the resource available in parallel. Compare to duplicating hardware, a pipeline only take at most N the biggest time step of the pipeline. If the time step is small enough compared to the entire time length of the pipeline, the time overhead is small and no area is wasted.
+- Doing in-place operation seems like a great idea at first, but it breaks pipelining so it has to be used with caution.
+- Reducing the number of operation between first and last access is crucial because the number of operation correspond to the depth of the pipeline. When the depth grows large, coarse grain pipelining will have to create as many intermediate buffers to ensure protected access at different stage of the pipeline. Furthermore, the order of execution is not rearranged by the compiler, so, in some case, simply changing the order of a few line of codes can make a tremendous difference in the depth of the pipeline.
 
 ## Conclusion
 
@@ -193,6 +204,13 @@ The Rao-Blackwellized Particle Filter is a complex application. It would have be
 
 # Conclusion {-}
 
-We have presented in this work a novel approach to POSE estimation, its mathematical modeling, its implementation in Software and Hardware, and developed spatial tools, including a standalone data-flow simulation tool, to ease the Hardware implementation development and at the same time, improve the whole Spatial ecosystem. 
+This work presents a novel approach to POSE estimation of drones with an accelerated, asynchronous, Rao-Blackwellized Particle Filter and its implementation in software and hardware. Rao-Blackwellized Particle Filter is mathematically more sound to solve the complexities of tracking the non-linear transformations of the orientation through time than current alternatives. Furthermore, we show that this choice improves upon the accuracy for both the position and orientation estimation. 
 
-**TODO**: moar txt
+To exploit the inherent parallelism in the filter, we have developed a highly accurate hardware implementation in Spatial with low latency and high throughput, capable of handling highly dynamic settings such as drone tracking.
+
+We have also developed two components that ease the design of hardware data paths for streaming applications; Scala-flow, a standalone data-flow simulation tool, and an interpreter for Spatial that can execute at staging time any arbitrary Spatial program. The interpreter is a key component to enable integration of the hardware programmability of Spatial to the streaming capabilities of Scala-flow. Scala-flow offers a functional interface, accurate functional simulation, hierarchical and modular grouping of nodes through blocks, immutable representation of the data flow graph, automatic batch scheduling, a graph structure display, interactive debugging and the abilities to generate plots. 
+
+On a higher level, this work shows that Scala, being the underlying language substrate behind Spatial, enables building complex and extensive development tools without sacrificing productivity. It also shows that Spatial is a powerful, productive, and versatile language that can be used in a wide range of applications, such as extending the current state-of-the-art of embedded drone applications.
+
+
+
