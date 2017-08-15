@@ -1,6 +1,6 @@
 # Introduction {-}
 
-## Moore's law end
+## The decline of Moore's law
 
 The Moore's law [^moore] has prevailed in the computation world for the last 4 decades. With each generation of processor, the promise of an exponentially faster execution. Transistors are reaching the scale of 10nm, only 100 times bigger than an atom. Unfortunately, the quantum rules of physics which govern the infinitesimally, start to manifest themselves. In particular, quantum tunneling move electrons from classically insurmountable barrier, making computations approximate, containing a non negligible fraction of errors. 
 
