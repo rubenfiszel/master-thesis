@@ -24,7 +24,7 @@ The right evaluation metric for accelerators is performance per energy, as measu
 
 ## Spatial 
 
-At the DAWN lab, under the lead of [Prof. Olukotun](http://arsenalfc.stanford.edu/kunle) and his grad students, is developed a scala DSL [spatial](https://github.com/stanford-ppl/spatial-lang) and its compiler to program Hardware in a higher-level, more user-friendly, more productive language than Verilog. In particular, the control flows are automatically generated when possible. This should enable software engineers to unlock the potential of Hardware. A custom CGRA, Plasticine, has been developed in parallel to Spatial. It leverages some recurrent patterns: the parallel patterns and aims to be the most efficient reprogrammable architecture for Spatial.
+At the DAWN lab, under the lead of [Prof. Olukotun](http://arsenalfc.stanford.edu/kunle) and his grad students, is developed an Hardware Description Language (HDL) implemented as an embedded scala DSL [spatial](https://github.com/stanford-ppl/spatial-lang) and its compiler to program Hardware in a higher-level, more user-friendly, more productive language than Verilog. In particular, the control flows are automatically generated when possible. This should enable software engineers to unlock the potential of Hardware. A custom CGRA, Plasticine, has been developed in parallel to Spatial. It leverages some recurrent patterns: the parallel patterns and aims to be the most efficient reprogrammable architecture for Spatial.
 
 There is a large upfront cost but once at a big enough scale, Plasticine could be deployed as an accelerator in a wide range of use-cases, from the most demanding server applications to embedded systems with heavy computing requirements.
 
