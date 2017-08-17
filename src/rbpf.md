@@ -264,13 +264,13 @@ The complementary filter is the simplest of all filter and commonly used to retr
 
 This is commonly called "Dead reckoning"[^ded] and is prone to accumulation error, referred as drift. Indeed, like Brownian motions, even if the process is unbiased, the variance grows with time. Reducing the noise cannot solve the issue entirely: even with extremely precise instruments, you are subject to floating-point errors.
 
-Fortunately, even though the accelerometer gives us a highly noisy (vibrations, wind, etc ... ) measurement of the orientation, it is not subject to drift because it does not rely on accumulation. Indeed, if not subject to other accelerations, the accelerometer measures the gravity field orientation. Since this field is oriented toward earth, it is possible to retrieve the current rotation from that field and by extension the attitude. However, in the case of a drone, it is subject to continuous and significant acceleration and vibration. Hence, the assumption that we retrieve the gravity field directly is wrong. Nevertheless, We could solve this by subtracting the acceleration deduced from the thrust control input. It is unpractical so this approach is not pursued in this work, but understanding this filter is still useful.
+Fortunately, even though the accelerometer gives us a highly noisy (vibrations, wind, etc ... ) measurement of the orientation, it is not impacted by the effects of drifting because it does not rely on accumulation. Indeed, if not subject to other accelerations, the accelerometer measures the gravity field orientation. Since this field is oriented toward earth, it is possible to retrieve the current rotation from that field and by extension the attitude. However, a drone is under the influence of continuous and significant acceleration and vibration. Hence, the assumption that we retrieve the gravity field directly is wrong. Nevertheless, We could solve this by subtracting the acceleration deduced from the thrust control input. It is unpractical so this approach is not pursued in this work, but understanding this filter is still useful.
 
 The idea of the filter itself is to combine the precise "short-term" measurements of the gyroscope subject to drift with the "long-term" measurements of the accelerometer. 
 
 ### State 
 
-This filter is very simple and it is only needed to store as a state the last estimated attitude along with its timestamp (to calculate $\Delta t$).
+This filter is very simple. The only requirement is that the last estimated attitude must be stored along with its timestamp in order to calculate $\Delta t$.
 $$\mathbf{x}_t = \mathbf{q}_t$$
 $$\hat{\mathbf{q}}_{t+1} = \alpha (\hat{\mathbf{q}}_t + \Delta t \mathbf{\omega}_t) + (1 - \alpha) {\mathbf{q_A}}_{t+1}$$
 $\alpha \in [0, 1]$. Usually, $\alpha$ is set to a high-value like $0.98$. It is very intuitive to see why this should approximately "work", the data from the accelerometer continuously correct the drift from the gyroscope.
@@ -309,7 +309,7 @@ We can observe here the long-term importance of being able to correct the drift,
 
 ## Asynchronous Augmented Complementary Filter
 
-As explained previously, in this highly-dynamic setting, combining the gyroscope and the accelerometer to retrieve the attitude is not satisfactory. However, we can reuse the intuition from the complementary filter, which is to combine precise but drifting short-term measurements to other measurements that do not suffer from drift. This enable a simple and computationally inexpensive novel filter that we will be able to use later as a baseline. In this case, the short-term measurements are the acceleration and angular velocity from the IMU, and the non drifting measurements come from the Vicon. 
+As explained previously, in this highly-dynamic setting, combining the gyroscope and the accelerometer to retrieve the attitude is not satisfactory. However, we can reuse the intuition from the complementary filter, which is to combine precise but drifting short-term measurements to other measurements that do not suffer from drifting. This enables a simple and computationally inexpensive novel filter that we will be able to use later as a baseline. In this context, the short-term measurements are the acceleration and angular velocity come from the IMU, and the non drifting measurements come from the Vicon. 
 
 We will also add the property that the data from the sensors are asynchronous. As with all following filters, we deal with asynchronicity by updating the state to the most likely state so far for any new sensor measurement incoming. This is a consequence of the sensors having different sampling rate. 
 
@@ -363,7 +363,7 @@ The kalman filter requires that both the model process and the measurement proce
 $$\mathbf{x}_t = f(\mathbf{x}_{t-1}) + \mathbf{w}_t$$
 where $f$ is a linear function and $\mathbf{w}_t$ a gaussian process: it is sampled from an arbitrary gaussian distribution.
 
-The Kalman filter is a direct application  of bayesian inference. It combines the prediction of the distribution given the estimated prior state and the state-transition model.
+The Kalman filter is a direct application of bayesian inference. It combines the prediction of the distribution given the estimated prior state and the state-transition model.
 
 $$\mathbf{x}_t = \mathbf{F}_t \mathbf{x}_{t-1} + \mathbf{B}_t \mathbf{u}_t + \mathbf{w}_t $$
 
@@ -381,7 +381,7 @@ $$\mathbf{y}_t = \mathbf{H}_t \mathbf{x}_{t}  + \mathbf{v}_t $$
 * $\mathbf{H}_t$ the state to measurement matrix
 * $\mathbf{w}_t$ measurement noise drawn from $\mathbf{w}_t \sim N(0, \mathbf{R}_k)$
 
-Because, both the model process and the sensor process are assumed to be linear Gaussian, we can combine them into a Gaussian distribution. Indeed, the product of the distribution of two Gaussian form a new Gaussian distribution.
+Because, both the model process and the sensor process are assumed to be linear Gaussian, we can combine them into a Gaussian distribution. Indeed, the product of the distribution of two Gaussian forms a new Gaussian distribution.
 
 $$P(\mathbf{x}_{t}) \propto P(\mathbf{x}^{-}_{t}|\mathbf{x}_{t-1}) \cdot P(\mathbf{x}_t | \mathbf{y}_t )$$
 $$\mathcal{N}(\mathbf{x}_{t}) \propto \mathcal{N}(\mathbf{x}^{-}_{t}|\mathbf{x}_{t-1}) \cdot \mathcal{N}(\mathbf{x}_t | \mathbf{y}_t )$$
@@ -432,7 +432,7 @@ Furthermore, it is provable that Kalman filters are optimal linear filters.
 
 However, in our context, one component of the state, the attitude, is intrinsically non-linear. Indeed, rotations and attitudes belong to $SO(3)$ which is not a vector space. Therefore, we cannot use *vanilla* Kalman filters. The filters that we present thereafter relax those requirements.
 
-One example of such extension is the extended Kalman filter (EKF) that we will present here. The EKF relax the linearity requirement by using differentiation to calculate an approximation of the first order of the required linear functions. Our state transition function and measurement function can now be expressed in the free forms $f(\mathbf{x}_t)$ and $h(\mathbf{x}_t)$ and we define the matrix $\mathbf{F}_t$ and $\mathbf{H}_t$ as their Jacobian.
+One example of such extension is the extended Kalman filter (EKF) that we will present here. The EKF relax the linearity requirement by using differentiation to calculate an approximation of the first order of the functions required to be linear. Our state transition function and measurement function can now be expressed in the free forms $f(\mathbf{x}_t)$ and $h(\mathbf{x}_t)$ and we define the matrix $\mathbf{F}_t$ and $\mathbf{H}_t$ as their Jacobian.
 
 
 $${\mathbf{F}_t}_{10 \times 10} = \left . \frac{\partial f}{\partial \mathbf{x} } \right \vert _{\hat{\mathbf{x}}_{t-1},\mathbf{u}_{t-1}}$$
@@ -590,9 +590,9 @@ The implementation of an UKF still suffer greatly from quaternion not belonging 
 
 ### Average quaternion
 
-Unfortunately, the average of quaternions components $\frac{1}{N} \sum q_i$ or *barycentric* mean is unsound: Indeed, attitude do not belong to a vector space but a homogenous Riemannian manifold (the four dimensional unit sphere). To convince yourself of the unsoundness of the *barycentric* mean, see that the addition and barycentric mean of two unit quaternion is not necessarily an unit quaternion ($(1, 0, 0, 0)$ and $(-1, 0, 0, 0)$ for instance. Furthermore, angle being periodic, the *barycentric* mean of a quaternion with angle $-178^\circ$ and another with same body-axis and angle $180^\circ$ gives $1^\circ$ instead of the expected $-179^\circ$. 
+Unfortunately, the average of quaternions components $\frac{1}{N} \sum q_i$ or *barycentric* mean is unsound: Indeed, attitudes do not belong to a vector space but a homogenous Riemannian manifold (the four dimensional unit sphere). To convince yourself of the unsoundness of the *barycentric* mean, see that the addition and barycentric mean of two unit quaternion is not necessarily an unit quaternion ($(1, 0, 0, 0)$ and $(-1, 0, 0, 0)$ for instance. Furthermore, angle being periodic, the *barycentric* mean of a quaternion with angle $-178^\circ$ and another with same body-axis and angle $180^\circ$ gives $1^\circ$ instead of the expected $-179^\circ$. 
 
-To calculate the average quaternion, we use an algorithm which minimize a metric that correspond to the weighted attitude difference to the average, namely the weighted sum of the squared Frobenius norms of attitude matrix differences.
+To calculate the average quaternion, we use an algorithm which minimize a metric that corresponds to the weighted attitude difference to the average, namely the weighted sum of the squared Frobenius norms of attitude matrix differences.
 $$\bar{\mathbf{q}} = arg \min_{q \in \mathbb{S}^3} \sum w_i \| A(\mathbf{q}) - A(\mathbf{q}_i) \|^2_F$$
 
 where $\mathbb{S}^3$ denotes the unit sphere.
@@ -607,7 +607,7 @@ The intuition of keeping track of multiple representative of the distribution is
 
 ## Particle Filter
 
-Particle filters are computationaly expensive. This is the reason why their usage is not very popular currently for low-powered embedded systems like drones. However, they are used in Avionics for planes since the computational resources are less scarce and the precision crucial. Accelerating hardware could widen the usage of particle filters to embedded systems.
+Particle filters are computationaly expensive. This is why their usage is not very popular currently for low-powered embedded systems like drones. However, they are used in Avionics for planes since the computational resources are less scarce and the precision more crucial. Accelerating hardware could widen the usage of particle filters to embedded systems.
 
 Particle filters are sequential monte carlo methods. Like all monte carlo method, they rely on repeated sampling for estimation of a distribution. 
 
@@ -654,7 +654,7 @@ $$\sum^N_i w^{(i)*} = 1 \Rightarrow w^{(i)} = \frac{w^{*(i)}}{\sum^N_j w^{*(i)}}
 
 ### Sequential Importance Sampling
 
-The last equation becomes more and more computationally expensive as T grows larger (the joint variable of the time series grows larger). Fortunately, Sequential Importance Sampling is an alternative recurisve algorithm that has a fixed amount of computation at each iteration:
+The last equation becomes more and more computationally expensive as T grows larger (the joint variable of the time series grows larger). Fortunately, Sequential Importance Sampling is an alternative recursive algorithm that has a fixed amount of computation at each iteration:
 
 $$
 \begin{aligned}
@@ -690,9 +690,9 @@ $$\sum^N_i w^{(i)*} = 1 \Rightarrow w^{(i)} = \frac{w^{*(i)}}{\sum^N_j w^{*(i)}}
 
 ### Resampling
 
-When the number of effective particles is too low (less than $1/10$ of N having weight $1/10$), we apply systematic resampling. The idea behind resampling is simple. The distribution is represented by a number of particles with different weights. As time goes, the repartition of weights degenerate. A large subset of particles ends up having negligible weight which make them irrelevant. In the most extreme case, one particle represents the whole distribution.
+When the number of effective particles is too low (less than $1/10$ of N having weight $1/10$), we apply systematic resampling. The idea behind resampling is simple. The distribution is represented by a number of particles with different weights. As time elapses, the partition of weights degenerate. A large subset of particles ends up having negligible weights which make them irrelevant and only a few particles represent most of the distribution. In the most extreme case, one particle represents the whole distribution.
 
-To avoid that degeneration, when the weights are too unbalanced, we resample from the weights distribution: pick N times among the particle and assign them a weight of $1/N$, each pick has odd $w_i$ to pick the particle $p_i$. Thus, some particles with large weights are splitted up into smaller clone particle and others with small weight are never picked. This process is similar to evolution, at each generation, the most promising branch survive and replicate while the less promising die off.
+To avoid that degeneration, when the weights are too unbalanced, we resample from the weights distribution: pick N times among the particle and assign them a weight of $1/N$, each pick has odd $w_i$ to pick the particle $p_i$. Thus, some particles with large weights are splitted up into smaller clone particles and others with small weights are never picked. This process is remotely similar to evolution, at each generation, the most promising branch survive and replicate while the less promising die off.
 
 A popular method for resampling is systematic sampling as described by [@doucet_tutorial_2009]:
 
@@ -702,9 +702,9 @@ Sample $U_1 \sim \mathcal{U} [0, \frac{1}{N} ]$ and define $U_i = U_1 + \frac{i-
 
 ### Introduction
 
-Compared to a plain particle filter, RBPF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RBPF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RBPF can be seen as the "average" of many Gaussians. Each particle is an optimal kalman filter conditioned on the particle's latent variable, the attitude.
+Compared to a plain particle filter, RBPF leverages the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RBPF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RBPF can be seen as the "average" of many Gaussians. Each particle is an optimal kalman filter conditioned on the particle's latent variable, the attitude.
 
-Indeed, the benefit of particle filters is that they assume no particular form for the posterior distribution and transformation of the state. But as the state widens in dimensions, the number of needed particles to keep a good estimation grows exponentially. This is a consequence of ["the curse of dimensionality"}(https://en.wikipedia.org/wiki/Curse_of_dimensionality): for each dimension, we would have to consider all additional combinations of state. In our context, we have 10 dimensions ($\mathbf{v}$,$\mathbf{p}$,$\mathbf{q}$) and it would be very computationally expensive to simulate a too large number of particles. 
+Indeed, the advantage of particle filters is that they assume no particular form for the posterior distribution and transformation of the state. But as the state widens in dimensions, the number of needed particles to keep a good estimation grows exponentially. This is a consequence of ["the curse of dimensionality"}(https://en.wikipedia.org/wiki/Curse_of_dimensionality): for each dimension, we would have to consider all additional combination of state components. In our context, we have 10 dimensions ($\mathbf{v}$,$\mathbf{p}$,$\mathbf{q}$), which is already large, and it would be computationally expensive to simulate a too large number of particles. 
 
 Kalman filters on the other hand do not suffer from such exponential growth, but as explained previously, they are inadequate for non-linear transformations. RBPF is the best of both world by combining a particle filter for the non-linear components of the state (the attitude) as a latent variable, and Kalman filters for the linear components of the state (velocity and position). For ease of notation, the linear component of the state will be referred to as the state and designated by $\mathbf{x}$  even though the actual state we are concerned with should include the latent variable $\boldsymbol{\theta}$.
 
@@ -713,7 +713,6 @@ Kalman filters on the other hand do not suffer from such exponential growth, but
 Related work of this approach is [@vernaza_rao-blackwellized_2006]. However, it differs by:
 
 - adapting the filter to drones by taking into account that the system is too dynamic for assuming that the accelerometer simply output the gravity vector. This is solved by augmenting the state with the acceleration as shown later.
-- not using measurements of the IMU as control inputs (this is usually used for wheeled vehicles because of the drift from the wheels) but have both control inputs and measurements.
 - add an attitude sensor.
 
 ### Latent variable 
