@@ -196,9 +196,9 @@ graph TD
 
 After the IR has been transformed through all the passes, it is sufficiently refined to be processed by the codegen. The codegen is implemented as a traversal which, after linearization by scheduling, visits each item of a sequence of pair of `Sym` and `Def`. Each pair is transformed according to the `Def` as a string in the format of the target language and written to the output file. `Def` nodes have versatile meaning since they encompass the full range of the language. Language designers add `Def` nodes to their language in a modular manner. For Spatial, each kind of data type have an associated set of `Defs` which are defined in their own modules and mixed-in incrementally to the compiler. For instance, `argon.Boolean` have among others `Def` nodes that can be simplified as:
 
-- `case class Not (a: Exp[argon.Boolean]) extends Def[argon.Boolean]`
-- `case class And (a: Exp[argon.Boolean], b: Exp[argon.Boolean]) extends Def[argon.Boolean]`
-- `case class Or  (a: Exp[argon.Boolean], b: Exp[argon.Boolean]) extends Def[argon.Boolean]`
+- `case class Not (a: Exp[argon.Boolean])` ` extends Def[argon.Boolean]`
+- `case class And (a: Exp[argon.Boolean], b: Exp[argon.Boolean])` ` extends Def[argon.Boolean]`
+- `case class Or  (a: Exp[argon.Boolean], b: Exp[argon.Boolean])` ` extends Def[argon.Boolean]`
 
 ## Staging compiler flow
 

@@ -144,7 +144,9 @@ case class RBPFVicon(rawSource1: Source[(Acceleration, Omega)],
                      covGyro: Real,
                      covViconP: Real,
                      covViconQ: Real)	
-	extends Block2[(Acceleration, Omega), (Position, Attitude), (Position, Attitude)] {
+	extends Block2[(Acceleration, Omega), 
+		           (Position, Attitude),
+				   (Position, Attitude)] {
 	
 		def imu = source1
 		def vicon = source2
@@ -563,7 +565,8 @@ There exists a `Spatialable[Time]` which make the following example possible:
   }
 
 
-  val spatial3 = new SpatialBatch2[Time, Time, Time, Double, Double, Double](spatial, spatial2) {
+  val spatial3 = new SpatialBatch2[Time, Time, Time, Double, Double, Double]
+	                              (spatial, spatial2) {
     def spatial(x: Either[TSA, TSB]) = {
       x match {
         case Right(t) => t.v+10
