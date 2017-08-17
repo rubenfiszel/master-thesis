@@ -2,17 +2,17 @@
 
 ## The decline of Moore's law
 
-The Moore's law [^moore] has prevailed in the computation world for the last 4 decades. With each generation of processor, the promise of an exponentially faster execution. Transistors are reaching the scale of 10nm, only 100 times bigger than an atom. Unfortunately, the quantum rules of physics which govern the infinitesimally, start to manifest themselves. In particular, quantum tunneling move electrons from classically insurmountable barrier, making computations approximate, containing a non negligible fraction of errors. 
+The Moore's law [^moore] has prevailed in the computation world for the last 4 decades. With each generation of processor, the promise of an exponentially faster execution. However, transistors are reaching the scale of 10nm, only 100 times bigger than an atom. Unfortunately, the quantum rules of physics which govern the infinitesimally, start to manifest themselves. In particular, quantum tunneling move electrons from classically insurmountable barrier, making computations approximate, containing a non negligible fraction of errors. 
 
 ![The number of transistors throughout the years. We can observe a recent start of a decline](moorelaw.png)
 
 ## The rise of Hardware
 
-Hardware and Software designate here respectively programs that are executed as code for a general purpose processing unit and programs that are synthesized as circuits. The dichotomy is not very well-defined and we can think of it as a spectrum. General-purpose computing on graphics processing units (GPGPU) is in-between in the sense that it is general purpose but relevant only for embarrassingly parallel tasks [^embarpar] and very efficient when used well. They have benefited from high-investment and many generations of iterations and hence, for some tasks, can rivalize or even surpass Hardware.
+Hardware and Software designate here respectively programs that are executed as code for a general purpose processing unit and programs that are hardware description and synthesized as circuits. The dichotomy is not very well-defined and we can think of it as a spectrum. General-purpose computing on graphics processing units (GPGPU) is in-between in the sense that it is general purpose but relevant only for embarrassingly parallel tasks [^embarpar] and very efficient when used well. GPUs have benefited from high-investment and many generations of iterations and hence, for some tasks, can rivalize or even surpass hardware such as field-programmable gate array (FPGA).
 
 ![Hardware vs Software](hwsf.jpg)
 
-Hardware has always been there but application-specific integrated circuit (ASIC) has prohibitive costs upfront (in the range of $100M for a tapeout). Reprogrammable hardware like field-programmable gate array (FPGA) have only been used marginally and for some specific industries like high-frequency trading. But now Hardware is the next natural step to increase performance, at least until a computing revolution happen, like quantum computing, but this is not realist for the near future. However, hardware do not enjoy the same quality of tooling, language and integrated development environments (IDE) as software. This is one the motivation behind Spatial: bridging the gap between Software and Hardware by abstracting control flows through language constructions.
+Hardware has always been there but application-specific integrated circuit (ASIC) has prohibitive costs upfront (in the range of $100M for a tapeout). Reprogrammable hardware like FPGA have only been used marginally and for some specific industries like high-frequency trading. But now Hardware is the next natural step to increase performance, at least until a computing revolution happen, like quantum computing, but it is unlikely to happen in the near future. Nevertheless, hardware do not enjoy the same quality of tooling, language and integrated development environments (IDE) as software. This is one the motivation behind Spatial: bridging the gap between software and hardware by abstracting control flows through language constructions.
 
 ## Hardware as companion accelerators
 
@@ -38,7 +38,9 @@ Thus, developing drone applications with spatial demonstrates the advantages of 
 
 POSE is the combination of the position and orientation of an object. POSE estimation is important for drones. Indeed, It is a subroutine of SLAM (Simultaneous localization and mapping) and it is a central part of motion planning and motion control. More accurate and more reliable POSE estimation results in more agile, more reactive and safer drones. Drones are an intellectually stimulating subject but in the near-future they might also see their usage increase exponentially. In this context, developing and implementing new filter for POSE estimation is both important for the field of robotics but also to demonstrate the importance of hardware acceleration. Indeed, the best and last filter presented here is only made possible because it can be hardware accelerated with Spatial. Furthermore, particle filters are embarrassingly parallel algorithms. Hence, they can leverage the potential of a dedicated hardware design. The spatial implementation will be presented in Part IV.
 
-Before expanding on the Rao-Blackwellized particle filter, we will introduce here several other filters for POSE estimation for highly dynamic objects: Complementary filter, Kalman Filter, Extended Kalman Filter, Particle Filter and finally Rao-Blackwellized Particle filter. The order is from the most conceptually simple, to the most complex. This order is justified because complex filters aim to alleviate some of the flaws of their simpler counterpart. It is important to understand which one and how. 
+Before expanding on the Rao-Blackwellized Particle Filter (RBPF), we will introduce here several other filters for POSE estimation for highly dynamic objects: Complementary filter, Kalman Filter, Extended Kalman Filter, Particle Filter and finally Rao-Blackwellized Particle filter. The order is from the most conceptually simple, to the most complex. This order is justified because complex filters aim to alleviate some of the flaws of their simpler counterpart. It is important to understand which one and how. 
+
+The core of the problem we are trying to solve is to track the current position of the drone given the noisy measurements of the sensor. It is a challenging problem because a good algorithm must take into account that the measurements are noisy and that the transformation applied to the state are non-linear, because of the orientation components of the state. Particle filters are efficient to handle non-linear state transformations and that is the intuition behind the development of the RBPF.
 
 All the following filters are developed and tested in scala-flow. scala-flow will be expanded in part II of this thesis. For now, we will focus on the model and the results, and leave the implementation details for later.
 
@@ -92,7 +94,7 @@ The algorithm inputs are:
 - information about the sensors (sensor measurements biases and matrix of covariance) 
 
 
-## Data generation 
+## Trajectory data generation 
 
 The difficulties with using real flight data is that you need to get the *true* trajectory and that you need enough data to check the efficiency of the filters.
 
@@ -208,7 +210,7 @@ We assume that since the biases of the sensor could be known prior to the flight
 ## Control inputs 
 
 Observations from the control input are not strictly speaking measurements but input of the state-transition model.
-The IMU is a sensor, thus strictly speaking, its measurements are not control inputs. However, in the literature, it is standard to use its measurements as control inputs. One of the advantage is that the accelerometer measures acceleration and angular velocity, raw values close from the input we need in our state-transition. If we used a transformation of the thrust sent as command to the rotors, we would have to account for the rotors imprecision, the wind and other disturbances. Another advantage is that since the IMU has very high sampling rate, we can update very frequently the state with new transitions. The drawback is that the accelerometer is noisy. Fortunately, we can take into account the noise as a process model noise.
+The IMU is a sensor, thus strictly speaking, its measurements are not control inputs. However, in the literature, it is standard to use its measurements as control inputs. One of the advantage is that the IMU measures exactly the data we need for a prediction through the model dynamic. If we used instead a transformation of the thrust sent as command to the rotors, we would have to account for the rotors imprecision, the wind and other disturbances. Another advantage is that since the IMU has very high sampling rate, we can update very frequently the state with new transitions. The drawback is that the accelerometer is noisy. Fortunately, we can take into account the noise as a process model noise.
 
 The control inputs at disposition are:
 
@@ -379,7 +381,7 @@ $$\mathbf{y}_t = \mathbf{H}_t \mathbf{x}_{t}  + \mathbf{v}_t $$
 * $\mathbf{H}_t$ the state to measurement matrix
 * $\mathbf{w}_t$ measurement noise drawn from $\mathbf{w}_t \sim N(0, \mathbf{R}_k)$
 
-Because, both the model process and the sensor process are assumed to be linear gaussian, we can combine them into a gaussian distribution. Indeed, the product of two gaussians is gaussian.
+Because, both the model process and the sensor process are assumed to be linear Gaussian, we can combine them into a Gaussian distribution. Indeed, the product of the distribution of two Gaussian form a new Gaussian distribution.
 
 $$P(\mathbf{x}_{t}) \propto P(\mathbf{x}^{-}_{t}|\mathbf{x}_{t-1}) \cdot P(\mathbf{x}_t | \mathbf{y}_t )$$
 $$\mathcal{N}(\mathbf{x}_{t}) \propto \mathcal{N}(\mathbf{x}^{-}_{t}|\mathbf{x}_{t-1}) \cdot \mathcal{N}(\mathbf{x}_t | \mathbf{y}_t )$$
@@ -700,11 +702,11 @@ Sample $U_1 \sim \mathcal{U} [0, \frac{1}{N} ]$ and define $U_i = U_1 + \frac{i-
 
 ### Introduction
 
-Compared to a plain particle filter, RPBF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RPBF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RPBF can be seen as the "average" of many Gaussians. Each particle is an optimal kalman filter conditioned on the particle's latent variable, the attitude.
+Compared to a plain particle filter, RBPF leverage the linearity of some components of the state by assuming our model gaussian conditionned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RBPF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RBPF can be seen as the "average" of many Gaussians. Each particle is an optimal kalman filter conditioned on the particle's latent variable, the attitude.
 
 Indeed, the benefit of particle filters is that they assume no particular form for the posterior distribution and transformation of the state. But as the state widens in dimensions, the number of needed particles to keep a good estimation grows exponentially. This is a consequence of ["the curse of dimensionality"}(https://en.wikipedia.org/wiki/Curse_of_dimensionality): for each dimension, we would have to consider all additional combinations of state. In our context, we have 10 dimensions ($\mathbf{v}$,$\mathbf{p}$,$\mathbf{q}$) and it would be very computationally expensive to simulate a too large number of particles. 
 
-Kalman filters on the other hand do not suffer from such exponential growth, but as explained previously, they are inadequate for non-linear transformations. RPBF is the best of both world by combining a particle filter for the non-linear components of the state (the attitude) as a latent variable, and Kalman filters for the linear components of the state (velocity and position). For ease of notation, the linear component of the state will be referred to as the state and designated by $\mathbf{x}$  even though the actual state we are concerned with should include the latent variable $\boldsymbol{\theta}$.
+Kalman filters on the other hand do not suffer from such exponential growth, but as explained previously, they are inadequate for non-linear transformations. RBPF is the best of both world by combining a particle filter for the non-linear components of the state (the attitude) as a latent variable, and Kalman filters for the linear components of the state (velocity and position). For ease of notation, the linear component of the state will be referred to as the state and designated by $\mathbf{x}$  even though the actual state we are concerned with should include the latent variable $\boldsymbol{\theta}$.
 
 ### Related work 
 
@@ -865,7 +867,7 @@ $$p(\mathbf{y}_t | \boldsymbol{\theta}^{(i)}_{0:t-1}, \mathbf{y}_{1:t-1}) = \mat
 
 ### Extension to outdoors
 
-As highlighted in the Algorithm summary, the RPBF if easily extensible to other sensors. Indeed, measurements are either: 
+As highlighted in the Algorithm summary, the RBPF if easily extensible to other sensors. Indeed, measurements are either: 
 
 - giving information about position or velocity and their update is similar to the vicon position update as a kalman partial update
 - giving information about the orientation and their update is similar to the vicon attitude update as a pure importance sampling re-weighting.
