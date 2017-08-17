@@ -2,43 +2,43 @@
 
 ## The decline of Moore's law
 
-Moore's law [^moore] has prevailed in the computation world for the last 4 decades. Each generation of processor held the promise of exponentially faster execution. However, transistors are reaching the scale of 10nm, only 100 times bigger than an atom. Unfortunately, the quantum rules of physics which govern the infinitesimal start to manifest themselves. In particular, quantum tunneling moves electrons across classically insurmountable barriers, making computations approximate, resulting in a non negligible fraction of errors. 
+Moore's law [^moore] has prevailed in the computation world for the last four decades. Each new generation of processor comes the promise of exponentially faster execution. However, transistors are reaching the scale of 10nm, only one hundred times bigger than an atom. Unfortunately, the quantum rules of physics governing the infinitesimally small start to manifest themselves. In particular, quantum tunneling moves electrons across classically insurmountable barriers, making computations approximate, resulting in a non negligible fraction of errors. 
 
 ![The number of transistors throughout the years. We can observe a recent start of a decline](moorelaw.png)
 
 ## The rise of Hardware
 
-Hardware and Software designate here respectively programs that are executed as code for a general purpose processing unit and programs that are a hardware description and synthesized as circuits. The dichotomy is not very well-defined and we can think of it as a spectrum. General-purpose computing on graphics processing units (GPGPU) is in-between in the sense that it is general purpose but relevant only for embarrassingly parallel tasks [^embarpar] and very efficient when used well. GPUs have benefited from high-investment and many generations of iterations and hence, for some tasks, can rival or even surpass hardware such as field-programmable gate arrays (FPGA).
+Hardware and Software respectively describe here programs that are executed as code for a general purpose processing unit and programs that are a hardware description and synthesized as circuits. The dichotomy is not very well-defined and we can think of it as a spectrum. General-purpose computing on graphics processing units (GPGPU) is in-between in the sense that it is general purpose but relevant only for embarrassingly parallel tasks [^embarpar] and very efficient when used well. GPUs have benefited from high-investment and many generations of iterations and hence, for some tasks they can match with or even surpass hardware such as field-programmable gate arrays (FPGA).
 
 ![Hardware vs Software](hwsf.jpg)
 
-The option of custom hardware implementations has always been there, but application-specific integrated circuit (ASIC) has prohibitive costs upfront (in the range of $100M for a tapeout). Reprogrammable hardware like FPGAs have only been used marginally and for some specific industries like high-frequency trading. But now Hardware is the next natural step to increase performance, at least until a computing revolution happen, like quantum computing, but it is unlikely to happen in the near future. Nevertheless, hardware do not enjoy the same quality of tooling, language and integrated development environments (IDE) as software. This is one the motivations behind Spatial: bridging the gap between software and hardware by abstracting control flow through language constructions.
+The option of custom hardware implementations has always been there, but application-specific integrated circuit (ASIC) has prohibitive costs upfront (near $100M for a tapeout). Reprogrammable hardware like FPGAs have only been used marginally and for some specific industries like high-frequency trading. But now Hardware is the next natural step to increase performance, at least until a computing revolution happens, e.g: quantum computing, yet this sounds unrealistic in a near future. Nevertheless, hardware do not enjoy the same quality of tooling, language and integrated development environments (IDE) as software. This is one the motivations behind Spatial: bridging the gap between software and hardware by abstracting control flow through language constructions.
 
 ## Hardware as companion accelerators
 
-In most cases, hardware would be inappropriate: running an OS as hardware would be impracticable. Nevertheless, as a companion to a central-processing unit (CPU also called "the host"), it is possible to get the best of both worlds: the flexibility of software on a CPU with the speed of hardware. In this setup, hardware is considered an "accelerator" (hence, the term "hardware accelerator"). It accelerates the most demanding subroutines of the CPU. This companionship is already present in modern computer desktops in the form of GPUs for *shader* operations and sound cards for complex sound transformation/output. 
+In most cases, hardware would be inappropriate: running an OS as hardware would be impracticable. Nevertheless, as a companion to a central-processing unit (CPU also called "the host"), it is possible to get the best of both worlds: the flexibility of software on a CPU with the speed of hardware. In this setup, hardware is considered an "*accelerator*" (hence, the term "hardware accelerator"). It accelerates the most demanding subroutines of the CPU. This companionship is already present in modern computer desktops in the form of GPUs for *shader* operations and sound cards for complex sound transformation/output. 
 
 ## The right metric: Perf/Watt
 
-The right evaluation metric for accelerators is performance per energy, as measured in FLOPS per Watt. This is a fair metric for the comparison of different hardware and architecture because it reveals its intrinsic properties as a computing element. If the metric was solely performance, then it would suffice to stack the same hardware and eventually reach the scale of a super-computer. Performance per dollar is not a good metric either because it does not account for the cost of energy at runtime. Hence, Perf/Watt is a fair metric to compare architectures.
+The right evaluation metric for accelerators is performance per energy, as measured in FLOPS per Watt. This is a fair metric for comparing different hardware and architecture because it reveals its intrinsic properties as a computing element. If the metric was solely performance, then it would be enough to stack the same hardware and eventually reach the scale of a super-computer. Performance per dollar is not a good metric either because it does not account for the cost of energy at runtime. Hence, Perf/Watt is a fair metric to compare architectures.
 
 ## Spatial 
 
-At the DAWN lab, under the lead of [Prof. Olukotun](http://arsenalfc.stanford.edu/kunle) and his grad students, is developed an Hardware Description Language (HDL) implemented as an embedded scala DSL [spatial](https://github.com/stanford-ppl/spatial-lang) and its compiler to program Hardware in a higher-level, more user-friendly, more productive language than Verilog. In particular, the control flows are automatically generated when possible. This should enable software engineers to unlock the potential of Hardware. A custom CGRA, Plasticine, has been developed in parallel to Spatial. It leverages some recurrent patterns: the parallel patterns and aims to be the most efficient reprogrammable architecture for Spatial.
+At the DAWN lab, under the lead of [Prof. Olukotun](http://arsenalfc.stanford.edu/kunle) and his grad students, is developed an Hardware Description Language (HDL) implemented as an embedded scala DSL [spatial](https://github.com/stanford-ppl/spatial-lang) and its compiler to program Hardware in a higher-level, more user-friendly, more productive language than Verilog. In particular, control flows are automatically generated when possible. This should enable software engineers to unlock the potential of Hardware. A custom CGRA, Plasticine, has been developed in parallel to Spatial. It leverages some recurrent patterns as the parallel patterns and it aims at being the most efficient reprogrammable architecture for Spatial.
 
-There is a large upfront cost but once at a big enough scale, Plasticine could be deployed as an accelerator in a wide range of use-cases, from the most demanding server applications to embedded systems with heavy computing requirements.
+Th upfront cost is large but once at a big enough scale, Plasticine could be deployed as an accelerator in a wide range of use-cases, from the most demanding server applications to embedded systems with heavy computing requirements.
 
 ## Embedded systems and drones
 
-Embedded systems are limited by the amount of power at disposal from the battery and may also have size constraints. At the same time, especially for autonomous vehicles, there is a great need for computing power.
+Embedded systems are limited by the amount of power at disposal in the battery and may also have size constraints. At the same time, especially for autonomous vehicles, there is a great need for computing power.
 
-Thus, developing drone applications with Spatial demonstrates the advantages of the platform. As a matter of fact, the filter implementation was only made possible because it is run on a hardware accelerator. It would be unfeasible to run it on more conventional micro-transistors. The family of particle filters, to which the filter developed here belongs, are very computationally expensive and hence are very seldom used for drones.
+Thus, developing drone applications with Spatial demonstrates the advantages of the platform. As a matter of fact, the filter implementation was only made possible because it is run on a hardware accelerator. It would be unfeasible to run it on more conventional micro-transistors. Particle filters, the family of filter which encompasses the types developed here, being very computationally expensive, are very seldom used for drones.
 
 # Sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter
 
-POSE is the combination of the position and orientation of an object. POSE estimation is important for drones. It is a subroutine of SLAM (Simultaneous localization and mapping) and it is a central part of motion planning and motion control. More accurate and more reliable POSE estimation results in more agile, more reactive and safer drones. Drones are an intellectually stimulating subject but in the near-future they might also see their usage increase exponentially. In this context, developing and implementing new filter for POSE estimation is both important for the field of robotics but also to demonstrate the importance of hardware acceleration. Indeed, the best and last filter presented here is only made possible because it can be hardware accelerated with Spatial. Furthermore, particle filters are embarrassingly parallel algorithms. Hence, they can leverage the potential of a dedicated hardware design. The Spatial implementation will be presented in Part IV.
+POSE is the combination of the position and orientation of an object. POSE estimation is important for drones. It is a subroutine of SLAM (Simultaneous localization and mapping) and it is a central part of motion planning and motion control. More accurate and more reliable POSE estimation results in more agile, more reactive and safer drones. Drones are an intellectually stimulating topic and in the near-future they might also see their usage increase exponentially. In this context, developing and implementing new filter for POSE estimation is both important for the field of robotics but also to demonstrate the importance of hardware acceleration. Indeed, the best and last filter presented here is only made possible because it can be hardware accelerated with Spatial. Furthermore, particle filters are embarrassingly parallel algorithms. Hence, they can leverage the potential of a dedicated hardware design. The Spatial implementation will be presented in Part IV.
 
-Before expanding on the Rao-Blackwellized Particle Filter (RBPF), we will introduce here several other filters for POSE estimation for highly dynamic objects: Complementary filter, Kalman Filter, Extended Kalman Filter, Particle Filter and finally Rao-Blackwellized Particle filter. The order is from the most conceptually simple, to the most complex. This order is justified because complex filters aim to alleviate some of the flaws of their simpler counterparts. It is important to understand which one and how. 
+Before expanding on the Rao-Blackwellized Particle Filter (RBPF), we will introduce here several other filters for POSE estimation for highly dynamic objects: Complementary filter, Kalman Filter, Extended Kalman Filter, Particle Filter and finally Rao-Blackwellized Particle filter. This ranges from the most conceptually simple, to the most complex. This order is justified because complex filters aim to alleviate some of the flaws of their simpler counterparts. It is important to understand which one and how. 
 
 The core of the problem we are trying to solve is to track the current position of the drone given the noisy measurements of the sensor. It is a challenging problem because a good algorithm must take into account that the measurements are noisy and that the transformation applied to the state are non-linear, because of the orientation components of the state. Particle filters are efficient to handle non-linear state transformations and that is the intuition behind the development of the RBPF.
 
@@ -52,15 +52,15 @@ The original motivation for the development of accelerated POSE estimation is fo
 
 where the drone avoids the sword attack from its creator. At first, it was thought of accelerating the whole algorithm but it was found that one of the most demanding subroutines was pose estimation.  Moreover, it was wished to increase the processing rate of the filter such that it could match the input with the fastest sampling rate: its inertial measurement unit (IMU) containing an accelerometer, a gyroscope and a magnetometer.
 
-The flamewheel f450 is the typical drone in this category. It is surprisingly fast and agile. Given the proper commands, it can generate enough thrust to avoid in a very short lapse of time any incoming object.
+The flamewheel f450 is the typical drone in this category. It is surprisingly fast and agile. With the proper commands, it can generate enough thrust to avoid any incoming object in a very short lapse of time.
 
 ![The Flamewheel f450](f450.jpg)
 
 ## Sensor fusion
 
-Sensor fusion is the combination of sensory data or data derived from disparate sources such that the resulting information has less uncertainty than would be possible if these sources were to be used individually. In the context of drones, it is very useful because it enables us to combine many imprecise sensor measurement to form a more precise one like having precise positioning from 2 less precise GPS (dual GPS setting). It can also permit us to combine sensors with different sampling rates: typically, precise sensors with low sampling rate and less precise sensors with high sampling rates. Both cases will be relevant here. 
+Sensor fusion is the combination of sensory data or data derived from disparate sources such that the resulting information has less uncertainty than what would be possible if these sources were to be used individually. In the context of drones, it is very useful because it enables us to combine many imprecise sensor measurements to form a more precise one like having precise positioning from 2 less precise GPS (dual GPS setting). It can also allows us to combine sensors with different sampling rates: typically, precise sensors with low sampling rate and less precise sensors with high sampling rates. Both cases will be relevant here. 
 
-A fundamental explanation of why this is possible comes from the central limit theorem: one sample from a distribution with a low variance is as good as n samples from a distribution with variance $n$ times higher.
+A fundamental explanation of why this is possible at all comes from the central limit theorem: one sample from a distribution with a low variance is as good as n samples from a distribution with variance $n$ times higher.
 
 $$\mathbb{V}(X_i)=\sigma^2 ~~~~~ \mathbb{E}(X_i) = \mu$$
 $$\bar{X} = \frac{1}{n}\sum X_i$$
@@ -102,7 +102,7 @@ To avoid these issues, the flight data is simulated through a model of trajector
 
 The bulk of the method is that a differential equation representing the difference of position, velocity and acceleration between the starting and ending state is solved with the [Pontryagin’s minimum principle](https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle) using the appropriate [Hamiltonian](https://en.wikipedia.org/wiki/Hamiltonian_(control_theory)).  Then, from that closed form solution, a per-axis cost can be calculated to pick the "least aggressive" trajectory out of different candidates. Finally, the feasibility of the trajectory is computed using the constraints of maximum thrust and body rate (angular velocity) limits.
 
-For the purpose of this work, a scala implementation of the model was realized. Then, some keypoints containing Gaussian components for the position, velocity acceleration, and duration were tried until a feasible set of keypoints was found. This method of data generation is both fast and a good enough approximation of the actual trajectories that a drone would perform in the real world. 
+For the purpose of this work, a scala implementation of the model was written. Then, some keypoints containing Gaussian components for the position, velocity acceleration, and duration were tried until a feasible set of keypoints was found. This method of data generation is both fast and a good enough approximation of the actual trajectories that a drone would perform in the real world. 
 
 <video autoplay loop>
   <source src="flight.webm" type="video/webm">
@@ -205,7 +205,7 @@ Some sensors are more relevant indoor and some others outdoor:
 
 * **Outdoor**: The sensors available outdoor are the accelerometer, the gyroscope, the magnetometer, two GPS, an optical flow and an altimeter.
 
-We assume that since the biases of the sensor could be known prior to the flight, the sensors have been calibrated and output measurements with no bias. Some filters like the [ekf2](https://dev.px4.io/en/tutorials/tuning_the_ecl_ekf.html) of the px4 flight stack keep track of the sensor biases but this is a state augmentation that was not deemed worthwhile.
+We assume that since the biases of the sensor could be known prior to the flight, both the sensor output measurements have been calibrated with no bias. Some filters like the [ekf2](https://dev.px4.io/en/tutorials/tuning_the_ecl_ekf.html) of the px4 flight stack keep track of the sensor biases but this is a state augmentation that was not deemed worthwhile.
 
 ## Control inputs 
 
@@ -355,7 +355,7 @@ The structure of this filter and all of the filters presented thereafter is as f
 
 ### Bayesian inference 
 
-Bayesian inference is a method of statistical inference in which Bayes' theorem is used to update the probability for a hypothesis as more evidence or information becomes available. In this Bayes setting, the prior is the estimated distribution of the previous state at time $t-1$, the likelihood correspond to the likelihood of getting the new data from the sensor given the prior and finally, the posterior is the updated estimated distribution.
+Bayesian inference is a method of statistical inference in which Bayes' theorem is used to update the probability for a hypothesis when more evidence or information becomes available. In this Bayes setting, the prior is the estimated distribution of the previous state at time $t-1$, the likelihood correspond to the likelihood of getting the new data from the sensor given the prior and finally, the posterior is the updated estimated distribution.
 
 ### Model
 
@@ -388,7 +388,7 @@ $$\mathcal{N}(\mathbf{x}_{t}) \propto \mathcal{N}(\mathbf{x}^{-}_{t}|\mathbf{x}_
 
 where $\mathbf{x}^{-}_{t}$ is the predicted state from the previous state and the state-transition model.
 
-The Kalman filter keeps track of the parameters of that gaussian: the mean state and the covariance of the state which represent the uncertainty about our last prediction. The mean of that distribution is also the best current state estimation of the filter.
+Kalman filter keeps track of the parameters of that gaussian: the mean state and the covariance of the state which represents the uncertainty about our last prediction. The mean of that distribution is also the best current state estimation of the filter.
 
 By keeping track of the uncertainty, we can optimally combine the normals by knowing what importance to give to the difference between the expected sensor data and the actual sensor data. That factor is the Kalman gain.
 
@@ -506,7 +506,7 @@ $$\left( \begin{array}{c}
 \mathbf{q}\\
 \end{array} \right)$$
 
-The only complex partial derivatives to calculate are the one of the acceleration, because they have to be rotated first. Once again, we use sagemath:
+The only complex partial derivatives to calculate are the ones of the acceleration, because they have to be rotated first. Once again, we use sagemath:
 $\mathbf{H_a}$ is defined by the script in the appendix B.
 
 $${\mathbf{H}_t}_{10 \times 7} = \left . \frac{\partial h}{\partial \mathbf{x} } \right \vert _{\hat{\mathbf{x}}_{t}} = \left( \begin{array}{ccc}
@@ -527,7 +527,7 @@ We transform this rotation vector into a quaternion using our function $R2Q$. We
 
 ### Unscented Transform
 
-The unscented transform (UT) is a mathematical function used to estimate statistics after applying a given nonlinear transformation to a probability distribution. The idea is to use points that are representative of the original distribution, sigma points. We apply the transformation to those sigma points and calculate the new statistics using the transformed sigma points. The sigma points must have the same mean and covariance as the original distribution.  
+The unscented transform (UT) is a mathematical function used to estimate statistics after applying a given nonlinear transformation to a probability distribution. The idea is to use points that are representative of the original distribution, sigma points. We apply the transformation to those sigma points and calculate new statistics using the transformed sigma points. The sigma points must have the same mean and covariance as the original distribution.  
 
 The minimal set of symmetric sigma points can be found using the covariance of the initial distribution. The $2N + 1$ minimal symmetric set of sigma points are the mean and the set of points corresponding to the mean plus and minus one of the direction corresponding to the covariance matrix. In one dimension, the square root of the variance is enough. In N-dimensions, you must use the Cholesky decomposition of the covariance matrix. The Cholesky decomposition finds the matrix $L$ such that $\Sigma = LL^t$.
 
@@ -586,7 +586,7 @@ The Unscented Kalman Filter (UKF) does not suffer from the two first flaws, but 
 
 Indeed, the UKF applies an unscented transformation to sigma points of the current approximated distribution. The statistics of the new approximated Gaussian are found through this unscented transform. The EKF linearizes the transformation, the UKF approximates the resulting Gaussian after the transformation. Hence, the UKF can take into account the effects of the transformation away from the mean which might be drastically different.
 
-The implementation of an UKF still suffers greatly from quaternions not belonging to a vector space. The approach taken by [@edgar_quaternion-based_nodate] is to use the error quaternion defined by $\mathbf{e}_i = \mathbf{q}_i\bar{\mathbf{q}}$. This approach has the benefit that similar quaternion differences result in similar error. But apart from that, it does not have any profound justification. We must compute a sound average weighted quaternion of all sigma points. An algorithm is described in the following section.
+The implementation of an UKF still suffers greatly from quaternions not belonging to a vector space. The approach taken by [@edgar_quaternion-based_nodate] is to use the error quaternion defined by $\mathbf{e}_i = \mathbf{q}_i\bar{\mathbf{q}}$. This approach has the advantage that similar quaternion differences result in similar error. But apart from that, it does not have any profound justification. We must compute a sound average weighted quaternion of all sigma points. An algorithm is described in the following section.
 
 ### Average quaternion
 
@@ -603,7 +603,7 @@ The attitude matrix $A(\mathbf{q})$ and its corresponding Frobenius norm have be
 
 ### Intuition
 
-The intuition of keeping track of multiple representations of the distribution is exactly the approach taken by the particle filter. The particle filter has the advantage that the distribution is never transformed back to a gaussian so there are fewer assumptions made about the noise and the transformation. It is only required to be able to calculate the expectation from a weighted set of particles.
+The intuition of keeping track of multiple representatives of the distribution is exactly the approach taken by the particle filter. The particle filter has the advantage that the distribution is never transformed back to a gaussian so there are fewer assumptions made about the noise and the transformation. It is only required to be able to calculate the expectation from a weighted set of particles.
 
 
 ## Particle Filter
@@ -620,7 +620,7 @@ $$p(\mathbf{x}) = \sum w^{(i)}\delta(\mathbf{x} - \mathbf{x}^{(i)})$$ where $\de
 
 ### Importance sampling 
 
-The weights are computed through importance sampling. With importance sampling, each particle does not equally represent the distribution. Importance sampling enables us to use sampling from another distribution to estimate properties from the target distribution of interest. In most cases, it can be used to focus sampling on a specific region of the distribution. In our case, by choosing the right importance distribution (the dynamics of the model as we will see later), we can re-weight particles based on the likelihood from the measurements ($p(\mathbf{y} | \mathbf{x})$.
+Weights are computed through importance sampling. With importance sampling, each particle does not equally represent the distribution. Importance sampling enables us to use sampling from another distribution to estimate properties from the target distribution of interest. In most cases, it can be used to focus sampling on a specific region of the distribution. In our case, by choosing the right importance distribution (the dynamics of the model as we will see later), we can re-weight particles based on the likelihood from the measurements ($p(\mathbf{y} | \mathbf{x})$.
 
 Importance sampling is based on the identity:
 
@@ -681,7 +681,7 @@ w^{(i)}_k &\propto \frac{p(\mathbf{y}_k | \mathbf{x}^{(i)}_{k})p(\mathbf{x}^{(i)
 \end{aligned}
 $$
 
-We can further simplify the formuly by choosing the importance distribution to be the dynamics of the model:
+We can further simplify the formula by choosing the importance distribution to be the dynamics of the model:
 $$\pi(\mathbf{x}_{k} |\mathbf{x}_{0:k-1},  \mathbf{y}_{1:k}) = p(\mathbf{x}^{(i)}_k | \mathbf{x}^{(i)}_{k-1})$$
 $$ w^{*(i)}_k = p(\mathbf{y}_k | \mathbf{x}^{(i)}_{k}) w^{(i)}_{k-1}$$
 
@@ -691,9 +691,9 @@ $$\sum^N_i w^{(i)*} = 1 \Rightarrow w^{(i)} = \frac{w^{*(i)}}{\sum^N_j w^{*(i)}}
 
 ### Resampling
 
-When the number of effective particles is too low (less than $1/10$ of N having weight $1/10$), we apply systematic resampling. The idea behind resampling is simple. The distribution is represented by a number of particles with different weights. As time goes on, the repartition of weights degenerate. A large subset of particles end up having negligible weight which make them irrelevant and only a few particles represent most of the distribution. In the most extreme case, one particle represents the whole distribution.
+When the number of effective particles is too low (less than $1/10$ of N having weight $1/10$), we apply systematic resampling. The idea behind resampling is simple. The distribution is represented by a number of particles with different weights. As time goes on, the repartition of weights degenerates. A large subset of particles end up having negligible weight which make them irrelevant and only a few particles represent most of the distribution. In the most extreme case, one particle represents the whole distribution.
 
-To avoid that degeneration, when the weights are too unbalanced, we resample from the weights distribution: pick N times among the particle and assign them a weight of $1/N$, each pick has odd $w_i$ to pick the particle $p_i$. Thus, some particles with large weights are split up into smaller clone particle and others with small weights are never picked. This process is remotely similar to evolution: at each generation, the most promising branch survive and replicate while the less promising die off.
+To avoid that degeneration, when the weights are too unbalanced, we resample from the weights distribution: pick N times among the particle and assign them a weight of $1/N$, each pick has odd $w_i$ to pick the particle $p_i$. Thus, some particles with large weights are split up into smaller clone particle and others with small weights are never picked. This process is remotely similar to evolution: at each generation, the most promising branch survives and replicate while the less promising dies off.
 
 A popular method for resampling is systematic sampling as described by [@doucet_tutorial_2009]:
 
@@ -703,7 +703,7 @@ Sample $U_1 \sim \mathcal{U} [0, \frac{1}{N} ]$ and define $U_i = U_1 + \frac{i-
 
 ### Introduction
 
-Compared to a plain particle filter, RBPF leverages the linearity of some components of the state by assuming our model gaussian conditioned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RBPF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RBPF can be seen as the "average" of many Gaussians. Each particle is an optimal kalman filter conditioned on the particle's latent variable, the attitude.
+Compared to a plain particle filter, RBPF leverages the linearity of some components of the state by assuming our model to be Gaussian conditioned on a latent variable: Given the attitude $q_t$, our model is linear. This is where RBPF shines: We use particle filtering to estimate our latent variable, the attitude, and we use the optimal kalman filter to estimate the state variable. If a plain particle can be seen as the simple average of particle states, then the RBPF can be seen as the "average" of many Gaussians. Each particle is an optimal kalman filter conditioned on the particle's latent variable, the attitude.
 
 Indeed, the advantage of particle filters is that they assume no particular form for the posterior distribution and transformation of the state. But as the state widens in dimensions, the number of needed particles to keep a good estimation grows exponentially. This is a consequence of ["the curse of dimensionality"}(https://en.wikipedia.org/wiki/Curse_of_dimensionality): for each dimension, we would have to consider all additional combination of state components. In our context, we have 10 dimensions ($\mathbf{v}$,$\mathbf{p}$,$\mathbf{q}$), which is already large, and it would be computationally expensive to simulate a too large number of particles. 
 

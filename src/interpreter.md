@@ -20,10 +20,10 @@ Spatial is built on top of Argon, a fork of Lightweight Modular Staging (LMS). A
 
 Argon is:
 
-- **two-staged**: There is only a single meta-stage and a single object-stage. The idea behind Argon is that the meta-program is constructing an IR programmatically in Scala through the frontend DSL, transform that IR and finally codegen the object program. All of this happening at runtime.
+- **two-staged**: There is only a single meta-stage and a single object-stage. The idea behind Argon is that the meta-program is constructing an IR programmatically in Scala through the frontend DSL, transforms that IR and finally codegens the object program. All of this happening at runtime.
 - **heterogenous**: The meta-program is in Scala but the generated meta-program does not have to be in Scala as well. For instance, for FPGA, the target language is both C++ and Chisel (an embedded DSL in Scala).
-- **typed**: The DSL is typed which enable Scala to typecheck the construction of the IR. Furthermore, the IR is itself typed. The IR being typed ensures that language designers write sound DSLs and corresponding IR.
-- **automatic staging annotations**: The staging annotations are part of the frontend DSL. Implicit conversions exist from unstaged types to staged types. The staging annotations exists in the form of typeclass instances and inheritance.
+- **typed**: The DSL is typed which enables Scala to typecheck the construction of the IR. Furthermore, the IR is itself typed. The IR being typed ensures that language designers write sound DSLs and corresponding IR.
+- **automatic staging annotations**: Staging annotations are part of the frontend DSL. Implicit conversions exist from unstaged types to staged types. Staging annotations exists under the form of typeclass instances and inheritance.
 
 ## Staged type
 
@@ -98,7 +98,7 @@ graph TD
 
 ## Transformer and traversal
 
-A Traversal is a pass of the compiler that traverse (iterate through) the entire IR and apply an arbitrary function. It can either be used to check if the IR is well-formed or to gather some logs and stats about the current state of the IR. Since the IR is a "sea-of-nodes", it has to be linearized first by a scheduler as a sequence of nodes. Codegen is defined as a traversal.
+A Traversal is a pass of the compiler that traverses (iterates through) the entire IR and applies an arbitrary function. It can either be used to check if the IR is well-formed or to gather some logs and stats about the current state of the IR. Since the IR is a "sea-of-nodes", it has to be linearized first by a scheduler as a sequence of nodes. Codegen is defined as a traversal.
 
 A Transformer is a Traversal that not only traverses the IR but also transforms it into a new IR.
 

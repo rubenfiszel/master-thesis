@@ -10,7 +10,7 @@ Simulink by MathWorks on the other hand, is a graphical programming environment 
 
 ![An example of the simulink interface](simulink.png)
 
-scala-flow is inspired by both of these tools. It is general purpose in the sense that it can be used to represent any dynamic systems. Nevertheless, its primary intended use is to develop, prototype, and debug embedded systems, and in particular those that make use of spatially programmed hardware. scala-flow has a functional/composable api, displays the constructed graph and also provides block constructions. It has strong type safety: the type of the input and output of each node is checked during compilation time to ensure the soundness of the resulting graph.
+scala-flow is inspired by both of these tools. It is general purpose in the sense that it can be used to represent any dynamic systems. Nevertheless, its primary intended use is to develop, prototype, and debug embedded systems, and in particular those that make use of spatially programmed hardware. scala-flow has a functional/composable api, displays the constructed graph and provides block constructions. It has strong type safety: the type of the input and output of each node is checked during compilation time to ensure the soundness of the resulting graph.
 
 ## Source, Sink and Transformations
 
@@ -20,7 +20,7 @@ Data are passed from nodes to nodes under the form of typed "packets" containing
 
 They are called Timestamped because they represent values and their corresponding timestamp information.
 
-Packets get emitted from `Source0[T]` (nodes with no input), processed and transformed by other nodes until they reach sinks (nodes with no output). The nodes are connected between each other according to the structure of the data flow.
+Packets get emitted from `Source0[T]` (nodes with no input), processed and transformed by other nodes until they reach sinks (nodes with no output). Nodes are connected between each other according to the structure of the data flow.
 
 Nodes all mix-in the common trait `Node`. Every emitting `Node` (all nodes except sinks) mix-in the trait `Source[A]` whose type parameter `A` indicates the type of the packets emitted by this node. Indeed, nodes can only have one output but they can have any number of inputs. Every node also mixes-in the trait `SourceX[A, B, ...]` where X is the number of inputs for that node and is replaced by the actual arity (1, 2, 3, ...). This is similar to `FunctionX[A, B, ..., R]`, the type of functions in scala.
 
@@ -159,7 +159,7 @@ case class RBPFVicon(rawSource1: Source[(Acceleration, Omega)],
 
 and similar for EKFVicon. 
 
-The observant reader might notice that the above block takes as arguments `rawSourceI` and not `sourceI` directly. However, the packets are processing in the body of the class as incoming from `sourceI` (`def imu = source1`). This is a consequence of intermediary `Source` potentially needing to be generated during the graph creation to synchronize multiple scheduler together. More details below. 
+The careful reader might notice that the above block takes as arguments `rawSourceI` and not `sourceI` directly. However, the packets are processing in the body of the class as incoming from `sourceI` (`def imu = source1`). This is a consequence of intermediary `Source` potentially needing to be generated during the graph creation to synchronize multiple scheduler together. More details below. 
 
 ## Graph construction
 
@@ -217,7 +217,7 @@ lazy val buffer = Buffer(merge, initA)
 lazy val zipped = source.zip(buffer)
 ```
 
-`lazy val a = e` in scala implements lazy evaluation, meaning the expression `e` is not evaluated until it is needed. In our case, this makes sure that both `buffer` and `zipped` can be declared and instantiated. It suffices that their parameters are declared of the right type, they do not actually need to evaluated. At the initialization of the entire graph, there is no circular dependency either because both instance exists and will only be used during the evaluation of the graph.
+`lazy val a = e` in scala implements lazy evaluation, meaning the expression `e` is not evaluated until it is needed. In our case, this makes sure that both `buffer` and `zipped` can be declared and instantiated. It is enough that their parameters are declared of the right type, they do not actually need to evaluated. At the initialization of the entire graph, there is no circular dependency either because both instances exist and will only be used during the evaluation of the graph.
 
 
 ## Source API
@@ -419,7 +419,7 @@ All schedulers start at time 0. The current time of a scheduler is the time of t
 
 ## Replay
 
-`Replay` are nodes at the frontier of two schedulers. They accumulate packets from the actions of the first scheduler until they receive its `CloseListener` callback. When received, they en-queue all the accumulated actions into the second scheduler. `Replay`s are the primary mechanism of synchronization between two `Scheduler`s. A `Batch` is essentially a `Replay` with its own `Scheduler` as secondary `Scheduler`. However, a batch transforms the data before broadcasting instead of simply replaying it. 
+`Replay` are nodes at the frontier of two schedulers. They accumulate packets from the actions of the first scheduler until they receive its `CloseListener` callback. When received, they en-queue all the accumulated actions into the second scheduler. `Replay`s are the primary mechanisms of synchronization between two `Scheduler`s. A `Batch` is essentially a `Replay` with its own `Scheduler` as secondary `Scheduler`. However, a batch transforms the data before broadcasting instead of simply replaying it. 
 
 **All sources of a node must share the same scheduler. Replays are automatically inserted to ensure that this rule is respected**
 
