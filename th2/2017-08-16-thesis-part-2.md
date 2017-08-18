@@ -3,43 +3,40 @@ title: "[thesis II] A simulation tool for scala with spatial integration: scala-
 author: Ruben Fiszel
 affiliation: Stanford University
 email: ruben.fiszel@epfl.ch
-date: August 2017
-link-citations: true
-header-includes:
-    - \usepackage{minted}
+date: 12 August 2017
 ---
 
 ### About
 
-This post is the part II out of IV of my [master thesis](assets/thesis.png) at the [DAWN lab](http://dawn.cs.stanford.edu/), Stanford, under [Prof. Kunle](http://arsenalfc.stanford.edu/kunle) and [Prof. Odersky](http://lampwww.epfl.ch/~odersky/) supervision. The central themes of this thesis are sensor fusion and spatial, an hardware description language (Verilog is also one, but tedious). 
+This post is the part II out of IV of my [master thesis](/assets/thesis.pdf) at the [DAWN lab](http://dawn.cs.stanford.edu/), Stanford, under [Prof. Kunle](http://arsenalfc.stanford.edu/kunle) and [Prof. Odersky](http://lampwww.epfl.ch/~odersky/) supervision. The central themes of this thesis are sensor fusion and spatial, an hardware description language (Verilog is also one, but tedious). 
 
 This part is about scala-flow, a simulation library with a spatial-lang integration written to ease the prototyping, development and testing of applications that can be represented as data flows with some subpart going through spatial written accelerators.
 
-# A simulation tool for data flows with spatial integration: scala-flow
+# A simulation tool for data flows with Spatial integration: scala-flow
 
 ## Purpose
 
-Data flows are intuitive visual representations and abstractions of computation. As all forms of representations and abstractions, they ease complexity management, and let engineers reason on a higher level. They are common in the context of embedded systems, where sensors and electronic circuits have natural visual representations. They are also used in most forms of data processing, in particular those related to the so called *big data*.
+Data flows are intuitive visual representations and abstractions of computation. As all forms of representations and abstractions, they ease complexity management, and let engineers reason at a higher level. They are common in the context of embedded systems, where sensors and electronic circuits have natural visual representations. They are also used in most forms of data processing, in particular those related to so called *big data*.
 
-Spark and Simulink are popular libraries for data processing and embedded systems respectively. Spark grew popular as an alternative to Hadoop. The advantages of Spark over Hadoop was, among others, in-memory communication between nodes (as opposite of through file) and a functionnally inspired scala api that brought better abstractions and reduced the number of line of code. Less boilerplate and duplication of code improve abstraction and ease prototyping thanks to fast iteration.
+Spark and Simulink are popular libraries for data processing and embedded systems, respectively. Spark grew popular as an alternative to Hadoop. The advantages of Spark over Hadoop was, among others, in-memory communication between nodes (as opposed to through files) and a functionally inspired scala api that brought better abstractions and reduced the number of lines of code. Less boilerplate and duplication of code improve abstraction and ease prototyping thanks to faster iteration.
 
-Simulink by MathWorks on the other hand, is a graphical programming environment for modeling, simulating and analyzing dynamic systems including embedded systems. Its primary interface is a graphical block diagramming tool and a customizable set of block libraries.
+Simulink by MathWorks on the other hand, is a graphical programming environment for modeling, simulating and analyzing dynamic systems, including embedded systems. Its primary interface is a graphical block diagramming tool and a customizable set of block libraries.
 
 ![An example of the simulink interface](simulink.png)
 
-scala-flow is inspired by both of these tools. It is general purpose in the sense that it can be used to represent any dynamic systems. Nevertheless, its primary intended usage is to develop, prototype, and debug embedded systems in particular those that make use of spatial programmed hardware. scala-flow has a functional/composable api, displays the constructed graph and also provides block constructions. It has strong type safety: the type of the input and output of each node is checked during compilation time to ensure the soundness of the resulting graph.
+scala-flow is inspired by both of these tools. It is general purpose in the sense that it can be used to represent any dynamic systems. Nevertheless, its primary intended use is to develop, prototype, and debug embedded systems, and in particular those that make use of spatially programmed hardware. scala-flow has a functional/composable api, displays the constructed graph and provides block constructions. It has strong type safety: the type of the input and output of each node is checked during compilation time to ensure the soundness of the resulting graph.
 
 ## Source, Sink and Transformations
 
-Data are passed from nodes to nodes under the form of typed "packets" containing a value of the given type, an emission timestamp and the delays the packet has encountered during its processing through the different nodes of the graph.
+Data are passed from nodes to nodes under the form of typed "packets" containing a value of the given type, an emission timestamp, and the delays the packet has encountered during its processing through the different nodes of the graph.
 
 `case class Timestamped[A](t: Time, v: A, dt: Time)`
 
-They are called Timestamped because they represent value and their corresponding timestamp information.
+They are called Timestamped because they represent values and their corresponding timestamp information.
 
-Packets get emitted from `Source0[T]` (nodes with no input), processed and transformed by other nodes until they reach sinks (nodes with no output). The nodes are connected between each other according to the structure of the data flow.
+Packets get emitted from `Source0[T]` (nodes with no input), processed and transformed by other nodes until they reach sinks (nodes with no output). Nodes are connected between each other according to the structure of the data flow.
 
-Nodes all mix-in the common trait `Node`. Every emitting `Node` (all node except sinks) mix-in the trait `Source[A]` whose type parameter `A` indicates the type of the packets emitted by this node. Indeed, nodes can only have one output but they can have any number of input. Every node also mix-in the trait `SourceX[A, B, ...]` where X is the number of input for that node and is replaced by the actual arity (1, 2, 3, ...). This is similar to `FunctionX[A, B, ..., R]`, the type of functions in scala.
+Nodes all mix-in the common trait `Node`. Every emitting `Node` (all nodes except sinks) mix-in the trait `Source[A]` whose type parameter `A` indicates the type of the packets emitted by this node. Indeed, nodes can only have one output but they can have any number of inputs. Every node also mixes-in the trait `SourceX[A, B, ...]` where X is the number of inputs for that node and is replaced by the actual arity (1, 2, 3, ...). This is similar to `FunctionX[A, B, ..., R]`, the type of functions in scala.
 
 - `Source0` indicates that the node takes exactly 0 input.
 - `Source1[A]` indicates that the node has 1 input whose packets are of type A. 
@@ -48,9 +45,9 @@ Nodes all mix-in the common trait `Node`. Every emitting `Node` (all node except
 
 Since all nodes mix-in a `SourceX`, the compiler can check that the inputs of each node are of the right type.
 
-All `SourceX` must define `def listenI(x: A)` where `I` goes from 1 to X and `A` correspond to the corresponding type parameter of `SourceX`. `def listenI(x: A)` defines the action to take whenever a packet is received from the input I. Those functions are callback used to pass packets to the nodes following a listener pattern. 
+All `SourceX` must define `def listenI(x: A)` where `I` goes from 1 to X and `A` correspond to the corresponding type parameter of `SourceX`. `def listenI(x: A)` defines the action to take whenever a packet is received from the input I. Those functions are callbacks used to pass packets to the nodes following a listener pattern. 
 
-There is a special case, `SourceN[A, R]` which represent nodes that have an \*-arity of type `A` and emit packets of type `R`. For instance, the `Plot` nodes take \* number of sources and display them all on the same plot. The only constraint is that all the source nodes must emit the same kind of data of type A. Else it would not make sense to compare them. For plot specifically, `A` has also a context bound of `Data` which means that there exists a conversion from `A` to a `Seq[Float]`, to ensure that `A` is displayable in a multiplot as time series. The x-axis, the time, correspond to the timestamp of emission contained in the packet.
+There is a special case, `SourceN[A, R]` which represent nodes that have an \*-arity of type `A` and emit packets of type `R`. For instance, the `Plot` nodes take \* number of sources and display them all on the same plot. The only constraint is that all the source nodes must emit the same kind of data of type A. Otherwise, it would not make sense to compare them. For plots specifically, `A` also has a context bound of `Data` which means that there exists a conversion from `A` to a `Seq[Float]`, to ensure that `A` is displayable in a multiplot as time series. The x-axis, the time, correspond to the timestamp of emission contained in the packet.
 
 An intermediary node that applies a transformation mixs-in the trait `OpX[A, B, ..., R]` where `A, B` is the type of the input, and `R` is the type of the output. 
 
@@ -61,7 +58,7 @@ For instance, `zip(sourceA, sourceB)` is an `Op[A, B, (A, B)]`. In most cases, `
 
 ## Demo 
 
-Below is the scala-flow code corresponding to a data-flow comparing a particle filter, an extended kalman filter, and the true state of the underlying model, the trajectory of the drone. At each tick of the different clocks, a packet containing the time as value is sent to a node simulating a sensor. Those sensors have access to the underlying model and transform the time into noisy sensor measurements, then forward them to the two filters. The packets once processed by the filters are plotted by the Plot sink. The plot also take as input the true state as given by the "toPoints" transformation.
+Below is the scala-flow code corresponding to a data-flow comparing a particle filter, an extended kalman filter, and the true state of the underlying model, the trajectory of the drone. At each tick of the different clocks, a packet containing the time as value is sent to a node simulating a sensor. Those sensors have access to the underlying model and transform the time into noisy sensor measurements, then forward them to the two filters. Once processed by the filters, the packets are plotted by the Plot sink. The plot also take as input the true state as given by the "toPoints" transformation.
 
 ```scala
 
@@ -147,7 +144,7 @@ Below is the scala-flow code corresponding to a data-flow comparing a particle f
 
 ## Block
 
-A block is a node representing a group of node. That node can be summarized by its input and output such that from an external perspective, it can be considered as a simple node. Similar to the way an interface or an API hide its implementation details, a block hides its inner workings to the rest of the data-flow as long as the block receives and emits the right type of packets. This logic extends to the graphical representation. Blocks are represented as nodes in the high-level graph but expanded in an independent graph below the main one.
+A block is a node representing a group of nodes. That node can be summarized by its input and output such that from an external perspective, it can be considered as a simple node. Similar to the way an interface or an API hide its implementation details, a block hides its inner workings to the rest of the data-flow as long as the block receives and emits the right type of packets. This logic extends to the graphical representation. Blocks are represented as nodes in the high-level graph but expanded in an independent graph below the main one.
 
 Similar to `OpX[A, B, ..., R]` , there exists `BlockX[A, B, ..., R]` which all extend `Block[R]` and take X sources as input. All `Block[R]` must define an `out` method of the form: `def out: Source[R]`.
 
@@ -161,7 +158,9 @@ case class RBPFVicon(rawSource1: Source[(Acceleration, Omega)],
                      covGyro: Real,
                      covViconP: Real,
                      covViconQ: Real)	
-	extends Block2[(Acceleration, Omega), (Position, Attitude), (Position, Attitude)] {
+	extends Block2[(Acceleration, Omega), 
+		           (Position, Attitude),
+				   (Position, Attitude)] {
 	
 		def imu = source1
 		def vicon = source2
@@ -174,11 +173,11 @@ case class RBPFVicon(rawSource1: Source[(Acceleration, Omega)],
 
 and similar for EKFVicon. 
 
-The observant reader might notice that the above block takes as arguments `rawSourceI` and not `sourceI` directly. However, the packets are processing in the body of the class as incoming from `sourceI` (`def imu = source1`). This is a consequence of intermediary `Source` potentially needing to be generated during the graph creation to synchronize multiple scheduler together. More details below. 
+The careful reader might notice that the above block takes as arguments `rawSourceI` and not `sourceI` directly. However, the packets are processing in the body of the class as incoming from `sourceI` (`def imu = source1`). This is a consequence of intermediary `Source` potentially needing to be generated during the graph creation to synchronize multiple scheduler together. More details below. 
 
 ## Graph construction
 
-A graph can be entirely re-evaluated multiple times. For instance, we might want to run our simulation more than once. A feature of scala-flow is that the nodes of a graph are immutable and can be reused between different evaluations. This enables to serialize, store or transfer a graph easily. A graph is a data structure and scala-flow follow that intuition by separating the construction of graph and its evaluations.  What is specific and shortlived for the lapse of time of an evaluation of a graph are the `Channel`s between the different nodes.
+A graph can be entirely re-evaluated multiple times. For instance, we might want to run our simulation more than once. A feature of scala-flow is that the nodes of a graph are immutable and can be reused between different evaluations. This enables us to serialize, store or transfer a graph easily. A graph is a data structure and scala-flow follows that intuition by separating the construction of graph and its evaluations.  What is specific and shortlived for the lapse of time of an evaluation of a graph are the `Channel`s between the different nodes.
 
 ### Channel
 
@@ -232,7 +231,7 @@ lazy val buffer = Buffer(merge, initA)
 lazy val zipped = source.zip(buffer)
 ```
 
-`lazy val a = e` in scala implements lazy evaluation, meaning the expression `e` is not evaluated until it is needed. In our case, this makes sure that both `buffer` and `zipped` can be declared and instantiated. It suffices that their parameters are declared of the right type, they do not actually need to evaluated. At the initialization of the entire graph, there is no circular dependency either because both instance exists and will only be used during the evaluation of the graph.
+`lazy val a = e` in scala implements lazy evaluation, meaning the expression `e` is not evaluated until it is needed. In our case, this makes sure that both `buffer` and `zipped` can be declared and instantiated. It is enough that their parameters are declared of the right type, they do not actually need to evaluated. At the initialization of the entire graph, there is no circular dependency either because both instances exist and will only be used during the evaluation of the graph.
 
 
 ## Source API
@@ -386,7 +385,7 @@ implicit class TimeSource(source: Source[Time]) {
 
 ![API of the Sources](empty.jpg)
 
-The real API includes also a `name` and `silent` parameter. Both are only relevant for the graphical representation. The name of the block will be overriden by name if present and the node will be skipped in the graphical representation if silent is present.
+The real API also includes `name` and `silent` parameters. Both are only relevant for the graphical representation. The name of the block will be overriden by name if present and the node will be skipped in the graphical representation if silent is present.
 
 ## Batteries
 
@@ -411,28 +410,30 @@ The following nodes are already included and pre-defined:
 
 ![Example of a trajectory visualization](flight.webm){ width=400px }
 
-In addition, any `scala.Stream[A]` can be transformed into a `Source0` node using `EmitterStream[A]` with `A` being the type of the `Stream`. This is how `Clock` are implemented, as an infinite scala stream of Time.
+In addition, any `scala.Stream[A]` can be transformed into a `Source0` node using `EmitterStream[A]` with `A` being the type of the `Stream`. This is how `Clock` is implemented, as an infinite scala stream of Time.
 
 ## Batch
 
-A batch is a node that process its input in "batch" mode. All the other nodes process their input in "stream" mode. By "stream" mode, it is meant that the node process the input one-by-one, as soon as it arrives. On the other hand, the "batch" mode means that the node process the incoming packets once they are all arrived, once and for all. This is the case for most sink (it makes more sense for a plot to build it once all the data is arrived). Batches are essential to the spatial integration: the nodes that simulate a spatial application can only run and treat all the data at once. Indeed, Running a spatial application involve running the spatial compiler in the background and compiling the full meta-program, including all meta-constant values. 
+A batch is a node that processes its inputs in "batch" mode. All the other nodes process their inputs in "stream" mode. By "stream" mode, it is meant that the node processes the inputs one-by-one, as soon as they arrive. On the other hand, the "batch" mode means that the node processes the incoming packets once they have all arrived, once and for all. This is the case for most sinks (for example, it makes more sense for a plot to build it once all the data is arrived).
+
+Spatial is a language described in part IV and developed to write high-level hardware design of accelerators. A spatial application can be integrated into scala-flow as a transformation node using the streaming interface of Spatial. Spatial applications can only run during the same runtime than scala-flow using the interpreter described in Part III and originally developed for this exact purpose. Batches are essential to Spatial integration: the nodes that simulate a Spatial application can only run and treat all the data at once. Indeed, running a Spatial application involves running the Spatial compiler in the background and compiling the full meta-program, including all meta-constant values. 
 
 ## Scheduler
 
-Scheduling is the core mechanism of scala-flow. Scheduling ensures that packets gets emitted by the sending nodes and received by the recipient nodes at the "right time". Since scala-flow is a simulation tool, the "scala-flow time" does not correspond at all to the real time. Scheduling emits the packets as fast as it can. Therefore, since time is an arbitrary component of the packet, the only constraint that scheduling must satisfy is emitting the packets from all nodes in the right order.
+Scheduling is the core mechanism of scala-flow. Scheduling ensures that packets get emitted by the sending nodes and received by the recipient nodes at the "right time". Since scala-flow is a simulation tool, the "scala-flow time" does not correspond at all to the real time. Scheduling emits the packets as fast as it can. Therefore, since time is an arbitrary component of the packet, the only constraint that scheduling must satisfy is emitting the packets from all nodes in the right order.
 
-Scheduling is achieved by one or many Schedulers. Schedulers are essentially priority queue of actions. The priorities is the timestamp plus the accumulated delay of the packets. The actions are side-effect functions that emit packets to the right node by the intermediary of channels. Every node has a scheduler and enqueue action to it every time the `broadcast` method is called. The scheduler are propagated through the graph through two rules:
+Scheduling is achieved by one or many Schedulers. Schedulers are essentially priority queues of actions. The priority is the timestamp plus the accumulated delay of the packet. The actions are side-effect functions that emit packets to the right node by the intermediary of channels. Every node has a scheduler and enqueue action to it every time the `broadcast` method is called. The scheduler are propagated through the graph through two rules:
 
 - Every `Source0` has for `Scheduler` the "main scheduler" available globally passed on as an implicit parameter
 - Other nodes either explicitly create their own scheduler (like the batch nodes) or use the Scheduler from their `source1` input.
 
-Only one scheduler execute actions at the same time. When a scheduler is finished, another one get started unless it was the last one. In practice, when a scheduler has no more packets to handle, there is a callback to `CloseListener` nodes and scheduler according to their `CloseListener` priority. Batches have their own scheduler and are also among `CloseListener` of the `Scheduler` of their source node, waiting for them to all finish. Batches process the accumulated packets as soon as the `CloseListener` callback is called. 
+Only one scheduler executes actions at the same time. When a scheduler is finished, another one is started unless it was the last one. In practice, when a scheduler has no more packets to handle, there is a callback to `CloseListener` nodes and scheduler according to their `CloseListener` priority. Batches have their own scheduler and are also among `CloseListener` of the `Scheduler` of their source node, waiting for them to all finish. Batches process the accumulated packets as soon as the `CloseListener` callback is called. 
 
 All schedulers start at time 0. The current time of a scheduler is the time of the last emitted packet. `Scheduler` can en-queue new actions while the scheduler is "live" but the en-queued packet can only have a time of emission greater or equal to the current time. In the trivial case where there is no Batch, only one scheduler is needed. 
 
 ## Replay
 
-`Replay` are nodes at the frontier of two schedulers. They accumulate packets from the actions of the first scheduler until they receive its `CloseListener` callback. When received, they en-queue all the accumulated actions into the second scheduler. `Replay`s are the primary mechanism of synchronization between two `Scheduler`s. A `Batch` is essentially a `Replay` with its own `Scheduler` as secondary `Scheduler`. However, a batch transforms the data before broadcasting instead of simply replaying it. 
+`Replay` are nodes at the frontier of two schedulers. They accumulate packets from the actions of the first scheduler until they receive its `CloseListener` callback. When received, they en-queue all the accumulated actions into the second scheduler. `Replay`s are the primary mechanisms of synchronization between two `Scheduler`s. A `Batch` is essentially a `Replay` with its own `Scheduler` as secondary `Scheduler`. However, a batch transforms the data before broadcasting instead of simply replaying it. 
 
 **All sources of a node must share the same scheduler. Replays are automatically inserted to ensure that this rule is respected**
 
@@ -444,19 +445,19 @@ When the graph involves multiple schedulers, depending on the graph structure, t
 
 ```mermaid
 graph LR
-	subgraph scheduler 1
-	sA(sourceA)
-	sB(sourceB)
-	sC(sourceC)	
-	end
-	subgraph scheduler2
-	node(Node)
-	rest(...)
-	end
-	sA-->node
-	sB-->node
-	sC-->node
-	node-->rest
+  subgraph scheduler 1
+  sA(sourceA)
+  sB(sourceB)
+  sC(sourceC)	
+  end
+  subgraph scheduler2
+  node(Node)
+  rest(...)
+  end
+  sA-->node
+  sB-->node
+  sC-->node
+  node-->rest
 ```
 
 ![Node's sources sharing the same Scheduler](empty.jpg)
@@ -465,23 +466,23 @@ In the above structure, no replay need to be created because all sources of the 
 
 ```mermaid
 graph LR
-	subgraph scheduler 1
-	sA(sourceA)
-	end
-	subgraph scheduler 2
-	sB(sourceB)
-	end
-	subgraph scheduler 3	
-	sC(sourceC)	
-	end
-	subgraph scheduler 4
-	node(Node)
-	rest(...)
-	end
-	sA-->node
-	sB-->node
-	sC-->node
-	node-->rest
+  subgraph scheduler 1
+  sA(sourceA)
+  end
+  subgraph scheduler 2
+  sB(sourceB)
+  end
+  subgraph scheduler 3	
+  sC(sourceC)	
+  end
+  subgraph scheduler 4
+  node(Node)
+  rest(...)
+  end
+  sA-->node
+  sB-->node
+  sC-->node
+  node-->rest
 ```
 
 ![Node's sources not sharing the same Scheduler](empty.jpg)
@@ -490,46 +491,46 @@ In the above structure, intermediary replays must be created so that the node "N
 
 ```mermaid
 graph LR
-	subgraph scheduler 1
-	sA(sourceA)
-	end
-	subgraph scheduler 2
-	sB(sourceB)
-	end
-	subgraph scheduler 3	
-	sC(sourceC)	
-	end
-	subgraph scheduler 4
-	replay1(Replay1)
-	replay2(Replay2)
-	replay3(Replay3)
-	end	
-	subgraph scheduler 5
-	node(Node)
-	rest(...)
-	end
-	sA-->replay1
-	sB-->replay2
-	sC-->replay3
-	replay1-->node
-	replay2-->node
-	replay3-->node	
-	node-->rest
+  subgraph scheduler 1
+  sA(sourceA)
+  end
+  subgraph scheduler 2
+  sB(sourceB)
+  end
+  subgraph scheduler 3	
+  sC(sourceC)	
+  end
+  subgraph scheduler 4
+  replay1(Replay1)
+  replay2(Replay2)
+  replay3(Replay3)
+  end	
+  subgraph scheduler 5
+  node(Node)
+  rest(...)
+  end
+  sA-->replay1
+  sB-->replay2
+  sC-->replay3
+  replay1-->node
+  replay2-->node
+  replay3-->node	
+  node-->rest
 ```
 
 ![Example of Replays between inserted in-between a Node and its sources](empty.jpg)
 
 ## InitHook
 
-Some nodes need initialization values for each simulation evaluation. For instance, This is the case for the trajectory filters: the filters require to be given the initial position and attitude of the drone. An `InitHook[I]` is an implicit parameter passed to the nodes during their declaration. The type parameter `I` is the type of the values that will be accessible by the nodes as initialization values.
+Some nodes need initialization values for each simulation evaluation. For instance, this is the case for the trajectory filters: the filters require to be given the initial position and attitude of the drone. An `InitHook[I]` is an implicit parameter passed to the nodes during their declaration. The type parameter `I` is the type of the values that will be accessible by the nodes as initialization values.
 
 ## ModelHook
 
-Similarly, some nodes need access to a "Model". A "Model" is specific to a simulation and is an oracle that node might need to consult in order to generate data or get any other information about the external simulation environment. For instance, the sensor nodes generate noisy measurements as a function of the time based on the underlying trajectory model. Similar to `InitHook[I]`, it is passed to nodes during the graph declaration as an implicit parameter.
+Similarly, some nodes need access to a "Model". A "Model" is specific to a simulation and is an oracle that a node might need to consult in order to generate data or get any other information about the external simulation environment. For instance, the sensor nodes generate noisy measurements as a function of the time based on the underlying trajectory model. Similar to `InitHook[I]`, it is passed to nodes during the graph declaration as an implicit parameter.
 
 ## NodeHook
 
-To gather the nodes and their connection between each others, a `NodeHook` is used. Every node must have access to a `NodeHook` to add itself to the registry. For the nodes that take no input, the `Source0`, the `NodeHook` is passed as an implicit parameter. For any other nodes, the `NodeHook` is propagated through the graph. All others nodes use the `NodeHook` from their `source1`. This is similar to the way `Scheduler` are propagated through the graph.
+To gather the nodes and their connection between each others, a `NodeHook` is used. Every node must have access to a `NodeHook` to add itself to the registry. For nodes that take no input, the `Source0`, the `NodeHook` is passed as an implicit parameter. For any other nodes, the `NodeHook` is propagated through the graph. All others nodes use the `NodeHook` from their `source1`. This is similar to the way `Scheduler` are propagated through the graph.
 
 ## Graphical representation
 
@@ -541,9 +542,9 @@ A `FlowApp[M, I]` is an extension of the scala `App`, a trait that treats the in
 
 ## Spatial integration
 
-Scala-flow can also be used as a complementary tool for the development of applications embedding Spatial, a language to design accelerating hardware. Accelerators can be easily represented as simple transformation nodes in a data flow and hence as a regular `OpX` node in scala-flow.
+Scala-flow can also be used as a complementary tool for the development of applications embedding Spatial, a language to design hardware accelerators. Accelerators can be easily represented as simple transformation nodes in a data flow and hence as a regular `OpX` node in scala-flow.
 
-`SpatialBatch` and its variants are the nodes used to embed spatial applications. `SpatialBatchRawX`s run a user-defined application. The application can use the list of incoming packet as a constant list of values. X is the number of source of the node. `SpatialBatchX`s are specialized `SpatialBatchRawX`s with additional syntactic sugar such that there is no more boilerplate and the required code is reduced to the most essential to write stream processing spatial applications. It is only to define a function `def spatial(x: TSA): SR` where `TSA` is a struct containing a value `v` of type `SA` (see below) and the packet timestamp as `t`.
+`SpatialBatch` and its variants are the nodes used to embed spatial applications. `SpatialBatchRawX`s run a user-defined application. The application can use the list of incoming packets as a constant list of values. X is the number of sources of the node. `SpatialBatchX`s are specialized `SpatialBatchRawX`s with additional syntactic sugar such that there is no more boilerplate and the required code is reduced to the most essential to write stream processing Spatial applications. It is only to define a function `def spatial(x: TSA): SR` where `TSA` is a struct containing a value `v` of type `SA` (see below) and the packet timestamp as `t`.
 
 If we take a look at `SpatialBatch1`'s signature, 
 ```scala
@@ -556,7 +557,7 @@ abstract class SpatialBatch1[A, R, SA: Bits: Type, SR: Bits: Type]
 
 we see that it takes type parameter `A, R, SA, SR` and the typeclass instances of `Spatialable` for `SA` and `SR`. `A` and `R` are the type members representing respectively the incoming and outgoing packet type. `SA` and `SR` are the spatial type into what they are converted to such that they can be handled by a spatial DSL. Indeed, `scala.Double` and `spatial.Double` are not the same type. The latter is a staged type part of the spatial DSL.
 
-`Spatialable[A]` is a typeclass that declare a conversion from `A` to a spatial type (declared as the inner type member `Spatial` of `Spatialable`.
+`Spatialable[A]` is a typeclass that declare a conversion from `A` to a Spatial type (declared as the inner type member `Spatial` of `Spatialable`.
 
 
 There exists a `Spatialable[Time]` which make the following example possible:
@@ -578,7 +579,8 @@ There exists a `Spatialable[Time]` which make the following example possible:
   }
 
 
-  val spatial3 = new SpatialBatch2[Time, Time, Time, Double, Double, Double](spatial, spatial2) {
+  val spatial3 = new SpatialBatch2[Time, Time, Time, Double, Double, Double]
+	                              (spatial, spatial2) {
     def spatial(x: Either[TSA, TSB]) = {
       x match {
         case Right(t) => t.v+10
@@ -592,18 +594,23 @@ There exists a `Spatialable[Time]` which make the following example possible:
 
 ![Usage demonstration of spatial batches](empty.jpg)
 
-Even though it looks inconspicuous, the `cos`, `+`, `-` functions are actually functions from the spatial DSL. This simple scala-flow program actually compiles and runs through the interpreter 3 different spatial programs.
+Even though it looks inconspicuous, the `cos`, `+`, `-` functions are actually functions from the Spatial DSL. This simple scala-flow program actually compiles and runs through the interpreter 3 different Spatial programs.
 
-The development of an interpreter was required so that spatial apps could run on the same runtime than scala-flow. The interpreter development is detailed in the next part of this thesis.
+The development of an interpreter was required so that Spatial applications could run on the same runtime than scala-flow. The interpreter development is detailed in the next part of this thesis.
 
 ## Conclusion
 
-`scala-flow` is a modern framework to simulate, develop, prototype and debug applications which have a natural representation as data-flows. Its integration with spatial makes it a good tool to include with spatial to ease the development complex applications whenever the accelerated application need to be written over multiple iterations of increasing complexity, and tested on different scenarios with modelable environment.
+`scala-flow` is a modern framework to simulate, develop, prototype and debug applications which have a natural representation as data-flows. Its integration with Spatial makes it a good tool to include with Spatial to ease the development complex applications whenever the accelerated application needs to be written over multiple iterations of increasing complexity, and tested on different scenarios with modelable environments.
 
 
 
 
 
-## References
+## Part III
+
+[Continue here to read the section about an interpreter for Spatial (III/IV)](/posts/th3/2017-08-16-thesis-part-3.html)
+
+
+
 
 

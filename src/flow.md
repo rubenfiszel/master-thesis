@@ -431,19 +431,19 @@ When the graph involves multiple schedulers, depending on the graph structure, t
 
 ```mermaid
 graph LR
-	subgraph scheduler 1
-	sA(sourceA)
-	sB(sourceB)
-	sC(sourceC)	
-	end
-	subgraph scheduler2
-	node(Node)
-	rest(...)
-	end
-	sA-->node
-	sB-->node
-	sC-->node
-	node-->rest
+  subgraph scheduler 1
+  sA(sourceA)
+  sB(sourceB)
+  sC(sourceC)	
+  end
+  subgraph scheduler2
+  node(Node)
+  rest(...)
+  end
+  sA-->node
+  sB-->node
+  sC-->node
+  node-->rest
 ```
 
 ![Node's sources sharing the same Scheduler](empty.jpg)
@@ -452,23 +452,23 @@ In the above structure, no replay need to be created because all sources of the 
 
 ```mermaid
 graph LR
-	subgraph scheduler 1
-	sA(sourceA)
-	end
-	subgraph scheduler 2
-	sB(sourceB)
-	end
-	subgraph scheduler 3	
-	sC(sourceC)	
-	end
-	subgraph scheduler 4
-	node(Node)
-	rest(...)
-	end
-	sA-->node
-	sB-->node
-	sC-->node
-	node-->rest
+  subgraph scheduler 1
+  sA(sourceA)
+  end
+  subgraph scheduler 2
+  sB(sourceB)
+  end
+  subgraph scheduler 3	
+  sC(sourceC)	
+  end
+  subgraph scheduler 4
+  node(Node)
+  rest(...)
+  end
+  sA-->node
+  sB-->node
+  sC-->node
+  node-->rest
 ```
 
 ![Node's sources not sharing the same Scheduler](empty.jpg)
@@ -477,31 +477,31 @@ In the above structure, intermediary replays must be created so that the node "N
 
 ```mermaid
 graph LR
-	subgraph scheduler 1
-	sA(sourceA)
-	end
-	subgraph scheduler 2
-	sB(sourceB)
-	end
-	subgraph scheduler 3	
-	sC(sourceC)	
-	end
-	subgraph scheduler 4
-	replay1(Replay1)
-	replay2(Replay2)
-	replay3(Replay3)
-	end	
-	subgraph scheduler 5
-	node(Node)
-	rest(...)
-	end
-	sA-->replay1
-	sB-->replay2
-	sC-->replay3
-	replay1-->node
-	replay2-->node
-	replay3-->node	
-	node-->rest
+  subgraph scheduler 1
+  sA(sourceA)
+  end
+  subgraph scheduler 2
+  sB(sourceB)
+  end
+  subgraph scheduler 3	
+  sC(sourceC)	
+  end
+  subgraph scheduler 4
+  replay1(Replay1)
+  replay2(Replay2)
+  replay3(Replay3)
+  end	
+  subgraph scheduler 5
+  node(Node)
+  rest(...)
+  end
+  sA-->replay1
+  sB-->replay2
+  sC-->replay3
+  replay1-->node
+  replay2-->node
+  replay3-->node	
+  node-->rest
 ```
 
 ![Example of Replays between inserted in-between a Node and its sources](empty.jpg)

@@ -50,6 +50,8 @@ The original motivation for the development of accelerated POSE estimation is fo
 
 ![Ross Allen fencing with his drone](fencing.png)
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/kdlhfMiWVV0" frameborder="0" allowfullscreen></iframe>
+
 where the drone avoids the sword attack from its creator. At first, it was thought of accelerating the whole algorithm but it was found that one of the most demanding subroutines was pose estimation.  Moreover, it was wished to increase the processing rate of the filter such that it could match the input with the fastest sampling rate: its inertial measurement unit (IMU) containing an accelerometer, a gyroscope and a magnetometer.
 
 The flamewheel f450 is the typical drone in this category. It is surprisingly fast and agile. With the proper commands, it can generate enough thrust to avoid any incoming object in a very short lapse of time.

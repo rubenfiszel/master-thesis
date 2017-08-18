@@ -138,11 +138,12 @@ build_post() {
     rm -rf ../$4
     mkdir ../$4
     cp "tmp_${1}2.md" ../$4/$5
-    sed -i 's/.pdf/.png/g' ../$4/$5        
+    sed -i 's/.pdf/.png/g' ../$4/$5
+    sed -i 's/thesis.png/thesis.pdf/g' ../$4/$5            
     cp ../images/* ../$4/
 
-    rm -rf ../../hakyll-website/drafts/$4
-    cp -r ../$4 ../../hakyll-website/drafts/
+    rm -rf ../../hakyll-website/posts/$4
+    cp -r ../$4 ../../hakyll-website/posts/
     
     echo "post $1 written to $4"
 }

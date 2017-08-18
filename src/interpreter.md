@@ -76,17 +76,17 @@ The IR in Argon is based on a "sea-of-nodes" representation of the object-progra
 
 ```mermaid
 graph TD
-	Exp
-	Dyn
-	Bound
-	Sym
-	Const
-	Param
-	Exp-->Dyn
-	Dyn-->Bound
-	Dyn-->Sym
-	Exp-->Const
-	Const-->Param
+  Exp
+  Dyn
+  Bound
+  Sym
+  Const
+  Param
+  Exp-->Dyn
+  Dyn-->Bound
+  Dyn-->Sym
+  Exp-->Const
+  Const-->Param
 ```
 
 - Consts are staged expressions whose value is known during staging. Since the staging compiler is aware of the value, some optimizations can be applied. For instance, constant folding can simplify the object-program considerably.
@@ -160,38 +160,38 @@ else
 
 ```mermaid
 graph TD
-	subgraph Scala Compile Time: 1st stage
-    prog(Meta-Program)
-	scalac
-	end
-	subgraph Scala Runtime: 2nd stage
-    exec(Executable Meta-Program)
-	expanded(expanded DSL nodes)
-	OIR(raw IR)
-	subgraph passes
-	transformer
-	IR(IR)
-	end
-	codegen
-	target(Chisel Object Program)
-	chisel[Chisel Compiler]
-	target2(Verilog Program)	
-	verilog[Verilog Compiler]	
-	target3(Hardware Design)
-	end
-	prog-->scalac
-	scalac-->exec
-	exec-->|meta-expansion|expanded
-	expanded-->|staging|OIR
-	OIR-->transformer
-	IR-->transformer
-	transformer-->IR
-	IR-->codegen
-	codegen-->target
-	target-->chisel
-	chisel-->target2
-	target2-->verilog
-	verilog-->target3
+  subgraph Scala Compile Time: 1st stage
+  prog(Meta-Program)
+  scalac
+  end
+  subgraph Scala Runtime: 2nd stage
+  exec(Executable Meta-Program)
+  expanded(expanded DSL nodes)
+  OIR(raw IR)
+  subgraph passes
+  transformer
+  IR(IR)
+  end
+  codegen
+  target(Chisel Object Program)
+  chisel[Chisel Compiler]
+  target2(Verilog Program)	
+  verilog[Verilog Compiler]	
+  target3(Hardware Design)
+  end
+  prog-->scalac
+  scalac-->exec
+  exec-->|meta-expansion|expanded
+  expanded-->|staging|OIR
+  OIR-->transformer
+  IR-->transformer
+  transformer-->IR
+  IR-->codegen
+  codegen-->target
+  target-->chisel
+  chisel-->target2
+  target2-->verilog
+  verilog-->target3
 ```
 
 After the IR has been transformed through all the passes, it is sufficiently refined to be processed by the codegen. The codegen is implemented as a traversal which, after linearization by scheduling, visits each item of a sequence of pair of `Sym` and `Def`. Each pair is transformed according to the `Def` as a string in the format of the target language and written to the output file. `Def` nodes have versatile meaning since they encompass the full range of the language. Language designers add `Def` nodes to their language in a modular manner. For Spatial, each kind of data type have an associated set of `Defs` which are defined in their own modules and mixed-in incrementally to the compiler. For instance, `argon.Boolean` have among others `Def` nodes that can be simplified as:
@@ -212,28 +212,28 @@ Synthesizing takes time, many days in some instances. It is beneficial for users
 
 ```mermaid
 graph TD
-	subgraph Scala Compile Time: 1st stage
-    prog(Meta-Program)
-	scalac
-	end
-	subgraph Scala Runtime: 2nd stage
-    exec(Executable Meta-Program)
-	expanded(expanded DSL nodes)
-	OIR(raw IR)
-	subgraph passes
-	transformer
-	IR(IR)
-	end
-	interpreter
-	end
-	prog-->scalac
-	scalac-->exec
-	exec-->|meta -expansion|expanded
-	expanded-->|staging|OIR
-	OIR-->transformer
-	IR-->transformer
-	transformer-->IR
-	IR-->interpreter
+  subgraph Scala Compile Time: 1st stage
+  prog(Meta-Program)
+  scalac
+  end
+  subgraph Scala Runtime: 2nd stage
+  exec(Executable Meta-Program)
+  expanded(expanded DSL nodes)
+  OIR(raw IR)
+  subgraph passes
+  transformer
+  IR(IR)
+  end
+  interpreter
+  end
+  prog-->scalac
+  scalac-->exec
+  exec-->|meta -expansion|expanded
+  expanded-->|staging|OIR
+  OIR-->transformer
+  IR-->transformer
+  transformer-->IR
+  IR-->interpreter
 ```
 
 Building an interpreter for Spatial was a requirement of having a Spatial integration in scala-flow. Furthermore, it is a requirement to integrate a Spatial simulator into any external library. It also benefits the Spatial ecosystem as a whole. Indeed, an interpreter encourages the user to have more interactions with the language and working in increasing complexity iterations thanks to fast feedback since the work flow involves less steps, is faster to launch and is more tightly integrated with Spatial (the interpreter has access to `SourceContext`, among others). The interpreter is not yet cycle-accurate, but this is planned as future work.
