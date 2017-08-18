@@ -1,5 +1,6 @@
 ---
-title: "[thesis II] A simulation tool for scala with spatial integration: scala-flow"
+title: "(thesis 2/4) A simulation tool for scala with spatial integration: scala-flow"
+subtitle: ""
 author: Ruben Fiszel
 affiliation: Stanford University
 email: ruben.fiszel@epfl.ch

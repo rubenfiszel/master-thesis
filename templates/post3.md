@@ -1,5 +1,6 @@
 ---
-title: "[thesis III] An interpreter for Spatial"
+title: "(thesis 3/4) An interpreter for Spatial"
+subtitle: ""
 author: Ruben Fiszel
 affiliation: Stanford University
 email: ruben.fiszel@epfl.ch

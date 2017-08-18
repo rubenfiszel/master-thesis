@@ -1,5 +1,6 @@
 ---
-title: "[thesis I] Accelerated sensor fusion algorithm for POSE estimation of drones: Asynchronous Rao-Blackwellized Particle filter"
+title: "(thesis 1/4) Accelerated sensor fusion algorithm for POSE estimation of drones"
+subtitle: "An Accelerated and Asynchronous Rao-Blackwellized Particle filter"
 author: Ruben Fiszel
 affiliation: Stanford University
 email: ruben.fiszel@epfl.ch
@@ -17,7 +18,7 @@ ${rbpf}
 
 ## Part II 
 
-[Continue here to read the section about scala-flow (/II/IV)](posts/th2/2017-08-16-thesis-part-2.html)
+[Continue here to read the section about scala-flow (I/IV)](/posts/th2/2017-08-16-thesis-part-2.html)
 
 ## References
 

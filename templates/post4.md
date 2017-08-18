@@ -1,5 +1,6 @@
 ---
-title: "[thesis IV] The Spatial implementation of a Rao-Blackwellized Particle Filter"
+title: "(thesis 4/4) The Spatial implementation of a Rao-Blackwellized Particle Filter"
+subtitle: ""
 author: Ruben Fiszel
 affiliation: Stanford University
 email: ruben.fiszel@epfl.ch
